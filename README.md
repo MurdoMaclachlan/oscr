@@ -24,6 +24,6 @@ client_secret=4lS0f4Ke1234567894NdN0tR3aL
 username=testuser
 password=yourpasswordhere
 ```
-Your praw.ini should remain in the current directory when running CDRemover, or in one of the config folders as [https://praw.readthedocs.io/en/latest/getting_started/configuration/prawini.html](described on PRAW's documentation).
+Your praw.ini should remain in the current directory when running CDRemover, or in one of the config folders as [described on PRAW's documentation](https://praw.readthedocs.io/en/latest/getting_started/configuration/prawini.html).
 
 Once you're done, just navigate to the folder where `main.py` is and run the file. I might run with an IDE you have installed, or simply run itself, or you can run it from the command line. On Linux, you do this like so: `./main.py`. You will see an output after a few seconds. Each comment older than your cutoff should be deleted.
