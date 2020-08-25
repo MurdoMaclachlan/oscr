@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import praw
 import time
-import datetime
 from config import blacklist, cutoff, os, user
 
 version = "0.1"
