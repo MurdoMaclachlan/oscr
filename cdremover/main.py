@@ -2,7 +2,7 @@
 import praw
 import time
 import libcdr
-from config import blacklist, cutoff, limit, os, unit, updateLog, user, wait
+from config import *
 
 version = "0.2"
 
