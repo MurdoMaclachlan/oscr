@@ -1,4 +1,6 @@
-def fetch(statistic):
+from .misc import doLog
+
+def fetch(statistic, log):
 
     file = open("data/stats.txt", "r")
     content = file.read().splitlines()
@@ -12,9 +14,10 @@ def fetch(statistic):
                     result.append(str(i))
 
     file.close()
+    doLog("Fetched {} successfully.".format(statistic), log)
     return int(''.join(result))
 
-def update(statistic, value):
+def update(statistic, value, log):
 
     lineToReplace = 0
     newLine = "{}: {}".format(statistic, str(value))
@@ -25,7 +28,8 @@ def update(statistic, value):
     with open("data/stats.txt", "w") as file:
         if content == []:
             file.write(newLine)
-            return "Updated successfully."
+            doLog("Updated {} successfully.".format(statistic), log)
+            return True
 
         for line in content:
             if list(line)[0] == list(statistic)[0]:
@@ -35,4 +39,5 @@ def update(statistic, value):
 
         file.write('\n'.join(content))
 
-    return "Updated successfully."
+    doLog("Updated {} successfully.".format(statistic), log)
+    return True
