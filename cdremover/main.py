@@ -4,7 +4,7 @@ import time
 import libcdr
 from config import blacklist, cutoff, limit, os, unit, updateLog, user, wait
 
-version = "0.2 dev"
+version = "0.2"
 
 def getDate(comment):
 	return comment.created_utc
