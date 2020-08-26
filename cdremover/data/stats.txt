@@ -1,2 +1,0 @@
-counted: 0
-deleted: 0
