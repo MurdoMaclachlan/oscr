@@ -46,7 +46,7 @@ def update(statistic, value, log):
         with open("data/stats.txt", "r") as file:
             content = file.read().splitlines()
     except FileNotFoundError:
-        doLog("No stats.txt file found; creating.", log)
+        doLog("No stats.txt found; creating.", log)
 
     with open("data/stats.txt", "w") as file:
         
