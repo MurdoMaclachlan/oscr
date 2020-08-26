@@ -10,6 +10,7 @@ def getDate(comment):
     return comment.created_utc
 
 # Credit to u/--B_L_A_N_K-- for improving the system and allowing it to delete in real-time, as well as for writing the improved console output and its formatting.
+# Credit to u/DasherPack for being a handsome boy
 
 reddit = praw.Reddit("credentials", user_agent=os+":claimdoneremover:v"+version+" (by u/MurdoMaclachlan)")
 
