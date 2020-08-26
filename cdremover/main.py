@@ -4,7 +4,7 @@ import time
 import libcdr
 from config import *
 
-version = "0.2"
+version = "0.3"
 
 def getDate(comment):
     return comment.created_utc
@@ -14,7 +14,6 @@ def getDate(comment):
 reddit = praw.Reddit("credentials", user_agent=os+":claimdoneremover:v"+version+" (by u/MurdoMaclachlan)")
 
 log = []
-run = True
 
 libcdr.doLog("Running CDRemover with recur set to {}.".format(recur), log)
 
