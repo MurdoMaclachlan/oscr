@@ -23,7 +23,7 @@ totalDeleted = libcdr.fetch("deleted", log)
 
 def updateLog(message, log):
     libcdr.doLog(message, log)
-    libcdr.writeLog(log)
+    libcdr.attemptLog(log)
 
 if logUpdates == True:
     updateLog("Updating log...", log)
