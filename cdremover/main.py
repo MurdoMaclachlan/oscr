@@ -4,7 +4,7 @@ import time
 import libcdr
 from config import *
 
-version = "0.3"
+version = "0.3.1"
 
 def getDate(comment):
     return comment.created_utc
