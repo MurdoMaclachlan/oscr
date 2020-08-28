@@ -1,5 +1,7 @@
 # Claim/Done Remover
 
+## DO NOT USE VERSION 0.4 -- THERE SEEMS TO CURRENTLY BE A RECURSION ERROR ISSUE WITH SOME USER(S).
+
 **This is an unofficial program and is not officially endorsed by the Transcribers of Reddit; they are in no way involved with this program and are not liable for any matters relating to it.**
 
 Also known as CDRemover, this program removes "claim" and "done" comments after a period of time. It is designed with r/TranscribersOfReddit transcribers in mind; specifically those  who are tired of these comments clogging up their profiles.
