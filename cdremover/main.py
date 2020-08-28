@@ -49,7 +49,7 @@ while True:
     for comment in reddit.redditor(user).comments.new(limit=limit):
         if comment.body in blacklist:
             if time.time() - getDate(comment) > cutoff*3600:
-                libcdr.doLog("Obsolete '{}' found, deleting.".format(comment.body, log))
+                libcdr.doLog("Obsolete '{}' found, deleting.".format(comment.body), log)
                 comment.delete()
                 deleted += 1
             else:
