@@ -1,8 +1,11 @@
-# misc functions
-from .misc import doLog
-from .misc import writeLog
-from .misc import attemptLog
+# miscellaneous functions
+from .misc import getTime
 
-# file handling functions
-from .readwrite import fetch
-from .readwrite import update
+# log handling functions functions
+from .log import doLog
+from .log import writeLog
+from .log import attemptLog
+
+# statistics handling functions
+from .statistics import fetch
+from .statistics import update

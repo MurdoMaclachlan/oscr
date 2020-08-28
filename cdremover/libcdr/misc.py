@@ -1,24 +1,6 @@
-import os
-from os.path import isfile, isdir
+import datetime
 
-def doLog(output, log):
-    log.append(output+"\n")
-    print(output)
-    return True
-
-def writeLog(log):
-    with open("data/log.txt", "a") as file:
-        for i in log:
-            file.write(i)
-    return True
-    
-def attemptLog(log):
-    try:
-        writeLog(log)
-    except FileNotFoundError:
-        doLog("No log.txt found; creating.", log)
-        if not isdir("data"):
-            os.mkdir("data")
-            writeLog(log)
-        if not isfile("data/logs.txt"):
-            writeLog(log)
+# Finds the current time and returns it in a human readable format.
+def getTime(timeToFind):
+    currentTime = datetime.datetime.fromtimestamp(timeToFind)
+    return currentTime.strftime("%Y-%m-%d %H:%M:%S")
