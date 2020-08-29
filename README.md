@@ -1,6 +1,6 @@
 # Claim/Done Remover
 
-**Some users have been experiencing recursion errors, and a failure of the program to find their comments, with v0.4.
+**Some users have been experiencing recursion errors, and a failure of the program to find their comments, with v0.4.**
 
 **This is an unofficial program and is not officially endorsed by the Transcribers of Reddit; they are in no way involved with this program and are not liable for any matters relating to it.**
 
