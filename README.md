@@ -1,7 +1,5 @@
 # Claim/Done Remover
 
-**Some users have been experiencing recursion errors, and a failure of the program to find their comments, with v0.4.**
-
 **This is an unofficial program and is not officially endorsed by the Transcribers of Reddit; they are in no way involved with this program and are not liable for any matters relating to it.**
 
 Also known as CDRemover, this program removes "claim" and "done" comments after a period of time. It is designed with r/TranscribersOfReddit transcribers in mind; specifically those  who are tired of these comments clogging up their profiles.
@@ -32,3 +30,7 @@ password=yourpasswordhere
 Your praw.ini should remain in the current directory when running CDRemover, or in one of the config folders as [described on PRAW's documentation](https://praw.readthedocs.io/en/latest/getting_started/configuration/prawini.html).
 
 Once you're done, just navigate to the folder where `main.py` is and run the file. I might run with an IDE you have installed, or simply run itself, or you can run it from the command line. On Linux, you do this like so: `./main.py`. You will see an output after a few seconds. Each comment older than your cutoff should be deleted. You can then either leave the program running in the background to delete posts in real time as they reach your cutoff, or you can manually run it every now and then in order to delete in batches.
+
+## Current Bugs
+
+- One user has experienced a recursion error upon initialising a Reddit instance. This appears to have been a result of attempting to initialise with an empty Redditor name, and is now a verified PRAW issue. Don't try to initialise with an empty Redditor name.
