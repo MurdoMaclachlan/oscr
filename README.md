@@ -31,6 +31,6 @@ Your praw.ini should remain in the current directory when running CDRemover, or 
 
 Once you're done, just navigate to the folder where `main.py` is and run the file. I might run with an IDE you have installed, or simply run itself, or you can run it from the command line. On Linux, you do this like so: `./main.py`. You will see an output after a few seconds. Each comment older than your cutoff should be deleted. You can then either leave the program running in the background to delete posts in real time as they reach your cutoff, or you can manually run it every now and then in order to delete in batches.
 
-## Current Bugs
+## Notes
 
 - One user has experienced a recursion error upon initialising a Reddit instance. This appears to have been a result of attempting to initialise with an empty Redditor name, and is now a verified PRAW issue. Don't try to initialise with an empty Redditor name.
