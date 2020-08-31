@@ -5,7 +5,8 @@ blacklist = [
     "done",
     "unclaim",
     "claim -- this was a automated action. please contact me with any questions.",
-    "done -- this was a automated action. please contact me with any questions."
+    "done -- this was a automated action. please contact me with any questions.",
+    "unclaim -- this was a automated action. please contact me with any questions."
 ] # The exact, word-for-word body of the comments to be deleted.
 cutoff = 3 # The number of hours old which comments must be before they are deleted.
 limit = 100 # How many comments to check through in the user's history, max 1000 (enter None).
