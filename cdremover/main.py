@@ -8,7 +8,7 @@ import time
 import libcdr
 from config import *
 
-version = "0.4.1"
+version = "0.4.2"
 
 # Retieves the date the comment was posted at.
 def getDate(comment):
