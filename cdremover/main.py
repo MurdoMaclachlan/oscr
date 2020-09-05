@@ -8,7 +8,7 @@ import time
 import libcdr
 from config import *
 
-version = "0.4.2"
+version = "0.4.3"
 
 # Retieves the date the comment was posted at.
 def getDate(comment):
@@ -24,7 +24,6 @@ libcdr.doLog("Running CDRemover with recur set to {}.".format(recur), log)
 totalCounted = libcdr.fetch("counted", log)
 totalDeleted = libcdr.fetch("deleted", log)
 
-
 # Updates the log.
 def updateLog(message, log):
     libcdr.doLog(message, log)
@@ -36,6 +35,16 @@ def updateLog(message, log):
         logUpdates = False
         return logUpdates
 
+def remover(comment, cutoff, deleted, waitingFor):
+    if time.time() - getDate(comment) > cutoff*3600:
+        libcdr.doLog("Obsolete '{}' found, deleting.".format(comment.body), log)
+        comment.delete()
+        deleted += 1
+    else:
+        libcdr.doLog("Waiting for '{}'.".format(comment.body), log)
+        waitingFor += 1
+    return deleted, waitingFor
+
 if logUpdates == True:
     log = updateLog("Updating log...", log)
     log = updateLog("Log updated successfully.", log)
@@ -45,15 +54,14 @@ while True:
     counted = 0
     waitingFor = 0
 
-    # Checks all the user's comments, deleting them if they're past the cutoff. Exits the program if it encounters an API error.
+    # Checks all the user's comments, deleting them if they're past the cutoff.
     for comment in reddit.redditor(user).comments.new(limit=limit):
-        if comment.body in blacklist:
-            if time.time() - getDate(comment) > cutoff*3600:
-                libcdr.doLog("Obsolete '{}' found, deleting.".format(comment.body), log)
-                comment.delete()
-                deleted += 1
-            else:
-                waitingFor += 1
+        if torOnly == True:
+            if comment.body.lower() in blacklist and str(comment.subreddit).lower() == "transcribersofreddit":
+                deleted, waitingFor = remover(comment, cutoff, deleted, waitingFor)
+        else:
+            if comment.body.lower() in blacklist:
+                deleted, waitingFor = remover(comment, cutoff, deleted, waitingFor)
         counted += 1
 
     # Updates statistics
