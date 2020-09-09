@@ -6,19 +6,20 @@
 import praw
 import time
 import libcdr
-from config import *
 
-version = "0.4.3"
+config = libcdr.getConfig()
+
+version = "0.4.4"
 
 # Retieves the date the comment was posted at.
 def getDate(comment):
     return comment.created_utc
 
-reddit = praw.Reddit("credentials", user_agent=os+":claimdoneremover:v"+version+" (by u/MurdoMaclachlan)")
+reddit = praw.Reddit("credentials", user_agent=config["os"]+":claimdoneremover:v"+version+" (by u/MurdoMaclachlan)")
 
 log = []
 
-libcdr.doLog("Running CDRemover with recur set to {}.".format(recur), log)
+libcdr.doLog("Running CDRemover with recur set to {}.".format(config["recur"]), log)
 
 # Retrieves stats
 totalCounted = libcdr.fetch("counted", log)
@@ -29,11 +30,11 @@ def updateLog(message, log):
     libcdr.doLog(message, log)
     if libcdr.attemptLog(log):
         del log[:]
-        return log
+        return config["logUpdates"], log
     else:
-        print("{} - Log error; disabling log updates for this instance.".format(getTime(time.time())))
+        print("{} - Log error; disabling log updates for this instance.".format(libcdr.getTime(time.time())))
         logUpdates = False
-        return logUpdates
+        return logUpdates, log
 
 def remover(comment, cutoff, deleted, waitingFor):
     if time.time() - getDate(comment) > cutoff*3600:
@@ -45,9 +46,9 @@ def remover(comment, cutoff, deleted, waitingFor):
         waitingFor += 1
     return deleted, waitingFor
 
-if logUpdates == True:
-    log = updateLog("Updating log...", log)
-    log = updateLog("Log updated successfully.", log)
+if config["logUpdates"] == True:
+    logUpdates, log = updateLog("Updating log...", log)
+    logUpdates, log = updateLog("Log updated successfully.", log)
 
 while True:
     deleted = 0
@@ -55,13 +56,13 @@ while True:
     waitingFor = 0
 
     # Checks all the user's comments, deleting them if they're past the cutoff.
-    for comment in reddit.redditor(user).comments.new(limit=limit):
-        if torOnly == True:
-            if comment.body.lower() in blacklist and str(comment.subreddit).lower() == "transcribersofreddit":
-                deleted, waitingFor = remover(comment, cutoff, deleted, waitingFor)
+    for comment in reddit.redditor(config["user"]).comments.new(limit=config["limit"]):
+        if config["torOnly"] == True:
+            if comment.body.lower() in config["blacklist"] and str(comment.subreddit).lower() == "transcribersofreddit":
+                deleted, waitingFor = remover(comment, config["cutoff"], deleted, waitingFor)
         else:
-            if comment.body.lower() in blacklist:
-                deleted, waitingFor = remover(comment, cutoff, deleted, waitingFor)
+            if comment.body.lower() in config["blacklist"]:
+                deleted, waitingFor = remover(comment, config["cutoff"], deleted, waitingFor)
         counted += 1
 
     # Updates statistics
@@ -78,19 +79,19 @@ while True:
     libcdr.doLog("Total Deleted: {}".format(str(totalDeleted)), log)
 
     # If recur is set to false, updates log and kills the program.
-    if recur == False:
-        log = updateLog("Updating log...", log)
-        log = updateLog("Log updated successfully.", log)
+    if config["recur"] == False:
+        logUpdates, log = updateLog("Updating log...", log)
+        logUpdates, log = updateLog("Log updated successfully.", log)
         updateLog("Exiting...", log)
         break
 
     # Updates log, prepares for next cycle.
     if logUpdates == True:
-        log = updateLog("Updating log...", log)
-        log = updateLog("Log updated successfully.", log)
-        libcdr.doLog("Waiting {} {} before checking again...".format(str(wait), unit[0] if wait == 1 else unit[1]), log)
-        log = updateLog("", log)
+        logUpdates, log = updateLog("Updating log...", log)
+        logUpdates, log = updateLog("Log updated successfully.", log)
+        libcdr.doLog("Waiting {} {} before checking again...".format(str(config["wait"]), config["unit"][0] if config["wait"] == 1 else config["unit"][1]), log)
+        logUpdates, log = updateLog("", log)
     else:
-        libcdr.doLog("Waiting {} {} before checking again...".format(str(wait), unit[0] if wait == 1 else unit[1]), log)
+        libcdr.doLog("Waiting {} {} before checking again...".format(str(config["wait"]), config["unit"][0] if config["wait"] == 1 else config["unit"][1]), log)
 
-    time.sleep(wait*unit[2])
+    time.sleep(config["wait"]*config["unit"][2])
