@@ -25,7 +25,7 @@ def getConfig():
             ],
             "cutoff": 1,
             "limit": 100,
-            "wait": 5,
+            "wait": 10,
             "unit": [
                 "minute",
                 "minutes",
