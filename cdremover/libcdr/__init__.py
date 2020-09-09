@@ -1,4 +1,5 @@
 # miscellaneous functions
+from .misc import getConfig
 from .misc import getTime
 
 # log handling functions functions
