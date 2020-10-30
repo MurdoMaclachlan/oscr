@@ -1,11 +1,16 @@
 import datetime
+import time
 import json
 
 # Retrieves the user configurations from a .json file, or creates a config file from default values if one can't be found.
 def getConfig():
     try:
         with open("config.json") as configFile:
-            fromConfig = json.load(configFile)
+            try:
+                fromConfig = json.load(configFile)
+            except json.decoder.JSONDecodeError:
+                currentTime = getTime(time.time())
+                print("{} - Failed to get config; could not decode JSON file. Exiting program.".format(currentTime))
             config = fromConfig["config"][0]
    
     except FileNotFoundError:
@@ -53,3 +58,7 @@ def getConfig():
 def getTime(timeToFind):
     currentTime = datetime.datetime.fromtimestamp(timeToFind)
     return currentTime.strftime("%Y-%m-%d %H:%M:%S")
+
+# Retieves the date the comment was posted at.
+def getDate(comment):
+    return comment.created_utc
