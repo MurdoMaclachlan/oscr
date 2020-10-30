@@ -15,6 +15,17 @@ def doLog(output, log):
             return False
     return True
 
+# Updates the log file with the current log.
+def updateLog(message, log, config):
+    doLog(message, log)
+    if attemptLog(log):
+        del log[:]
+        return config["logUpdates"], log
+    else:
+        print("{} - Log error; disabling log updates for this instance.".format(getTime(time.time())))
+        logUpdates = False
+        return logUpdates, log
+
 # Writes the contents of the log array to the log.txt file
 def writeLog(log):
     with open("data/log.txt", "a") as file:
