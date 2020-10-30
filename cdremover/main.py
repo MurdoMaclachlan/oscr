@@ -9,35 +9,19 @@ import libcdr
 
 config = libcdr.getConfig()
 
-version = "0.4.4"
-
-# Retieves the date the comment was posted at.
-def getDate(comment):
-    return comment.created_utc
+version = "0.4.5-pre"
 
 reddit = praw.Reddit("credentials", user_agent=config["os"]+":claimdoneremover:v"+version+" (by u/MurdoMaclachlan)")
 
 log = []
-
-libcdr.doLog("Running CDRemover with recur set to {}.".format(config["recur"]), log)
+libcdr.doLog("Running CDRemover version {} with recur set to {}.".format(version, config["recur"]), log)
 
 # Retrieves stats
 totalCounted = libcdr.fetch("counted", log)
 totalDeleted = libcdr.fetch("deleted", log)
 
-# Updates the log.
-def updateLog(message, log):
-    libcdr.doLog(message, log)
-    if libcdr.attemptLog(log):
-        del log[:]
-        return config["logUpdates"], log
-    else:
-        print("{} - Log error; disabling log updates for this instance.".format(libcdr.getTime(time.time())))
-        logUpdates = False
-        return logUpdates, log
-
 def remover(comment, cutoff, deleted, waitingFor):
-    if time.time() - getDate(comment) > cutoff*3600:
+    if time.time() - libcdr.getDate(comment) > cutoff*3600:
         libcdr.doLog("Obsolete '{}' found, deleting.".format(comment.body), log)
         comment.delete()
         deleted += 1
@@ -47,8 +31,8 @@ def remover(comment, cutoff, deleted, waitingFor):
     return deleted, waitingFor
 
 if config["logUpdates"] == True:
-    logUpdates, log = updateLog("Updating log...", log)
-    logUpdates, log = updateLog("Log updated successfully.", log)
+    logUpdates, log = libcdr.updateLog("Updating log...", log, config)
+    logUpdates, log = libcdr.updateLog("Log updated successfully.", log, config)
 
 while True:
     deleted = 0
@@ -80,17 +64,17 @@ while True:
 
     # If recur is set to false, updates log and kills the program.
     if config["recur"] == False:
-        logUpdates, log = updateLog("Updating log...", log)
-        logUpdates, log = updateLog("Log updated successfully.", log)
-        updateLog("Exiting...", log)
+        logUpdates, log = libcdr.updateLog("Updating log...", log, config)
+        logUpdates, log = libcdr.updateLog("Log updated successfully.", log, config)
+        libcdr.updateLog("Exiting...", log, config)
         break
 
     # Updates log, prepares for next cycle.
     if logUpdates == True:
-        logUpdates, log = updateLog("Updating log...", log)
-        logUpdates, log = updateLog("Log updated successfully.", log)
+        logUpdates, log = libcdr.updateLog("Updating log...", log, config)
+        logUpdates, log = libcdr.updateLog("Log updated successfully.", log, config)
         libcdr.doLog("Waiting {} {} before checking again...".format(str(config["wait"]), config["unit"][0] if config["wait"] == 1 else config["unit"][1]), log)
-        logUpdates, log = updateLog("", log)
+        logUpdates, log = libcdr.updateLog("", log, config)
     else:
         libcdr.doLog("Waiting {} {} before checking again...".format(str(config["wait"]), config["unit"][0] if config["wait"] == 1 else config["unit"][1]), log)
 
