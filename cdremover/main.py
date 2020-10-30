@@ -9,7 +9,7 @@ import libcdr
 
 config = libcdr.getConfig()
 
-version = "0.4.5-pre"
+version = "0.4.5"
 
 reddit = praw.Reddit("credentials", user_agent=config["os"]+":claimdoneremover:v"+version+" (by u/MurdoMaclachlan)")
 
