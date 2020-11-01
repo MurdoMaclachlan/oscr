@@ -2,7 +2,7 @@
 
 **This is an unofficial program and is not officially endorsed by the Transcribers of Reddit; they are in no way involved with this program and are not liable for any matters relating to it.**
 
-Also known as CDRemover, this program removes "claim" and "done" comments after a period of time. It is designed with r/TranscribersOfReddit transcribers in mind; specifically those  who are tired of these comments clogging up their profiles.
+Also known as CDRemover, this program removes "claim" and "done" comments after a period of time. It is designed with r/TranscribersOfReddit transcribers in mind; specifically those who are tired of these comments clogging up their profiles.
 
 If you've been a transcriber for a while, chances are this program will not remove every "claim" or "done" you've ever posted, but when I tested it removed the most recent 60 or so, and if you have it running in the background, it should continually delete them as they pass the cutoff age (NOTE: current master version does not do this. Should be fixed in v0.2).
 
@@ -68,13 +68,13 @@ Once properly intialised, there should be a `config.json` file in the same direc
 - The blacklist is the list of comments it will delete if it comes across. It is not case sensitive, so comments of varying capitalisation will all be deleted, however they will only be deleted if the entire content of the comment matches one of the entries in the blacklist.
 - The cutoff is the amount of hours old a comment must be before it is deleted. This is set to 1 hour by default.
 - The limit is the number of comments the program will check through on your profile; i.e. how far back it will go. This is set to 100 by default, and can go to a maximum of 1000. This maximum is due to Reddit's own API limits.
-- logUpdates is a boolean (true/false) variable that determines whether the program will right the console log to a file. This is set to true by default.
+- logUpdates is a boolean (true/false) variable that determines whether the program will write the console log to a file. This is set to true by default.
 - The os is your operating system, and can be left blank.
 - recur is a boolean variable that determines whether the program will run only once (false), or continue searching through until you exit it (true). This is set to true by default.
 - torOnly is whether the program will delete blacklisted comments on all subreddits (false), or only on r/transcribersofreddit (true). This is set to true by default.
-- The unit list contains variations on the unit of time used for the wait variable; plural, singular, and the converted into seconds. The unit is minutes by default.
-- The user is your Reddit username.
-- The wait is how many units of time the program waits before re-checking your comments. This is set to 10 by default.
+- The unit list contains variations on the unit of time used for the wait variable; singular, plural, and the equivalent of one of the unit when converted into seconds. The unit is minutes by default.
+- user is your Reddit username.
+- wait is how many units of time the program waits before re-checking your comments. This is set to 10 by default.
 
 ## Notes
 
