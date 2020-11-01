@@ -59,8 +59,7 @@ def getConfig(home):
 # Creates praw.ini file, if it is missing
 def createIni(home):
     platformConfs = {
-        "linux1": ".config",
-        "linux2": ".config",
+        "linux": ".config",
         "darwin": ".config",
         "win32": "AppData"
     }
@@ -71,7 +70,7 @@ def createIni(home):
         "username": input("Please input your Reddit username:  /u/"),
         "password": input("Please input your Reddit password:  ")
     }
-    with open(home+"/"+platformConfs[sys.platform]+"praw.ini", "a+") as file:
+    with open(home+"/"+platformConfs[sys.platform]+"/praw.ini", "a+") as file:
         file.write("[credentials]")
         for i in iniVars:
             file.write(iniVars[i])
