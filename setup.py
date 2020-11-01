@@ -5,7 +5,7 @@ def readme():
 
 setup(
     name="cdremover",
-    version="1.0.0-pre3",
+    version="1.0.0rc4",
     scripts=["cdremover"],
     author="Murdo Maclachlan",
     author_email="murdo@maclachlans.org.uk",
@@ -16,7 +16,6 @@ setup(
     packages=find_packages(),
     install_requires=[
         "configparser",
-        "expanduser",
         "praw>=7.1.0",
     ],
     classifiers=[
