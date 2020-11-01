@@ -26,7 +26,7 @@ while instance == False:
         reddit = praw.Reddit("credentials", user_agent=config["os"]+":claimdoneremover:v"+version+" (by u/MurdoMaclachlan)")
         instance = True
     except configparser.NoSectionError:
-        createIni()
+        createIni(home)
         attemps += 1
 
 log = []
