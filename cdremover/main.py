@@ -1,38 +1,54 @@
 #!/usr/bin/env python3
 
-# Credit to u/--B_L_A_N_K-- for improving the system and allowing it to delete in real-time, and for helping to improve console output formatting.
-# Credit to u/DasherPack for being a handsome boy.
+# Credit to /u/--B_L_A_N_K-- for improving the system and allowing it to delete in real-time, and for helping to improve console output formatting.
+# Credit to /u/DasherPack for being a handsome boy.
 
 import praw
 import time
-import libcdr
+import sys
+import configparser
+from os.path import expanduser
+from .__init__ import *
 
-config = libcdr.getConfig()
+home = expanduser("~")
 
-version = "0.4.5"
+config = getConfig(home)
 
-reddit = praw.Reddit("credentials", user_agent=config["os"]+":claimdoneremover:v"+version+" (by u/MurdoMaclachlan)")
+version = "1.0.0-pre3"
+
+instance = False
+attempts = 0
+while instance == False:
+    if attempts == 3:
+        print("Could not find praw.ini file after 3 attempts. Exiting.")
+        sys.exit(0)
+    try:
+        reddit = praw.Reddit("credentials", user_agent=config["os"]+":claimdoneremover:v"+version+" (by u/MurdoMaclachlan)")
+        instance = True
+    except configparser.NoSectionError:
+        createIni()
+        attemps += 1
 
 log = []
-libcdr.doLog("Running CDRemover version {} with recur set to {}.".format(version, config["recur"]), log)
+doLog("Running CDRemover version {} with recur set to {}.".format(version, config["recur"]), log)
 
 # Retrieves stats
-totalCounted = libcdr.fetch("counted", log)
-totalDeleted = libcdr.fetch("deleted", log)
+totalCounted = fetch("counted", log, home)
+totalDeleted = fetch("deleted", log, home)
 
 def remover(comment, cutoff, deleted, waitingFor):
-    if time.time() - libcdr.getDate(comment) > cutoff*3600:
-        libcdr.doLog("Obsolete '{}' found, deleting.".format(comment.body), log)
+    if time.time() - getDate(comment) > cutoff*3600:
+        doLog("Obsolete '{}' found, deleting.".format(comment.body), log)
         comment.delete()
         deleted += 1
     else:
-        libcdr.doLog("Waiting for '{}'.".format(comment.body), log)
+        doLog("Waiting for '{}'.".format(comment.body), log)
         waitingFor += 1
     return deleted, waitingFor
 
 if config["logUpdates"] == True:
-    logUpdates, log = libcdr.updateLog("Updating log...", log, config)
-    logUpdates, log = libcdr.updateLog("Log updated successfully.", log, config)
+    logUpdates, log = updateLog("Updating log...", log, config, home)
+    logUpdates, log = updateLog("Log updated successfully.", log, config, home)
 
 while True:
     deleted = 0
@@ -52,30 +68,30 @@ while True:
     # Updates statistics
     totalCounted += counted
     totalDeleted += deleted
-    libcdr.update("counted", totalCounted, log)
-    libcdr.update("deleted", totalDeleted, log)
+    update("counted", totalCounted, log, home)
+    update("deleted", totalDeleted, log, home)
     
     # Gives info about this iteration; how many comments were counted, deleted, still waiting for.
-    libcdr.doLog("Counted this cycle: {}".format(str(counted)), log)
-    libcdr.doLog("Deleted this cycle: {}".format(str(deleted)), log)
-    libcdr.doLog("Waiting for: {}".format(str(waitingFor)), log)
-    libcdr.doLog("Total Counted: {}".format(str(totalCounted)), log)
-    libcdr.doLog("Total Deleted: {}".format(str(totalDeleted)), log)
+    doLog("Counted this cycle: {}".format(str(counted)), log)
+    doLog("Deleted this cycle: {}".format(str(deleted)), log)
+    doLog("Waiting for: {}".format(str(waitingFor)), log)
+    doLog("Total Counted: {}".format(str(totalCounted)), log)
+    doLog("Total Deleted: {}".format(str(totalDeleted)), log)
 
     # If recur is set to false, updates log and kills the program.
     if config["recur"] == False:
-        logUpdates, log = libcdr.updateLog("Updating log...", log, config)
-        logUpdates, log = libcdr.updateLog("Log updated successfully.", log, config)
-        libcdr.updateLog("Exiting...", log, config)
+        logUpdates, log = updateLog("Updating log...", log, config, home)
+        logUpdates, log = updateLog("Log updated successfully.", log, config, home)
+        updateLog("Exiting...", log, config, home)
         break
 
     # Updates log, prepares for next cycle.
     if logUpdates == True:
-        logUpdates, log = libcdr.updateLog("Updating log...", log, config)
-        logUpdates, log = libcdr.updateLog("Log updated successfully.", log, config)
-        libcdr.doLog("Waiting {} {} before checking again...".format(str(config["wait"]), config["unit"][0] if config["wait"] == 1 else config["unit"][1]), log)
-        logUpdates, log = libcdr.updateLog("", log, config)
+        logUpdates, log = updateLog("Updating log...", log, config, home)
+        logUpdates, log = updateLog("Log updated successfully.", log, config, home)
+        doLog("Waiting {} {} before checking again...".format(str(config["wait"]), config["unit"][0] if config["wait"] == 1 else config["unit"][1]), log)
+        logUpdates, log = updateLog("", log, config, home)
     else:
-        libcdr.doLog("Waiting {} {} before checking again...".format(str(config["wait"]), config["unit"][0] if config["wait"] == 1 else config["unit"][1]), log)
+        doLog("Waiting {} {} before checking again...".format(str(config["wait"]), config["unit"][0] if config["wait"] == 1 else config["unit"][1]), log)
 
     time.sleep(config["wait"]*config["unit"][2])
