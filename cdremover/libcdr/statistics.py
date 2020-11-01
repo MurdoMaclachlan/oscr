@@ -1,12 +1,12 @@
 from .log import doLog
 
-def fetch(statistic, log):
-
+def fetch(statistic, log, home):
+    
     result = []
 
     # If stats.txt doesn't exist, this returns 0. Otherwise it reads the file.
     try:    
-        with open("data/stats.txt", "r") as file:
+        with open(home+"/.cdremover/data/stats.txt", "r") as file:
             content = file.read().splitlines()
     except FileNotFoundError:
         doLog("No stats for {} found; returning 0.".format(statistic), log)
@@ -36,7 +36,7 @@ def fetch(statistic, log):
     doLog("Fetched {} successfully.".format(statistic), log)
     return int(''.join(result))
 
-def update(statistic, value, log):
+def update(statistic, value, log, home):
 
     content = []    
     lineToReplace = 0
@@ -44,12 +44,12 @@ def update(statistic, value, log):
 
     # Creates the stats.txt file if it doesn't exist.
     try:
-        with open("data/stats.txt", "r") as file:
+        with open(home+"/.cdremover/data/stats.txt", "r") as file:
             content = file.read().splitlines()
     except FileNotFoundError:
         doLog("No stats.txt found; creating.", log)
 
-    with open("data/stats.txt", "w") as file:
+    with open(home+"/.cdremover/data/stats.txt", "w") as file:
         
         # If it can't find any statistics, this adds the statistic to be updated and sets the other to 0.
         if content == []:
