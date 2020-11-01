@@ -14,7 +14,7 @@ home = expanduser("~")
 
 config = getConfig(home)
 
-version = "1.0.0-pre3"
+version = "1.0.0rc4"
 
 instance = False
 attempts = 0
@@ -27,7 +27,7 @@ while instance == False:
         instance = True
     except configparser.NoSectionError:
         createIni(home)
-        attemps += 1
+        attempts += 1
 
 log = []
 doLog("Running CDRemover version {} with recur set to {}.".format(version, config["recur"]), log)
