@@ -10,7 +10,7 @@ setup(
     author="Murdo Maclachlan",
     author_email="murdo@maclachlans.org.uk",
     description="A utility for members of the Transcribers of Reddit to remove their claim and done comments.",
-    long_description=readme()
+    long_description=readme(),
     long_description_content_type="text/markdown",
     url="https://github.com/MurdoMaclachlan/claimdoneremover",
     packages=setuptools.find_packages(),
