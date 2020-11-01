@@ -1,16 +1,18 @@
 import datetime
 import time
 import json
+import sys
 
 # Retrieves the user configurations from a .json file, or creates a config file from default values if one can't be found.
-def getConfig():
+def getConfig(home):
     try:
-        with open("config.json") as configFile:
+        with open(home+"/.cdremover/config.json") as configFile:
             try:
                 fromConfig = json.load(configFile)
             except json.decoder.JSONDecodeError:
                 currentTime = getTime(time.time())
-                print("{} - Failed to get config; could not decode JSON file. Exiting program.".format(currentTime))
+                print("{} - Failed to get config; could not decode JSON file. Exiting.".format(currentTime))
+                sys.exit(0)
             config = fromConfig["config"][0]
    
     except FileNotFoundError:
@@ -44,7 +46,7 @@ def getConfig():
         outConfig["config"] = []
         outConfig["config"].append(defaultConfig)
         
-        with open("config.json", "w") as outFile:
+        with open(home+"/.cdremover/config.json", "w") as outFile:
             outFile.write(json.dumps(outConfig, indent=4, sort_keys=True))
             
         config = outConfig["config"][0]
@@ -54,6 +56,26 @@ def getConfig():
 
     return config
 
+# Creates praw.ini file, if it is missing
+def createIni(home):
+    platformConfs = {
+        "linux1": ".config",
+        "linux2": ".config",
+        "darwin": ".config",
+        "win32": "AppData"
+    }
+    print("No praw.ini file found. It will need to be created.")
+    iniVars = {
+        "client_id": input("Please input your client id:  "),
+        "client_secret": input("Please input your client secret:  "),
+        "username": input("Please input your Reddit username:  /u/"),
+        "password": input("Please input your Reddit password:  ")
+    }
+    with open(home+"/"+platformConfs[sys.platform]+"praw.ini", "a+") as file:
+        file.write("[credentials]")
+        for i in iniVars:
+            file.write(iniVars[i])
+              
 # Finds the current time and returns it in a human readable format.
 def getTime(timeToFind):
     currentTime = datetime.datetime.fromtimestamp(timeToFind)
