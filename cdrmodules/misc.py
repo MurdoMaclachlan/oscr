@@ -30,8 +30,6 @@ def getConfig():
         user = input("No config file found. Please enter your Reddit username:  /u/")
         os = input("Optionally, you may also enter your operating system. This is only used in the user_agent and can be left blank by simply pressing enter:  ")
         defaultConfig = {
-            "user": user,
-            "os": os,
             "blacklist": [
                 "claim",
                 "done",
@@ -44,15 +42,17 @@ def getConfig():
             "cutoff": 1,
             "cutoffUnit": 3600,
             "limit": 100,
-            "wait": 10,
+            "logUpdates": True,
+            "os": os,
+            "recur": True,
             "unit": [
                 "minute",
                 "minutes",
                 60
             ],
-            "logUpdates": True,
-            "recur": True,
-            "torOnly": True
+            "user": user,
+            "torOnly": True,
+            "wait": 10
         }
         outConfig = {}
         outConfig["config"] = []
@@ -82,7 +82,8 @@ def createIni():
     platformConfs = {
         "linux": ".config",
         "darwin": ".config",
-        "win32": "AppData"
+        "win32": "AppData",
+        "win64": "AppData"
     }
     print("praw.ini incomplete or incorrect. It will need to be created.")
     iniVars = {
