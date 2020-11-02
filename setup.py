@@ -5,7 +5,7 @@ def readme():
 
 setup(
     name="cdremover",
-    version="1.0.0rc11",
+    version="1.0.0",
     scripts=["cdremover"],
     author="Murdo Maclachlan",
     author_email="murdo@maclachlans.org.uk",
@@ -20,7 +20,7 @@ setup(
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: GPL-3.0",
+        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
         "Operating System :: OS Independent",
     ]
 )
