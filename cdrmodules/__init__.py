@@ -1,3 +1,6 @@
+# global variables
+from .gvars import *
+
 # miscellaneous functions
 from .misc import getConfig
 from .misc import createIni
