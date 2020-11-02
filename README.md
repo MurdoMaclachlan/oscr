@@ -2,6 +2,8 @@
 
 **This is an unofficial program and is not officially endorsed by the Transcribers of Reddit; they are in no way involved with this program and are not liable for any matters relating to it.**
 
+**WARNING: use of this bot can cause the ToR-Stats Discord bot to freeze, if you have the bad luck to delete a comment while it is being processed. This has happened to at least two users (including myself).**
+
 Also known as CDRemover, this program removes "claim" and "done" comments after a period of time. It is designed with r/TranscribersOfReddit transcribers in mind; specifically those who are tired of these comments clogging up their profiles.
 
 If you've been a transcriber for a while, chances are this program will not remove every "claim" or "done" you've ever posted, but for me it had removed well over 500 after a few cycles, and if you have it running in the background, it should continually delete any new ones as they pass the cutoff age.
