@@ -5,7 +5,7 @@ def readme():
 
 setup(
     name="cdremover",
-    version="1.0.0",
+    version="1.0.1",
     scripts=["cdremover"],
     author="Murdo Maclachlan",
     author_email="murdo@maclachlans.org.uk",
