@@ -64,7 +64,7 @@ def getConfig():
         config = outConfig["config"][0]
         
     # Performs any necessary one-time calculations and changes relating to the config
-    if config["limit"] >= 1000:
+    if config["limit"] >= 1000 or not str(config["limit"]).isnumeric():
         config["limit"] = None
     try:
         config["cutoffSec"] = config["cutoff"]*config["cutoffUnit"]
