@@ -39,7 +39,11 @@ def fetch(statistic):
 
 def update(statistic, value):
 
-    global log, home
+    global failedStats, log, home
+
+    if statistic is in failedStats:
+        doLog("Skipping update of following statistic: {}".format(statistic))
+        return False
 
     content = []    
     lineToReplace = 0
@@ -68,20 +72,18 @@ def update(statistic, value):
             # If it can find both statistics, this updates as normal.
             if list(line)[0] == list(statistic)[0]:
                 lineToReplace = content.index(line)
-                break
-            
-            # If it can only find one statistic, and it isn't the right one, this adds the right one.
-            else:
-                content.append(newLine)
-                file.seek(0)
+                content[lineToReplace] = newLine
                 file.write('\n'.join(content))
                 doLog("Updated {} successfully.".format(statistic))
                 return True
             
-                
-        content[lineToReplace] = newLine
-
+        # If it can only find one statistic, and it isn't the right one, this adds the right one.
+        content.append(newLine)
+        file.seek(0)
         file.write('\n'.join(content))
-
-    doLog("Updated {} successfully.".format(statistic))
-    return True
+        doLog("Updated {} successfully.".format(statistic))
+        return True
+    
+    doLog("Statistics error: failed to update {}, will no longer attempt to update this statistic for this instance.".format(statistic))
+    failedStats.append(statistic)
+    return False
