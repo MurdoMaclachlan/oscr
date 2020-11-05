@@ -80,6 +80,10 @@ Once properly intialised, there should be a `config.json` file in the following 
 
 You will have a `data` folder in `.cdremover`, which is where the `log.txt` and `stats.txt` files are saved.
 
+## Using the latest testing version
+
+To use the latest testing version, download either the 1.x branch files (0.x is deprecated), extract the archive you have downloaded, and use `pip3 install .` after navigating into the directory the files were extracted to.
+
 ## Notes
 
 - If you already have a praw.ini file in your config folder, this program should append the cdrcredentials section to it without altering any content that is already there. If you notice any errors with this, please report them immediately.
