@@ -101,6 +101,6 @@ def createIni():
             file.write(i+"="+iniVars[i]+"\n")
     return True
              
-# Retieves the date the comment was posted at.
+# Retrieves the date the comment was posted at.
 def getDate(comment):
     return comment.created_utc
