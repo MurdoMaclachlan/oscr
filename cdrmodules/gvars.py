@@ -1,6 +1,7 @@
 from os.path import expanduser
 
-global home, log, version
+global failedStats, home, log, version
+failedStats = []
 home = expanduser("~")
 log = []
-version = "1.0.1"
+version = "1.0.2rc1"
