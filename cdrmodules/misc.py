@@ -3,6 +3,7 @@ import time
 import json
 import sys
 from .gvars import *
+from os import environ
 
 # Finds the current time and returns it in a human readable format.
 def getTime(timeToFind):
@@ -81,10 +82,12 @@ def createIni():
     
     platformConfs = {
         "linux": ".config",
-        "darwin": ".config",
-        "win32": "AppData",
-        "win64": "AppData"
+        "darwin": ".config"
     }
+    if sys.platform.startswith("win"):
+        save_path = environ["APPDATA"]
+    else:
+        save_path = home + platformConfs[sys.platform]
     print("praw.ini incomplete or incorrect. It will need to be created.")
     iniVars = {
         "client_id": input("Please input your client id:  "),
@@ -92,7 +95,7 @@ def createIni():
         "username": input("Please input your Reddit username:  /u/"),
         "password": input("Please input your Reddit password:  ")
     }
-    with open(home+"/"+platformConfs[sys.platform]+"/praw.ini", "a+") as file:
+    with open(save_path+"/praw.ini", "a+") as file:
         file.write("[cdrcredentials]\n")
         for i in iniVars:
             file.write(i+"="+iniVars[i]+"\n")
