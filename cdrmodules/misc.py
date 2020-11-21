@@ -3,27 +3,27 @@ import time
 import json
 import sys
 from .gvars import *
-from os import environ
+from os import environ, mkdir
+from os.path import isfile, isdir
 
 # Finds the current time and returns it in a human readable format.
 def getTime(timeToFind):
     currentTime = datetime.datetime.fromtimestamp(timeToFind)
     return currentTime.strftime("%Y-%m-%d %H:%M:%S")
 
-from .log import doLog
+from .log import doLog, writeLog
 
 # Retrieves the user configurations from a .json file, or creates a config file from default values if one can't be found.
 def getConfig():
     
-    global home
-    
+    global home, log
+
     try:
         with open(home+"/.cdremover/config.json") as configFile:
             try:
                 fromConfig = json.load(configFile)
             except json.decoder.JSONDecodeError:
-                currentTime = getTime(time.time())
-                doLog("{} - Failed to get config; could not decode JSON file. Exiting.".format(currentTime))
+                doLog("Failed to get config; could not decode JSON file. Exiting.")
                 sys.exit(0)
             config = fromConfig["config"][0]
    
@@ -59,8 +59,13 @@ def getConfig():
         outConfig["config"] = []
         outConfig["config"].append(defaultConfig)
         
-        with open(home+"/.cdremover/config.json", "w") as outFile:
-            outFile.write(json.dumps(outConfig, indent=4, sort_keys=True))
+        try:
+            dumpConfig(outConfig)
+        except FileNotFoundError:
+            doLog("home/.cdremover directory not found; creating.")
+            if not isdir(home+"/.cdremover"):
+                mkdir(home+"/.cdremover")
+                dumpConfig(outConfig)
             
         config = outConfig["config"][0]
         
@@ -75,19 +80,25 @@ def getConfig():
 
     return config
 
+# Attempts to update the config file
+def dumpConfig(outConfig):
+    with open(home+"/.cdremover/config.json", "w") as outFile:
+        outFile.write(json.dumps(outConfig, indent=4, sort_keys=True))
+    return True
+
 # Creates praw.ini file, if it is missing
 def createIni():
     
     global home
-    
+
     platformConfs = {
         "linux": ".config",
         "darwin": ".config"
     }
     if sys.platform.startswith("win"):
-        save_path = environ["APPDATA"]
+        savePath = environ["APPDATA"]
     else:
-        save_path = home + platformConfs[sys.platform]
+        savePath = home + platformConfs[sys.platform]
     print("praw.ini incomplete or incorrect. It will need to be created.")
     iniVars = {
         "client_id": input("Please input your client id:  "),
@@ -95,7 +106,7 @@ def createIni():
         "username": input("Please input your Reddit username:  /u/"),
         "password": input("Please input your Reddit password:  ")
     }
-    with open(save_path+"/praw.ini", "a+") as file:
+    with open(savePath+"/praw.ini", "a+") as file:
         file.write("[cdrcredentials]\n")
         for i in iniVars:
             file.write(i+"="+iniVars[i]+"\n")
