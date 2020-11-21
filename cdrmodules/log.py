@@ -1,6 +1,6 @@
-import os
-from os.path import isfile, isdir
 import time
+from os import mkdir
+from os.path import isfile, isdir
 from .misc import getTime
 from .gvars import *
 
@@ -12,11 +12,11 @@ def doLog(output):
     if not output == "":
         currentTime = getTime(time.time())
         try:
-            log.append("{} - {}\n".format(currentTime, output))
-            print("{} - {}".format(currentTime, output))
+            log.append(f"{currentTime} - {output}\n")
+            print(f"{currentTime} - {output}")
         except AttributeError as e:
-            print(currentTime+" - "+"Failed to update log; log is {}.".format(log))
-            print("Error is {}".format(e))
+            print(currentTime+" - "+f"Failed to update log; log is {log}.")
+            print(f"Error is {e}")
             return False
     return True
 
@@ -30,7 +30,7 @@ def updateLog(message, config):
         del log[:]
         return config["logUpdates"]
     else:
-        print("{} - Log error; disabling log updates for this instance.".format(getTime(time.time())))
+        print(f"{getTime(time.time())} - Log error; disabling log updates for this instance.")
         logUpdates = False
         return logUpdates
 
@@ -57,10 +57,6 @@ def attemptLog():
     except FileNotFoundError:
         doLog("No log.txt found; attempting to create.")
         if not isdir(home+"/.cdremover/data"):
-            if not isdir(home+"/.cdremover"):
-                os.mkdir(home+"/.cdremover")
-            os.mkdir(home+"/.cdremover/data")
-            writeLog()
-        if not isfile(home+"/.cdremover/data/logs.txt"):
+            mkdir(home+"/.cdremover/data")
             writeLog()
         return True
