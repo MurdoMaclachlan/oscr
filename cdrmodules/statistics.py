@@ -12,12 +12,12 @@ def fetch(statistic):
         with open(home+"/.cdremover/data/stats.txt", "r") as file:
             content = file.read().splitlines()
     except FileNotFoundError:
-        doLog("No stats for {} found; returning 0.".format(statistic))
+        doLog(f"No stats for {statistic} found; returning 0.")
         return 0
 
     # If it can't find a value for any statistic, this returns 0.
     if content == []:
-        doLog("No stats for {} found; returning 0.".format(statistic))
+        doLog(f"No stats for {statistic} found; returning 0.")
         return 0
     
     for line in content:
@@ -31,30 +31,30 @@ def fetch(statistic):
         
     # If it can only find one statistic, and it isn't the one being fetched, this returns 0.
     if result == []:          
-        doLog("No stats for {} found; returning 0.".format(statistic))
+        doLog(f"No stats for {statistic} found; returning 0.")
         return 0
 
-    doLog("Fetched {} successfully.".format(statistic))
+    doLog(f"Fetched {statistic} successfully.")
     return int(''.join(result))
 
 def update(statistic, value):
 
     global failedStats, log, home
 
-    if statistic is in failedStats:
-        doLog("Skipping update of following statistic: {}".format(statistic))
+    if statistic in failedStats:
+        doLog(f"Skipping update of following statistic: {statistic}")
         return False
 
     content = []    
     lineToReplace = 0
-    newLine = "{}: {}".format(statistic, str(value))
+    newLine = f"{statistic}: {str(value)}"
 
     # Creates the stats.txt file if it doesn't exist.
     try:
         with open(home+"/.cdremover/data/stats.txt", "r") as file:
             content = file.read().splitlines()
     except FileNotFoundError:
-        doLog("No stats.txt found; creating.", log)
+        doLog("No stats.txt found; creating.")
 
     with open(home+"/.cdremover/data/stats.txt", "w") as file:
         
@@ -64,7 +64,7 @@ def update(statistic, value):
                 file.write(newLine+"\ndeleted: 0")
             else:
                 file.write("counted: 0\n"+newLine)
-            doLog("Updated {} successfully.".format(statistic))
+            doLog(f"Updated {statistic} successfully.")
             return True
 
         for line in content:
@@ -74,16 +74,16 @@ def update(statistic, value):
                 lineToReplace = content.index(line)
                 content[lineToReplace] = newLine
                 file.write('\n'.join(content))
-                doLog("Updated {} successfully.".format(statistic))
+                doLog(f"Updated {statistic} successfully.")
                 return True
             
         # If it can only find one statistic, and it isn't the right one, this adds the right one.
         content.append(newLine)
         file.seek(0)
         file.write('\n'.join(content))
-        doLog("Updated {} successfully.".format(statistic))
+        doLog(f"Updated {statistic} successfully.")
         return True
     
-    doLog("Statistics error: failed to update {}, will no longer attempt to update this statistic for this instance.".format(statistic))
+    doLog(f"Statistics error: failed to update {statistic}, will no longer attempt to update this statistic for this instance.")
     failedStats.append(statistic)
     return False
