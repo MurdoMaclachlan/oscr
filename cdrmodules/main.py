@@ -12,7 +12,7 @@ from .gvars import *
 
 # config setup and start message
 config = getConfig()
-doLog("Running CDRemover version {} with recur set to {}.".format(version, config["recur"]))
+doLog(f"Running CDRemover version {version} with recur set to {config['recur']}.")
 
 # Retrieves stats
 totalCounted = fetch("counted")
@@ -32,11 +32,11 @@ except (configparser.NoSectionError, praw.exceptions.MissingRequiredAttributeExc
 
 def remover(comment, cutoff, deleted, waitingFor):
     if time.time() - getDate(comment) > cutoff:
-        doLog("Obsolete '{}' found, deleting.".format(comment.body))
+        doLog(f"Obsolete '{comment.body}' found, deleting.")
         comment.delete()
         deleted += 1
     else:
-        doLog("Waiting for '{}'.".format(comment.body))
+        doLog(f"Waiting for '{comment.body}'.")
         waitingFor += 1
     return deleted, waitingFor
 
@@ -45,9 +45,7 @@ if config["logUpdates"] == True:
     logUpdates = updateLog("Log updated successfully.", config)
 
 while True:
-    deleted = 0
-    counted = 0
-    waitingFor = 0
+    deleted, counted, waitingFor = 0, 0, 0
 
     # Checks all the user's comments, deleting them if they're past the cutoff.
     for comment in reddit.redditor(config["user"]).comments.new(limit=config["limit"]):
@@ -58,8 +56,8 @@ while True:
             if comment.body.lower() in config["blacklist"]:
                 deleted, waitingFor = remover(comment, config["cutoffSec"], deleted, waitingFor)
         counted += 1
-        if counted % 25 == 0:
-            doLog("{}/{} comments checked successfuly.".format(counted, config["limit"]))
+        if counted % 25 == 0 or counted in [1000, config["limit"]]:
+            doLog(f"{counted}/{1000 if config['limit'] == None else config['limit']} comments checked successfully.")
 
     # Updates statistics
     totalCounted += counted
@@ -68,11 +66,11 @@ while True:
     update("deleted", totalDeleted)
     
     # Gives info about this iteration; how many comments were counted, deleted, still waiting for.
-    doLog("Counted this cycle: {}".format(str(counted)))
-    doLog("Deleted this cycle: {}".format(str(deleted)))
-    doLog("Waiting for: {}".format(str(waitingFor)))
-    doLog("Total Counted: {}".format(str(totalCounted)))
-    doLog("Total Deleted: {}".format(str(totalDeleted)))
+    doLog(f"Counted this cycle: {str(counted)}")
+    doLog(f"Deleted this cycle: {str(deleted)}")
+    doLog(f"Waiting for: {str(waitingFor)}")
+    doLog(f"Total Counted: {str(totalCounted)}")
+    doLog(f"Total Deleted: {str(totalDeleted)}")
 
     # If recur is set to false, updates log and kills the program.
     if not config["recur"]:
@@ -85,9 +83,9 @@ while True:
     if logUpdates:
         logUpdates = updateLog("Updating log...", config)
         logUpdates = updateLog("Log updated successfully.", config)
-        doLog("Waiting {} {} before checking again...".format(str(config["wait"]), config["unit"][0] if config["wait"] == 1 else config["unit"][1]))
+        doLog(f"Waiting {str(config['wait'])} {config['unit'][0] if config['wait'] == 1 else config['unit'][1]} before checking again...")
         logUpdates = updateLog("", config)
     else:
-        doLog("Waiting {} {} before checking again...".format(str(config["wait"]), config["unit"][0] if config["wait"] == 1 else config["unit"][1]))
+        doLog(f"Waiting {str(config['wait'])} {config['unit'][0] if config['wait'] == 1 else config['unit'][1]} before checking again...")
 
     time.sleep(config["waitTime"])
