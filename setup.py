@@ -1,11 +1,12 @@
 from setuptools import setup, find_packages
+from cdrmodules.gvars import version
 
 def readme():
     return open('README.md', 'r').read()
 
 setup(
     name="cdremover",
-    version="1.0.1",
+    version=version,
     scripts=["cdremover"],
     author="Murdo Maclachlan",
     author_email="murdo@maclachlans.org.uk",
