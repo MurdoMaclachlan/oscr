@@ -16,7 +16,7 @@ If set to recur, this program should delete new blacklisted comments periodicall
     Choose "script". 
     Give it a description (which can really be anything you want).
     Set an about url and redirect url. They don't really matter for a personal script. I linked to this repository.
-3. Now, in your console, run the command `cdremover` and you will be prompted to enter information for both config.json and praw.ini. The praw.ini will ask for your client id and client secret, which you can see on `https://www.reddit.com/prefs/apps/`. Go to the page and scroll down until you find the bot you created. Underneath its name should be "personal use script", and below that a string of random characters. This is your client id. If you can't see a field that labeled "secret" with another, longer string of random characters after it, then click the edit button and it should appear (along with other fields you filled out when you were creating the bot). Once praw.ini is created, the program will exit and you will need to rerun it (this is because PRAW currently can't reload praw.ini files once Reddit() has been initialised).
+3. Now, in your console, run the command `oscr` and you will be prompted to enter information for both config.json and praw.ini. The praw.ini will ask for your client id and client secret, which you can see on `https://www.reddit.com/prefs/apps/`. Go to the page and scroll down until you find the bot you created. Underneath its name should be "personal use script", and below that a string of random characters. This is your client id. If you can't see a field that labeled "secret" with another, longer string of random characters after it, then click the edit button and it should appear (along with other fields you filled out when you were creating the bot). Once praw.ini is created, the program will exit and you will need to rerun it (this is because PRAW currently can't reload praw.ini files once Reddit() has been initialised).
 
 Once it has been created, the contents of your praw.ini file should look something like this:
 ```
@@ -34,7 +34,7 @@ To update the program to a newer version, run `python3 -m pip install --upgrade 
 
 ## Editing the Config File
 
-Once properly intialised, there should be a `config.json` file in the following directory: `[your home folder]/.oscar`. Its contents will look like this:
+Once properly intialised, there should be a `config.json` file in the following directory: `[your home folder]/.oscr`. Its contents will look like this:
 ```
 {
     "config": [
