@@ -7,85 +7,101 @@ import praw
 import time
 import sys
 import configparser
+from os import remove
+from .gvars import initialiseGlobals, version
 from .__init__ import *
-from .gvars import *
+
+global gvars, version
+gvars = initialiseGlobals(version)
+
+if "--reset-config" in sys.argv:
+    print("Resetting config file.")
+    remove(gvars.home+"/.cdremover/config.json")
 
 # config setup and start message
-config = getConfig()
-doLog(f"Running CDRemover version {version} with recur set to {config['recur']}.")
+gvars.config = getConfig(gvars)
 
-# Retrieves stats
-totalCounted = fetch("counted")
-totalDeleted = fetch("deleted")
+if "--settings" in sys.argv:
+    from .settings import *
+    doLog(f"Running CDRemover version {version} with --settings parameter, entering settings menu.", gvars)
+    settingsMain(gvars)
+if "--no-recur" in sys.argv:
+    gvars.config["recur"] = False
+
+doLog(f"Running CDRemover version {version} with recur set to {gvars.config['recur']}.", gvars)
 
 # Initialises Reddit() instance
 try:
-    reddit = praw.Reddit("cdrcredentials", user_agent=config["os"]+":claimdoneremover:v"+version+" (by u/MurdoMaclachlan)")
+    reddit = praw.Reddit("cdrcredentials", user_agent=gvars.config["os"]+":claimdoneremover:v"+version+" (by u/MurdoMaclachlan)")
 except (configparser.NoSectionError, praw.exceptions.MissingRequiredAttributeException):
     if createIni():
-        doLog("praw.ini successfully created, program restart required for this to take effect.")
-        updateLog("Exiting...", config)
+        doLog("praw.ini successfully created, program restart required for this to take effect.", gvars)
+        if not updateLog("Exiting...", gvars):
+            print("Exiting...")
     else:
-        doLog("Failed to create praw.ini file, something went wrong.")
-        updateLog("Exiting...", config)
+        doLog("Failed to create praw.ini file, something went wrong.", gvars)
+        if not updateLog("Exiting...", gvars):
+            print("Exiting...")
     sys.exit(0)
 
 def remover(comment, cutoff, deleted, waitingFor):
     if time.time() - getDate(comment) > cutoff:
-        doLog(f"Obsolete '{comment.body}' found, deleting.")
+        doLog(f"Obsolete '{comment.body}' found, deleting.", gvars)
         comment.delete()
         deleted += 1
     else:
-        doLog(f"Waiting for '{comment.body}'.")
+        doLog(f"Waiting for '{comment.body}'.", gvars)
         waitingFor += 1
     return deleted, waitingFor
 
-if config["logUpdates"] == True:
-    logUpdates = updateLog("Updating log...", config)
-    logUpdates = updateLog("Log updated successfully.", config)
+# Fetches statistics
+totalCounted = fetch("counted", gvars)
+totalDeleted = fetch("deleted", gvars)
+
+print(gvars.config)
+
+updateLog("Updating log...", gvars)
+updateLog("Log updated successfully.", gvars)
 
 while True:
     deleted, counted, waitingFor = 0, 0, 0
 
     # Checks all the user's comments, deleting them if they're past the cutoff.
-    for comment in reddit.redditor(config["user"]).comments.new(limit=config["limit"]):
-        if config["torOnly"]:
-            if comment.body.lower() in config["blacklist"] and str(comment.subreddit).lower() == "transcribersofreddit":
-                deleted, waitingFor = remover(comment, config["cutoffSec"], deleted, waitingFor)
+    for comment in reddit.redditor(gvars.config["user"]).comments.new(limit=gvars.config["limit"]):
+        if gvars.config["torOnly"]:
+            if comment.body.lower() in gvars.config["blacklist"] and str(comment.subreddit).lower() == "transcribersofreddit":
+                deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
         else:
-            if comment.body.lower() in config["blacklist"]:
-                deleted, waitingFor = remover(comment, config["cutoffSec"], deleted, waitingFor)
+            if comment.body.lower() in gvars.config["blacklist"]:
+                deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
         counted += 1
-        if counted % 25 == 0 or counted in [1000, config["limit"]]:
-            doLog(f"{counted}/{1000 if config['limit'] == None else config['limit']} comments checked successfully.")
+        if counted % 25 == 0 or counted in [1000, gvars.config["limit"]]:
+            doLog(f"{counted}/{1000 if gvars.config['limit'] == None else gvars.config['limit']} comments checked successfully.", gvars)
 
     # Updates statistics
     totalCounted += counted
     totalDeleted += deleted
-    update("counted", totalCounted)
-    update("deleted", totalDeleted)
+    update("counted", totalCounted, gvars)
+    update("deleted", totalDeleted, gvars)
     
     # Gives info about this iteration; how many comments were counted, deleted, still waiting for.
-    doLog(f"Counted this cycle: {str(counted)}")
-    doLog(f"Deleted this cycle: {str(deleted)}")
-    doLog(f"Waiting for: {str(waitingFor)}")
-    doLog(f"Total Counted: {str(totalCounted)}")
-    doLog(f"Total Deleted: {str(totalDeleted)}")
+    doLog(f"Counted this cycle: {str(counted)}", gvars)
+    doLog(f"Deleted this cycle: {str(deleted)}", gvars)
+    doLog(f"Waiting for: {str(waitingFor)}", gvars)
+    doLog(f"Total Counted: {str(totalCounted)}", gvars)
+    doLog(f"Total Deleted: {str(totalDeleted)}", gvars)
 
     # If recur is set to false, updates log and kills the program.
-    if not config["recur"]:
-        logUpdates = updateLog("Updating log...", config)
-        logUpdates = updateLog("Log updated successfully.", config)
-        updateLog("Exiting...", config)
+    if not gvars.config["recur"]:
+        updateLog("Updating log...", gvars)
+        updateLog("Log updated successfully.", gvars)
+        updateLog("Exiting...", gvars)
         break
 
     # Updates log, prepares for next cycle.
-    if logUpdates:
-        logUpdates = updateLog("Updating log...", config)
-        logUpdates = updateLog("Log updated successfully.", config)
-        doLog(f"Waiting {str(config['wait'])} {config['unit'][0] if config['wait'] == 1 else config['unit'][1]} before checking again...")
-        logUpdates = updateLog("", config)
-    else:
-        doLog(f"Waiting {str(config['wait'])} {config['unit'][0] if config['wait'] == 1 else config['unit'][1]} before checking again...")
+    updateLog("Updating log...", gvars)
+    updateLog("Log updated successfully.", gvars)
+    doLog(f"Waiting {str(gvars.config['wait'])} {gvars.config['unit'][0] if gvars.config['wait'] == 1 else gvars.config['unit'][1]} before checking again...", gvars)
+    updateLog("", gvars)
 
-    time.sleep(config["waitTime"])
+    time.sleep(gvars.config["waitTime"])
