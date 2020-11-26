@@ -1,7 +1,19 @@
 from os.path import expanduser
 
-global failedStats, home, log, version
-failedStats = []
-home = expanduser("~")
-log = []
-version = "1.1.0rc7"
+global version
+
+version = "1.1.0rc21"
+
+class Globals():
+    def __init__(self, config, failedStats, home, log, version):
+        self.config = config
+        self.failedStats = failedStats
+        self.home = home
+        self.log = log
+        self.version = version
+
+def initialiseGlobals(version):
+    
+    global gvars
+    gvars = Globals({}, [], expanduser("~"), [], version)
+    return gvars
