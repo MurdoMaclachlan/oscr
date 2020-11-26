@@ -1,62 +1,54 @@
 import time
 from os import mkdir
-from os.path import isfile, isdir
+from os.path import isdir
 from .misc import getTime
-from .gvars import *
 
 # Updates the log array and prints to console
-def doLog(output):
-    
-    global log
+def doLog(output, gvars):
     
     if not output == "":
         currentTime = getTime(time.time())
         try:
-            log.append(f"{currentTime} - {output}\n")
+            gvars.log.append(f"{currentTime} - {output}\n")
             print(f"{currentTime} - {output}")
         except AttributeError as e:
-            print(currentTime+" - "+f"Failed to update log; log is {log}.")
+            print(currentTime+" - "+f"Failed to update log; log is {gvars.log}.")
             print(f"Error is {e}")
             return False
     return True
 
 # Updates the log file with the current log.
-def updateLog(message, config):
+def updateLog(message, gvars):
     
-    global log, home
-    
-    doLog(message)
-    if attemptLog():
-        del log[:]
-        return config["logUpdates"]
-    else:
-        print(f"{getTime(time.time())} - Log error; disabling log updates for this instance.")
-        logUpdates = False
-        return logUpdates
+    if gvars.config["logUpdates"]:
+        doLog(message, gvars)
+        if attemptLog(gvars):
+            del gvars.log[:]
+            return True
+        else:
+            print(f"{getTime(time.time())} - Log error; disabling log updates for this instance.")
+            gvars.config["logUpdates"] = False
+    return False
 
 # Writes the contents of the log array to the log.txt file
-def writeLog():
+def writeLog(gvars):
     
-    global log, home
-    
-    with open(home+"/.cdremover/data/log.txt", "a") as file:
-        for i in log:
+    with open(gvars.home+"/.cdremover/data/log.txt", "a") as file:
+        for i in gvars.log:
             file.write(i)
     return True
     
 # Attempts to update log.txt file, creating any missing files/directories.
-def attemptLog():
-    
-    global log, home
+def attemptLog(gvars):
     
     try:
-        writeLog()
+        writeLog(gvars)
         return True
         
     # Creates log.txt and/or the data directory, if necessary.
     except FileNotFoundError:
         doLog("No log.txt found; attempting to create.")
-        if not isdir(home+"/.cdremover/data"):
-            mkdir(home+"/.cdremover/data")
-            writeLog()
+        if not isdir(gvars.home+"/.cdremover/data"):
+            mkdir(gvars.home+"/.cdremover/data")
+            writeLog(gvars)
         return True
