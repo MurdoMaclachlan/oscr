@@ -1,5 +1,6 @@
 # global variables
-from .gvars import *
+from .gvars import initialiseGlobals
+from .gvars import version
 
 # miscellaneous functions
 from .misc import getConfig
@@ -12,6 +13,9 @@ from .log import doLog
 from .log import updateLog
 from .log import writeLog
 from .log import attemptLog
+
+# settings
+from .settings import settingsMain
 
 # statistics handling functions
 from .statistics import fetch
