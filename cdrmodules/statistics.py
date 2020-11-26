@@ -1,23 +1,24 @@
 from .log import doLog
-from .gvars import *
 
-def fetch(statistic):
+def fetch(statistic, gvars):
     
-    global log, home
+    if statistic in gvars.failedStats:
+        doLog(f"Skipping fetch of following statistic: {statistic}", gvars)
+        return False
     
     result = []
 
     # If stats.txt doesn't exist, this returns 0. Otherwise it reads the file.
     try:    
-        with open(home+"/.cdremover/data/stats.txt", "r") as file:
+        with open(gvars.home+"/.cdremover/data/stats.txt", "r") as file:
             content = file.read().splitlines()
     except FileNotFoundError:
-        doLog(f"No stats for {statistic} found; returning 0.")
+        doLog(f"No stats for {statistic} found; returning 0.", gvars)
         return 0
 
     # If it can't find a value for any statistic, this returns 0.
     if content == []:
-        doLog(f"No stats for {statistic} found; returning 0.")
+        doLog(f"No stats for {statistic} found; returning 0.", gvars)
         return 0
     
     for line in content:
@@ -28,21 +29,19 @@ def fetch(statistic):
                 if i.isnumeric():
                     result.append(str(i))
             break
-        
+
     # If it can only find one statistic, and it isn't the one being fetched, this returns 0.
     if result == []:          
-        doLog(f"No stats for {statistic} found; returning 0.")
+        doLog(f"No stats for {statistic} found; returning 0.", gvars)
         return 0
 
-    doLog(f"Fetched {statistic} successfully.")
+    doLog(f"Fetched {statistic} successfully.", gvars)
     return int(''.join(result))
 
-def update(statistic, value):
+def update(statistic, value, gvars):
 
-    global failedStats, log, home
-
-    if statistic in failedStats:
-        doLog(f"Skipping update of following statistic: {statistic}")
+    if statistic in gvars.failedStats:
+        doLog(f"Skipping update of following statistic: {statistic}", gvars)
         return False
 
     content = []    
@@ -51,12 +50,12 @@ def update(statistic, value):
 
     # Creates the stats.txt file if it doesn't exist.
     try:
-        with open(home+"/.cdremover/data/stats.txt", "r") as file:
+        with open(gvars.home+"/.cdremover/data/stats.txt", "r") as file:
             content = file.read().splitlines()
     except FileNotFoundError:
-        doLog("No stats.txt found; creating.")
+        doLog("No stats.txt found; creating.", gvars)
 
-    with open(home+"/.cdremover/data/stats.txt", "w") as file:
+    with open(gvars.home+"/.cdremover/data/stats.txt", "w") as file:
         
         # If it can't find any statistics, this adds the statistic to be updated and sets the other to 0.
         if content == []:
@@ -64,7 +63,7 @@ def update(statistic, value):
                 file.write(newLine+"\ndeleted: 0")
             else:
                 file.write("counted: 0\n"+newLine)
-            doLog(f"Updated {statistic} successfully.")
+            doLog(f"Updated {statistic} successfully.", gvars)
             return True
 
         for line in content:
@@ -74,14 +73,14 @@ def update(statistic, value):
                 lineToReplace = content.index(line)
                 content[lineToReplace] = newLine
                 file.write('\n'.join(content))
-                doLog(f"Updated {statistic} successfully.")
+                doLog(f"Updated {statistic} successfully.", gvars)
                 return True
             
         # If it can only find one statistic, and it isn't the right one, this adds the right one.
         content.append(newLine)
         file.seek(0)
         file.write('\n'.join(content))
-        doLog(f"Updated {statistic} successfully.")
+        doLog(f"Updated {statistic} successfully.", gvars)
         return True
     
     doLog(f"Statistics error: failed to update {statistic}, will no longer attempt to update this statistic for this instance.")
