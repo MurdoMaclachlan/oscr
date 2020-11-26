@@ -1,18 +1,18 @@
-# Claim/Done Remover
+# OSCR (Open Source Caretaker for Reddit)
 
 **This is an unofficial program and is not officially endorsed by the Transcribers of Reddit; they are in no way involved with this program and are not liable for any matters relating to it.**
 
 **WARNING: use of this bot can cause the ToR-Stats Discord bot to freeze, if you have the bad luck to delete a comment while it is being processed. This has happened to at least two users (including myself).**
 
-Also known as CDRemover, this program removes "claim" and "done" comments after a period of time. It is designed with r/TranscribersOfReddit transcribers in mind; specifically those who are tired of these comments clogging up their profiles.
+More lovingly known as Oscar, this program removes blacklisted comments after a period of time. It is designed with r/TranscribersOfReddit transcribers in mind; specifically those who are tired of these comments clogging up their profiles, thus the contents of the default blacklist.
 
-If you've been a transcriber for a while, chances are this program will not remove every "claim" or "done" you've ever posted, but for me it had removed well over 500 after a few cycles, and if you have it running in the background, it should continually delete any new ones as they pass the cutoff age.
+If set to recur, this program should delete new blacklisted comments periodically as they move past the cutoff time.
 
 ## Installation and Use
 
 1. Run either `python3 -m pip install cdremover` or `pip3 install cdremover` in your command line. It should automatically install the program as well as any dependencies.
 2. Before doing anything else, you should now create an app for your Reddit account. You can do this by going to `https://www.reddit.com/prefs/apps/` and creating a new app. 
-    Give it a name ("ClaimDoneRemover" or "CDRemover" are easy to remember).
+    Give it a name ("Oscar" or "OSCR" are easy to remember).
     Choose "script". 
     Give it a description (which can really be anything you want).
     Set an about url and redirect url. They don't really matter for a personal script. I linked to this repository.
@@ -30,11 +30,11 @@ You can check if they are correct by navigating to your config folder, which sho
 
 4. Once you've rerun the program, each comment older than the cutoff should be deleted. By default, it will search every 10 minutes, and you can then either leave the program running in the background to delete posts in real time as they reach the cutoff, or you could turn recur off in your config file and manually run it every now and then.
 
-To update the program to a newer version, run `python3 -m pip install --upgrade cdremover` or `pip3 install --upgrade cdremover` in your command line.
+To update the program to a newer version, run `python3 -m pip install --upgrade oscr` or `pip3 install --upgrade oscr` in your command line.
 
 ## Editing the Config File
 
-Once properly intialised, there should be a `config.json` file in the following directory: `[your home folder]/.cdremover`. Its contents will look like this:
+Once properly intialised, there should be a `config.json` file in the following directory: `[your home folder]/.oscar`. Its contents will look like this:
 ```
 {
     "config": [
