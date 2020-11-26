@@ -10,7 +10,7 @@ If set to recur, this program should delete new blacklisted comments periodicall
 
 ## Installation and Use
 
-1. Run either `python3 -m pip install cdremover` or `pip3 install cdremover` in your command line. It should automatically install the program as well as any dependencies.
+1. Run either `python3 -m pip install oscr` or `pip3 install oscr` in your command line. It should automatically install the program as well as any dependencies.
 2. Before doing anything else, you should now create an app for your Reddit account. You can do this by going to `https://www.reddit.com/prefs/apps/` and creating a new app. 
     Give it a name ("Oscar" or "OSCR" are easy to remember).
     Choose "script". 
