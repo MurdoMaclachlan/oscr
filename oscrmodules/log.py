@@ -33,7 +33,7 @@ def updateLog(message, gvars):
 # Writes the contents of the log array to the log.txt file
 def writeLog(gvars):
     
-    with open(gvars.home+"/.cdremover/data/log.txt", "a") as file:
+    with open(gvars.home+"/.oscr/data/log.txt", "a") as file:
         for i in gvars.log:
             file.write(i)
     return True
@@ -47,8 +47,8 @@ def attemptLog(gvars):
         
     # Creates log.txt and/or the data directory, if necessary.
     except FileNotFoundError:
-        doLog("No log.txt found; attempting to create.")
-        if not isdir(gvars.home+"/.cdremover/data"):
-            mkdir(gvars.home+"/.cdremover/data")
+        doLog("No log.txt found; attempting to create.", gvars)
+        if not isdir(gvars.home+"/.oscr/data"):
+            mkdir(gvars.home+"/.oscr/data")
             writeLog(gvars)
         return True
