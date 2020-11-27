@@ -29,7 +29,9 @@ def settingsMain(gvars):
         elif choice == "3":
             return doLog("Exiting settings menu, continuing to main program.", gvars)
         else:
-            updateLog("Exiting CDRemover.", gvars)
+            updateLog("Updating log...", gvars)
+            doLog("Log updated successfully.", gvars)
+            updateLog("Exiting OSCR...", gvars)
             sys.exit(0)
 
 # This fucking shite is the bane of my existence
@@ -109,7 +111,7 @@ def editConfig(gvars):
     outConfig = {}
     outConfig["config"] = []
     outConfig["config"].append(gvars.config)
-    with open(gvars.home+"/.cdremover/config.json", "w") as outFile:
+    with open(gvars.home+"/.oscr/config.json", "w") as outFile:
         outFile.write(json.dumps(outConfig, indent=4, sort_keys=True))
 
     gvars = calculateEssentials(gvars)
@@ -120,7 +122,10 @@ def editConfig(gvars):
 # does what it says on the fucking tin
 def editPraw(gvars):
 
-    print("Not ready yet.")
+    print("\nWhich praw section would you like to edit?\n1. Add to blacklist\n2. Remove from blacklist\n3. Cutoff\n4. Cutoff unit\n5. Limit\n6. Log updates\n7. Operating system\n8. Recur\n9. ToR only\n10. Wait unit\n11. Username\n12. Wait amount")
+    results = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+    resultNames = list(gvars.config.keys())
+    choice = validateChoice(results)
     return True
     
 # validates the user's choice to make sure it's in the viable results
