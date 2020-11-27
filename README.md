@@ -20,7 +20,7 @@ If set to recur, this program should delete new blacklisted comments periodicall
 
 Once it has been created, the contents of your praw.ini file should look something like this:
 ```
-[cdrcredentials]
+[oscr]
 client_id=lI3fAkE7x82LiE
 client_secret=4lS0f4Ke1234567894NdN0tR3aL
 username=testuser
@@ -84,6 +84,18 @@ You will have a `data` folder in `.cdremover`, which is where the `log.txt` and 
 
 To use the latest testing version, download either the 1.x branch files (0.x is deprecated), extract the archive you have downloaded, and use `pip3 install .` after navigating into the directory the files were extracted to.
 
-## Notes
+## Additional Help and FAQ
 
-- If you already have a praw.ini file in your config folder, this program should append the cdrcredentials section to it without altering any content that is already there. If you notice any errors with this, please report them immediately.
+**Where are the config file and data located?**
+On all operating systems, these are stored under `/home/your_username/.oscr/`, with the data (log and statistics) under the subfolder `data`.
+
+**Where is the praw.ini file?**
+On Linux, this is under `/home/your_username/.config/`,
+on MacOS it should be under `/home/your_username/.config/`,
+and on Windows, it is under `C:\Users\your_username\AppData\Roaming\`.
+
+**What if I already have a praw.ini in my config folder?**
+In this scenario, Oscar should append the `oscr` section to it without altering any content that is already there. If you notice any errors with this, please report them immediately.
+
+**How can I contact the developer?**
+I'm reachable through `murdo@maclachlans.org.uk` and `murdomaclachlan@gmail.com` (the first address is preferred). You can also open an issue on GitHub if needed.
