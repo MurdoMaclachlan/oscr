@@ -95,8 +95,8 @@ def dumpConfig(outConfig, gvars):
 def createIni(gvars):
 
     platformConfs = {
-        "linux": ".config",
-        "darwin": ".config"
+        "linux": "/.config",
+        "darwin": "/.config"
     }
     if sys.platform.startswith("win"):
         savePath = environ["APPDATA"]
