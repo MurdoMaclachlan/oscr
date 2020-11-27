@@ -7,34 +7,45 @@ import praw
 import time
 import sys
 import configparser
-from os import remove
+from os import remove, rename
 from .gvars import initialiseGlobals, version
 from .__init__ import *
 
 global gvars, version
 gvars = initialiseGlobals(version)
 
+if "--format-cdr" in sys.argv:
+    doLog("Reformatting CDRemover files to OSCR.", gvars)
+    try:
+        rename(gvars.home+"/.cdremover", gvars.home+"/.oscr")
+    except FileNotFoundError:
+        pass
+    reformatIni(gvars)
+    doLog("Reformatting complete.", gvars)
 if "--reset-config" in sys.argv:
-    print("Resetting config file.")
-    remove(gvars.home+"/.cdremover/config.json")
+    doLog("Resetting config file.", gvars)
+    try:
+        remove(gvars.home+"/.oscr/config.json")
+    except FileNotFoundError:
+        doLog("Config file already absent.", gvars)
 
 # config setup and start message
 gvars.config = getConfig(gvars)
 
 if "--settings" in sys.argv:
     from .settings import *
-    doLog(f"Running CDRemover version {version} with --settings parameter, entering settings menu.", gvars)
+    doLog(f"Running OSCR version {version} with --settings parameter, entering settings menu.", gvars)
     settingsMain(gvars)
 if "--no-recur" in sys.argv:
     gvars.config["recur"] = False
 
-doLog(f"Running CDRemover version {version} with recur set to {gvars.config['recur']}.", gvars)
+doLog(f"Running OSCR version {version} with recur set to {gvars.config['recur']}.", gvars)
 
 # Initialises Reddit() instance
 try:
-    reddit = praw.Reddit("cdrcredentials", user_agent=gvars.config["os"]+":claimdoneremover:v"+version+" (by u/MurdoMaclachlan)")
+    reddit = praw.Reddit("oscr", user_agent=gvars.config["os"]+":oscr:v"+version+" (by /u/MurdoMaclachlan)")
 except (configparser.NoSectionError, praw.exceptions.MissingRequiredAttributeException):
-    if createIni():
+    if createIni(gvars):
         doLog("praw.ini successfully created, program restart required for this to take effect.", gvars)
         if not updateLog("Exiting...", gvars):
             print("Exiting...")
