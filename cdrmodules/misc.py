@@ -15,7 +15,7 @@ from .log import doLog
 def getConfig(gvars):
 
     try:
-        with open(gvars.home+"/.cdremover/config.json") as configFile:
+        with open(gvars.home+"/.oscr/config.json") as configFile:
             try:
                 fromConfig = json.load(configFile)
             except json.decoder.JSONDecodeError:
@@ -59,9 +59,9 @@ def getConfig(gvars):
         try:
             dumpConfig(outConfig, gvars)
         except FileNotFoundError:
-            doLog("home/.cdremover directory not found; creating.", gvars)
-            if not isdir(gvars.home+"/.cdremover"):
-                mkdir(gvars.home+"/.cdremover")
+            doLog("home/.oscr directory not found; creating.", gvars)
+            if not isdir(gvars.home+"/.oscr"):
+                mkdir(gvars.home+"/.oscr")
                 dumpConfig(outConfig, gvars)
             
         gvars.config = outConfig["config"][0]
@@ -87,21 +87,14 @@ def calculateEssentials(gvars):
 # Attempts to update the config file
 def dumpConfig(outConfig, gvars):
     
-    with open(gvars.home+"/.cdremover/config.json", "w") as outFile:
+    with open(gvars.home+"/.oscr/config.json", "w") as outFile:
         outFile.write(json.dumps(outConfig, indent=4, sort_keys=True))
     return True
 
 # Creates praw.ini file, if it is missing
 def createIni(gvars):
 
-    platformConfs = {
-        "linux": "/.config",
-        "darwin": "/.config"
-    }
-    if sys.platform.startswith("win"):
-        savePath = environ["APPDATA"]
-    else:
-        savePath = gvars.home + platformConfs[sys.platform]
+    savePath = defineSavePath(gvars)
     doLog("praw.ini incomplete or incorrect. It will need to be created.", gvars)
     iniVars = {
         "client_id": input("Please input your client id:  "),
@@ -110,11 +103,51 @@ def createIni(gvars):
         "password": input("Please input your Reddit password:  ")
     }
     with open(savePath+"/praw.ini", "a+") as file:
-        file.write("[cdrcredentials]\n")
+        file.write("[oscr]\n")
         for i in iniVars:
             file.write(i+"="+iniVars[i]+"\n")
     return True
-             
+   
+def reformatIni(gvars):
+    
+    savePath = defineSavePath(gvars)
+    
+    try:
+        
+        with open(savePath+"/praw.ini", "r+") as file:
+            
+            content = file.read().splitlines()
+            
+            if content == []:
+                doLog("praw.ini file is empty. Proceeding to create.", gvars)
+                createIni(gvars)
+            else:
+                for line in content:
+                    if line == "[cdrcredentials]":
+                        file.seek(content.index("[cdrcredentials]"))
+                        file.write("[oscr]          ")
+                        return True
+                doLog("praw.ini file is missing a section for OSCR. Proceeding to create.", gvars)
+                createIni(gvars)
+                return True
+                    
+    except FileNotFoundError:
+        createIni(gvars)
+    return True
+
+def defineSavePath(gvars):
+    
+    platformConfs = {
+        "linux": "/.config",
+        "darwin": "/.config"
+    }
+    if sys.platform.startswith("win"):
+        savePath = environ["APPDATA"]
+    else:
+        savePath = gvars.home + platformConfs[sys.platform]
+    
+    return savePath
+          
 # Retrieves the date the comment was posted at.
 def getDate(comment):
     return comment.created_utc
