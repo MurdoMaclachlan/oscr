@@ -1,19 +1,19 @@
 from setuptools import setup, find_packages
-from cdrmodules.gvars import version
+from oscrmodules.gvars import version
 
 def readme():
     return open('README.md', 'r').read()
 
 setup(
-    name="cdremover",
+    name="oscr",
     version=version,
-    scripts=["cdremover"],
+    scripts=["oscr"],
     author="Murdo Maclachlan",
     author_email="murdo@maclachlans.org.uk",
-    description="A utility for members of the Transcribers of Reddit to remove their claim and done comments.",
+    description="A utility allowing users to delete blacklisted comments from their Reddit profile once they have passed a cutoff time.",
     long_description=readme(),
     long_description_content_type="text/markdown",
-    url="https://github.com/MurdoMaclachlan/claimdoneremover",
+    url="https://github.com/MurdoMaclachlan/oscr",
     packages=find_packages(),
     install_requires=[
         "configparser",
