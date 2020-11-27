@@ -78,7 +78,7 @@ Once properly intialised, there should be a `config.json` file in the following 
 - user is your Reddit username.
 - wait is how many units of time the program waits before re-checking your comments. This is set to 10 by default.
 
-You will have a `data` folder in `.cdremover`, which is where the `log.txt` and `stats.txt` files are saved.
+You can manually edit the config.json and praw.ini files by running `oscr --settings`.
 
 ## Using the latest testing version
 
