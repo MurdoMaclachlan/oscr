@@ -3,9 +3,12 @@ from .gvars import initialiseGlobals
 from .gvars import version
 
 # miscellaneous functions
-from .misc import getConfig
-from .misc import createIni
 from .misc import getTime
+from .misc import getConfig
+from .misc import calculateEssentials
+from .misc import createIni
+from .misc import reformatIni
+from .misc import defineSavePath
 from .misc import getDate
 
 # log handling functions functions
