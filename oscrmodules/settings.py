@@ -4,7 +4,7 @@
 import sys
 import json
 from .log import doLog, updateLog
-from .misc import calculateEssentials
+from .misc import calculateEssentials, createIni
 
 # Main settings menu
 # If-tree the first, but not the last
@@ -14,7 +14,7 @@ def settingsMain(gvars):
 
     while True:
         # Gets user choice
-        print("\nOPTIONS MENU\n1. Edit config\n2. Edit praw.ini [under construction]\n3. Continue to program\n4. Exit")
+        print("\nOPTIONS MENU\n1. Edit config\n2. Edit praw.ini\n3. Continue to program\n4. Exit")
         results = ["1", "2", "3", "4"]
         choice = validateChoice(results)
 
@@ -35,14 +35,14 @@ def settingsMain(gvars):
             sys.exit(0)
 
 # This fucking shite is the bane of my existence
-# you'd think I wouldn't need to turn my r/badcode flair into actual fucking code
-# but apparently I do
-# does what it says on the fucking tin
+# You'd think I wouldn't need to turn my r/badcode flair into actual fucking code
+# But apparently I do
+# Does what it says on the fucking tin
 def editConfig(gvars):
 
     # Gets user choice
-    print("\nWhich config option would you like to edit?\n1. Add to blacklist\n2. Remove from blacklist\n3. Cutoff\n4. Cutoff unit\n5. Limit\n6. Log updates\n7. Operating system\n8. Recur\n9. ToR only\n10. Wait unit\n11. Username\n12. Wait amount")
-    results = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+    print("\nWhich option would you like?\n1. Add to blacklist\n2. Remove from blacklist\n3. Cutoff\n4. Cutoff unit\n5. Limit\n6. Log updates\n7. Operating system\n8. Recur\n9. ToR only\n10. Wait unit\n11. Username\n12. Wait amount\n13. Return to main settings menu")
+    results = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]
     resultNames = list(gvars.config.keys())
     choice = validateChoice(results)
 
@@ -50,8 +50,12 @@ def editConfig(gvars):
 
     key = resultNames[int(choice)-2]
 
+    # Returns to main settings menu
+    if choice == "13":
+        return True
+    
     # Adds/removes from blacklist
-    if choice in ["1", "2"]:
+    elif choice in ["1", "2"]:
   
         if choice == "1":
             key = resultNames[int(choice)-1]
@@ -118,18 +122,94 @@ def editConfig(gvars):
 
     return True
 
-# Oh fuck it's editConfig 2 electric boogaloo
-# does what it says on the fucking tin
+# No refresh token support implemented yet, but I'm preparing for it
+# Does what it says on the fucking tin
 def editPraw(gvars):
 
-    print("\nWhich praw section would you like to edit?\n1. Add to blacklist\n2. Remove from blacklist\n3. Cutoff\n4. Cutoff unit\n5. Limit\n6. Log updates\n7. Operating system\n8. Recur\n9. ToR only\n10. Wait unit\n11. Username\n12. Wait amount")
-    results = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
-    resultNames = list(gvars.config.keys())
+    # Setup results
+    results = []
+    resultNames = [
+        "client_id",
+        "client_secret",
+        "username",
+        "password",
+        "Return to main settings menu"
+        #"refresh_token"
+    ]
+    
+    # Prints menu
+    print("\nWhich option would you like?")
+    for i in range(len(resultNames)):
+        print(f"{i+1}. {resultNames[i]}")
+        results.append(str(i+1))
+    
+    # Get user choice
     choice = validateChoice(results)
+    key = resultNames[int(choice)-1]
+    
+    # Returns to main settings menu
+    if choice == "5":
+        return True
+    
+    try:
+        
+        # Retrieve information from praw.ini
+        with open(gvars.home+"/.config/praw.ini", "r+") as file:
+            content = file.read().splitlines()
+            success = False
+            allowChanges = False
+            
+            # Find and replace necessary line
+            print(content)
+            for line in content:
+                if not line == "":
+                    if list(line)[0] == "[" and line in ["[oscr]", "[oscr]          "]:
+                        allowChanges = True
+                    elif list(line)[0] == "[":
+                        allowChanges = False
+                    if allowChanges and not list(line[0]) == "[":
+                        lineStart = line.split("=")[0]
+                        if lineStart == key:
+                            oldLine = line
+                            line = key+"="+input(f"\nEditing {key}\nPlease enter the new value\n>> ")
+                            if len(oldLine) > len(line):
+                                line = line + " "*(len(oldLine)-len(line))
+                            content[content.index(oldLine)] = line
+                            print(content)
+                            success = True
+                else:
+                    doLog("Skipping irrelevant line: " + line, gvars)
+            
+            # Writes content back into file
+            if success:
+                
+                # Ensure all lines have newlines at the end, because apparently writelines is loathe to do this
+                for line in content:
+                    content[content.index(line)] = line+"\n"
+                file.seek(0)
+                file.writelines(content)
+            
+            # In case necessary line is not found
+            else:
+                if key in resultNames[0:3]:
+                    doLog(f"{key} is not in praw.ini.", gvars)
+                #if key in [3]:
+                #    print("If you are using refresh tokens to log in, please choose that option instead.")
+                #    return False
+                #elif key in [4]:
+                #    print("If you are not using refresh tokens to log in, please choose password instead.")
+                #    return False
+                createIni(gvars)
+    
+    # In case praw.ini is not found
+    except FileNotFoundError:
+        doLog("praw.ini file not found.", gvars)
+        createIni(gvars)
+
     return True
     
-# validates the user's choice to make sure it's in the viable results
-# the only function in this module that doesn't look like shrek got acne
+# Validates the user's choice to make sure it's in the viable results
+# The only function in this module that doesn't look like shrek got acne
 def validateChoice(results):
     choice = ""
     while choice not in results:
