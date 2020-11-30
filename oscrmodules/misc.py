@@ -95,7 +95,7 @@ def dumpConfig(outConfig, gvars):
 def createIni(gvars):
 
     savePath = defineSavePath(gvars)
-    doLog("praw.ini incomplete or incorrect. It will need to be created.", gvars)
+    doLog("praw.ini missing, incomplete or incorrect. It will need to be created.", gvars)
     iniVars = {
         "client_id": input("Please input your client id:  "),
         "client_secret": input("Please input your client secret:  "),
@@ -122,11 +122,12 @@ def reformatIni(gvars):
                 doLog("praw.ini file is empty. Proceeding to create.", gvars)
                 createIni(gvars)
             else:
+                file.seek(0)
                 for line in content:
                     if line == "[cdrcredentials]":
-                        file.seek(content.index("[cdrcredentials]"))
-                        file.write("[oscr]          ")
+                        content[content.index("[cdrcredentials]")] = "[oscr]          "
                         return True
+                    file.write(line+"\n")
                 doLog("praw.ini file is missing a section for OSCR. Proceeding to create.", gvars)
                 createIni(gvars)
                 return True
