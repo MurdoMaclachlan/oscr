@@ -1,26 +1,26 @@
-# Claim/Done Remover
+# OSCR (Open Source Caretaker for Reddit)
 
 **This is an unofficial program and is not officially endorsed by the Transcribers of Reddit; they are in no way involved with this program and are not liable for any matters relating to it.**
 
 **WARNING: use of this bot can cause the ToR-Stats Discord bot to freeze, if you have the bad luck to delete a comment while it is being processed. This has happened to at least two users (including myself).**
 
-Also known as CDRemover, this program removes "claim" and "done" comments after a period of time. It is designed with r/TranscribersOfReddit transcribers in mind; specifically those who are tired of these comments clogging up their profiles.
+More lovingly known as Oscar, this program removes blacklisted comments after a period of time. It is designed with r/TranscribersOfReddit transcribers in mind; specifically those who are tired of these comments clogging up their profiles, thus the contents of the default blacklist.
 
-If you've been a transcriber for a while, chances are this program will not remove every "claim" or "done" you've ever posted, but for me it had removed well over 500 after a few cycles, and if you have it running in the background, it should continually delete any new ones as they pass the cutoff age.
+If set to recur, this program should delete new blacklisted comments periodically as they move past the cutoff time.
 
 ## Installation and Use
 
-1. Run either `python3 -m pip install cdremover` or `pip3 install cdremover` in your command line. It should automatically install the program as well as any dependencies.
+1. Run either `python3 -m pip install oscr` or `pip3 install oscr` in your command line. It should automatically install the program as well as any dependencies.
 2. Before doing anything else, you should now create an app for your Reddit account. You can do this by going to `https://www.reddit.com/prefs/apps/` and creating a new app. 
-    Give it a name ("ClaimDoneRemover" or "CDRemover" are easy to remember).
+    Give it a name ("Oscar" or "OSCR" are easy to remember).
     Choose "script". 
     Give it a description (which can really be anything you want).
     Set an about url and redirect url. They don't really matter for a personal script. I linked to this repository.
-3. Now, in your console, run the command `cdremover` and you will be prompted to enter information for both config.json and praw.ini. The praw.ini will ask for your client id and client secret, which you can see on `https://www.reddit.com/prefs/apps/`. Go to the page and scroll down until you find the bot you created. Underneath its name should be "personal use script", and below that a string of random characters. This is your client id. If you can't see a field that labeled "secret" with another, longer string of random characters after it, then click the edit button and it should appear (along with other fields you filled out when you were creating the bot). Once praw.ini is created, the program will exit and you will need to rerun it (this is because PRAW currently can't reload praw.ini files once Reddit() has been initialised).
+3. Now, in your console, run the command `oscr` and you will be prompted to enter information for both config.json and praw.ini. The praw.ini will ask for your client id and client secret, which you can see on `https://www.reddit.com/prefs/apps/`. Go to the page and scroll down until you find the bot you created. Underneath its name should be "personal use script", and below that a string of random characters. This is your client id. If you can't see a field that labeled "secret" with another, longer string of random characters after it, then click the edit button and it should appear (along with other fields you filled out when you were creating the bot). Once praw.ini is created, the program will exit and you will need to rerun it (this is because PRAW currently can't reload praw.ini files once Reddit() has been initialised).
 
 Once it has been created, the contents of your praw.ini file should look something like this:
 ```
-[cdrcredentials]
+[oscr]
 client_id=lI3fAkE7x82LiE
 client_secret=4lS0f4Ke1234567894NdN0tR3aL
 username=testuser
@@ -30,11 +30,11 @@ You can check if they are correct by navigating to your config folder, which sho
 
 4. Once you've rerun the program, each comment older than the cutoff should be deleted. By default, it will search every 10 minutes, and you can then either leave the program running in the background to delete posts in real time as they reach the cutoff, or you could turn recur off in your config file and manually run it every now and then.
 
-To update the program to a newer version, run `python3 -m pip install --upgrade cdremover` or `pip3 install --upgrade cdremover` in your command line.
+To update the program to a newer version, run `python3 -m pip install --upgrade oscr` or `pip3 install --upgrade oscr` in your command line.
 
 ## Editing the Config File
 
-Once properly intialised, there should be a `config.json` file in the following directory: `[your home folder]/.cdremover`. Its contents will look like this:
+Once properly intialised, there should be a `config.json` file in the following directory: `[your home folder]/.oscr`. Its contents will look like this:
 ```
 {
     "config": [
@@ -78,12 +78,24 @@ Once properly intialised, there should be a `config.json` file in the following 
 - user is your Reddit username.
 - wait is how many units of time the program waits before re-checking your comments. This is set to 10 by default.
 
-You will have a `data` folder in `.cdremover`, which is where the `log.txt` and `stats.txt` files are saved.
+You can manually edit the config.json and praw.ini files by running `oscr --settings`.
 
 ## Using the latest testing version
 
-To use the latest testing version, download either the 1.x or 0.x branch files (0.x is very infrequently updated), extract the archive you have downloaded, and use `pip3 install .` after navigating into the directory the files were extracted to.
+To use the latest testing version, download either the 1.x branch files (0.x is deprecated), extract the archive you have downloaded, and use `pip3 install .` after navigating into the directory the files were extracted to.
 
-## Notes
+## Additional Help and FAQ
 
-- If you already have a praw.ini file in your config folder, this program should append the cdrcredentials section to it without altering any content that is already there. If you notice any errors with this, please report them immediately.
+**Where are the config file and data located?**
+On all operating systems, these are stored under `/home/your_username/.oscr/`, with the data (log and statistics) under the subfolder `data`.
+
+**Where is the praw.ini file?**
+On Linux, this is under `/home/your_username/.config/`,
+on MacOS it should be under `/home/your_username/.config/`,
+and on Windows, it is under `C:\Users\your_username\AppData\Roaming\`.
+
+**What if I already have a praw.ini in my config folder?**
+In this scenario, Oscar should append the `oscr` section to it without altering any content that is already there. If you notice any errors with this, please report them immediately.
+
+**How can I contact the developer?**
+I'm reachable through `murdo@maclachlans.org.uk` and `murdomaclachlan@gmail.com` (the first address is preferred). You can also open an issue on GitHub if needed.
