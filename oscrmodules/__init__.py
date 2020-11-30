@@ -19,6 +19,9 @@ from .log import attemptLog
 
 # settings
 from .settings import settingsMain
+from .settings import editConfig
+from .settings import editPraw
+from .settings import validateChoice
 
 # statistics handling functions
 from .statistics import fetch
