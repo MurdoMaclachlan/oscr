@@ -2,7 +2,7 @@ from os.path import expanduser
 
 global version
 
-version = "1.1.0rc30"
+version = "1.1.0"
 
 class Globals():
     def __init__(self, config, failedStats, home, log, version):
