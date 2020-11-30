@@ -69,7 +69,6 @@ def getConfig(gvars):
     # Performs any necessary one-time calculations and changes relating to the config
     gvars = calculateEssentials(gvars)
     
-    print(gvars.config)
     return gvars.config
 
 def calculateEssentials(gvars):
@@ -118,19 +117,35 @@ def reformatIni(gvars):
             
             content = file.read().splitlines()
             
+            # If file is empty
             if content == []:
                 doLog("praw.ini file is empty. Proceeding to create.", gvars)
                 createIni(gvars)
+            
+            # If file is not empty
             else:
+                success = False
                 file.seek(0)
+                
+                # Replace necessary line and write all lines to file
                 for line in content:
                     if line == "[cdrcredentials]":
-                        content[content.index("[cdrcredentials]")] = "[oscr]          "
-                        return True
+                        doLog(f"Replacing line '{line}' with '[oscr]'.", gvars)
+                        line = "[oscr]          "
+                        success = True
+                    elif line in ["[oscr]", "[oscr]          "]:
+                        success = True
                     file.write(line+"\n")
-                doLog("praw.ini file is missing a section for OSCR. Proceeding to create.", gvars)
-                createIni(gvars)
-                return True
+                
+                # If successfully formatted to OSCR
+                if success:
+                    return True
+                
+                # If no cdrcredentials or oscr section was found
+                else:
+                    doLog("praw.ini file is missing a section for OSCR. Proceeding to create.", gvars)
+                    createIni(gvars)
+                    return True
                     
     except FileNotFoundError:
         createIni(gvars)
