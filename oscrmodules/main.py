@@ -69,8 +69,6 @@ def remover(comment, cutoff, deleted, waitingFor):
 totalCounted = fetch("counted", gvars)
 totalDeleted = fetch("deleted", gvars)
 
-print(gvars.config)
-
 updateLog("Updating log...", gvars)
 updateLog("Log updated successfully.", gvars)
 
