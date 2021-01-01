@@ -87,6 +87,13 @@ while True:
         if counted % 25 == 0 or counted in [1000, gvars.config["limit"]]:
             doLog(f"{counted}/{1000 if gvars.config['limit'] == None else gvars.config['limit']} comments checked successfully.", gvars)
 
+    # Notifies if the end of Reddit's listing is reached (i.e. no new comments due to API limitations)
+    try:
+        if counted < gvars.config["limit"]:
+            doLog(f"The end of the listing has been reached after {counted} comments; you have deleted all elligible comments.", gvars)
+    except TypeError:
+        doLog(f"The end of the listing has been reached after {counted} comments; you have deleted all elligible comments.", gvars)
+    
     # Updates statistics
     totalCounted += counted
     totalDeleted += deleted
