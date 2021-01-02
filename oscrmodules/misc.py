@@ -73,7 +73,7 @@ def getConfig(gvars):
 
 def calculateEssentials(gvars):
     
-    if gvars.config["limit"] >= 1000 or not str(gvars.config["limit"]).isnumeric():
+    if not str(gvars.config["limit"]).isnumeric() or gvars.config["limit"] >= 1000:
         gvars.config["limit"] = None
     try:
         gvars.config["cutoffSec"] = gvars.config["cutoff"]*gvars.config["cutoffUnit"]
