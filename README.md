@@ -21,11 +21,11 @@ If set to recur, this program should delete new blacklisted comments periodicall
 ## Installation and Use
 
 1. Run either `python3 -m pip install oscr` or `pip3 install oscr` in your command line. It should automatically install the program as well as any dependencies.
-2. Before doing anything else, you should now create an app for your Reddit account. You can do this by going to `https://www.reddit.com/prefs/apps/` and creating a new app. 
-    Give it a name ("Oscar" or "OSCR" are easy to remember).
-    Choose "script". 
-    Give it a description (which can really be anything you want).
-    Set an about url and redirect url. They don't really matter for a personal script. I linked to this repository.
+2. Before doing anything else, you should now create an app for your Reddit account. You can do this by going to `https://www.reddit.com/prefs/apps/` and creating a new app:
+- Give it a name ("Oscar" or "OSCR" are easy to remember).
+- Choose "script". 
+- Give it a description (which can really be anything you want).
+- Set an about url and redirect uri. The about url doesn't matter (I just linked to the project's repository), and the redirect uri only matters if you're using refresh tokens.
 3. Now, in your console, run the command `oscr` and you will be prompted to enter information for both config.json and praw.ini. The praw.ini will ask for your client id and client secret, which you can see on `https://www.reddit.com/prefs/apps/`. Go to the page and scroll down until you find the bot you created. Underneath its name should be "personal use script", and below that a string of random characters. This is your client id. If you can't see a field that labeled "secret" with another, longer string of random characters after it, then click the edit button and it should appear (along with other fields you filled out when you were creating the bot). Once praw.ini is created, the program will exit and you will need to rerun it (this is because PRAW currently can't reload praw.ini files once Reddit() has been initialised).
 
 Once it has been created, the contents of your praw.ini file should look something like this:
