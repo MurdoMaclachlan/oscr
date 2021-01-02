@@ -77,7 +77,7 @@ Once properly intialised, there should be a `config.json` file in the following 
 }
 ```
 - The blacklist is the list of comments it will delete if it comes across. It is not case sensitive, so comments of varying capitalisation will all be deleted, however they will only be deleted if the entire content of the comment matches one of the entries in the blacklist.
-- The cutoff is the number of units of time old a comment must be before it is deleted. This is set to 1 by default.
+- The cutoff is the number of units of time old a comment must be before it is deleted. This is set to 1 by default. I would recommend a minimum cutoff of 15 minutes, in case the u/transcribersofreddit bot has lag and doesn't register your comment in time.
 - The cutoffTime is one of the unit of time used for the cutoff, converted into seconds. This is set to 3600 (1 hour) by default.
 - The limit is the number of comments the program will check through on your profile; i.e. how far back it will go. This is set to 100 by default, and can go to a maximum of 1000. This maximum is due to Reddit's own API limits.
 - logUpdates is a boolean (true/false) variable that determines whether the program will write the console log to a file. This is set to true by default.
