@@ -1,3 +1,22 @@
+"""
+    Copyright (C) 2020-present, Murdo B. Maclachlan
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
+    
+    Contact me at murdo@maclachlans.org.uk
+"""
+
 import datetime
 import json
 import sys
@@ -49,7 +68,9 @@ def getConfig(gvars):
                 60
             ],
             "user": user,
-            "torOnly": True,
+            "subredditList": [
+                "transcribersofreddit"
+            ],
             "wait": 10
         }
         outConfig = {}
@@ -135,6 +156,7 @@ def reformatIni(gvars):
                         success = True
                     elif line in ["[oscr]", "[oscr]          "]:
                         success = True
+                        doLog("praw.ini file already formatted to OSCR.", gvars)
                     file.write(line+"\n")
                 
                 # If successfully formatted to OSCR
