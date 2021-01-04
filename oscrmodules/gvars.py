@@ -21,18 +21,18 @@ from os.path import expanduser
 
 global version
 
-version = "1.2.0-dev1"
+version = "1.2.0-dev3"
 
 class Globals():
-    def __init__(self, config, failedStats, home, log, version):
-        self.config = config
-        self.failedStats = failedStats
-        self.home = home
-        self.log = log
+    def __init__(self, version):
+        self.config = {}
+        self.failedStats = []
+        self.home = expanduser("~")
+        self.log = []
         self.version = version
 
 def initialiseGlobals(version):
     
     global gvars
-    gvars = Globals({}, [], expanduser("~"), [], version)
+    gvars = Globals(version)
     return gvars
