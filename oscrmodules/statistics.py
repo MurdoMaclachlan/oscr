@@ -21,10 +21,6 @@ from .log import doLog
 
 def fetch(statistic, gvars):
     
-    if statistic in gvars.failedStats:
-        doLog(f"Skipping fetch of following statistic: {statistic}", gvars)
-        return False
-    
     result = []
 
     # If stats.txt doesn't exist, this returns 0. Otherwise it reads the file.
