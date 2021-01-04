@@ -1,4 +1,21 @@
-#!/usr/bin/env python3
+"""
+    Copyright (C) 2020-present, Murdo B. Maclachlan
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
+    
+    Contact me at murdo@maclachlans.org.uk
+"""
 
 # Credit to /u/--B_L_A_N_K-- for improving the system and allowing it to delete in real-time, and for helping to improve console output formatting.
 # Credit to /u/DasherPack for being a handsome boy.
@@ -77,13 +94,11 @@ while True:
 
     # Checks all the user's comments, deleting them if they're past the cutoff.
     for comment in reddit.redditor(gvars.config["user"]).comments.new(limit=gvars.config["limit"]):
-        if gvars.config["torOnly"]:
-            if comment.body.lower() in gvars.config["blacklist"] and str(comment.subreddit).lower() == "transcribersofreddit":
-                deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
-        else:
-            if comment.body.lower() in gvars.config["blacklist"]:
-                deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
+        if comment.body.lower() in gvars.config["blacklist"] and str(comment.subreddit).lower() in gvars.config["subredditList"]:
+            deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
         counted += 1
+        
+        # Prints success check every 25 comments, or once the limit has been reached.
         if counted % 25 == 0 or counted in [1000, gvars.config["limit"]]:
             doLog(f"{counted}/{1000 if gvars.config['limit'] == None else gvars.config['limit']} comments checked successfully.", gvars)
 
@@ -93,7 +108,8 @@ while True:
             doLog(f"The end of the listing has been reached after {counted} comments; you have deleted all elligible comments.", gvars)
     except TypeError:
         doLog(f"The end of the listing has been reached after {counted} comments; you have deleted all elligible comments.", gvars)
-    
+
+
     # Updates statistics
     totalCounted += counted
     totalDeleted += deleted
