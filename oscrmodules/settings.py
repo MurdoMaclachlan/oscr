@@ -1,3 +1,22 @@
+"""
+    Copyright (C) 2020-present, Murdo B. Maclachlan
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
+    
+    Contact me at murdo@maclachlans.org.uk
+"""
+
 # This whole module is an ugly bastard, but it works
 # I'll deal with it eventually probably maybe
 
@@ -41,27 +60,30 @@ def settingsMain(gvars):
 def editConfig(gvars):
 
     # Gets user choice
-    print("\nWhich option would you like?\n1. Add to blacklist\n2. Remove from blacklist\n3. Cutoff\n4. Cutoff unit\n5. Limit\n6. Log updates\n7. Operating system\n8. Recur\n9. ToR only\n10. Wait unit\n11. Username\n12. Wait amount\n13. Return to main settings menu")
-    results = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]
+    print("\nWhich option would you like?\n1. Add to blacklist\n2. Remove from blacklist\n3. Cutoff\n4. Cutoff unit\n5. Limit\n6. Log updates\n7. Operating system\n8. Recur\n9. Add to subredditList\n10. Remove from subredditList\n11. Wait unit\n12. Username\n13. Wait amount\n14. Return to main settings menu")
+    results = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
     resultNames = list(gvars.config.keys())
     choice = validateChoice(results)
 
-    # All possible results 
-
-    key = resultNames[int(choice)-2]
-
     # Returns to main settings menu
-    if choice == "13":
+    if choice == "14":
         return True
     
+    # All possible results 
+    if choice == "1":
+        key = resultNames[int(choice)-1]
+    elif int(choice) > 1 and int(choice) < 10:
+        key = resultNames[int(choice)-2]
+    else:
+        key = resultNames[int(choice)-3]
+    
     # Adds/removes from blacklist
-    elif choice in ["1", "2"]:
+    if choice in ["1", "2", "9", "10"]:
   
-        if choice == "1":
-            key = resultNames[int(choice)-1]
-            gvars.config[key].append(input("\nPlease enter the phrase to add to the blacklist.\n>> "))
+        if choice in ["1", "9"]:
+            gvars.config[key].append(input(f"\nPlease enter the phrase to add to the {key}\n>> "))
         else:
-            value = input("\nPlease enter the phrase to remove from the blacklist.\n>> ")
+            value = input(f"\nPlease enter the phrase to remove from the {key}.\n>> ")
             if value in gvars.config[key]:
                 gvars.config[key].remove(value)
             else:
@@ -71,7 +93,7 @@ def editConfig(gvars):
     else:
 
         # All edits that require one integer value.        
-        if choice in ["3", "4", "5", "12"]:
+        if choice in ["3", "4", "5", "13"]:
             value = "k"
             while True:
                 value = input(f"\nEditing {key}\nPlease enter an integer value\n>> ")
@@ -82,7 +104,7 @@ def editConfig(gvars):
                     print(f"{e} - Not an integer.")
 
         # All edits that require boolean values.
-        elif choice in ["6", "8", "9"]:
+        elif choice in ["6", "8"]:
             value = "k"
             while True:
                 value = input(f"\nEditing {key}\nPlease enter a boolean value\n>> ")
@@ -93,11 +115,11 @@ def editConfig(gvars):
                     print(f"{e} - Not a boolean.")
 
         # All edits that require one string value.
-        elif choice in ["7", "11"]:
+        elif choice in ["7", "12"]:
             gvars.config[key] = input(f"\nEditing {key}\nPlease enter the new value\n>> ")
 
         # Replaces waitUnit
-        elif choice == "10":
+        elif choice == "11":
             print(f"Editing {key}")
             newUnit = [
                 input("Please enter the singular noun for the new unit. \n>> "),
@@ -160,7 +182,6 @@ def editPraw(gvars):
             allowChanges = False
             
             # Find and replace necessary line
-            print(content)
             for line in content:
                 if not line == "":
                     if list(line)[0] == "[" and line in ["[oscr]", "[oscr]          "]:
@@ -175,7 +196,6 @@ def editPraw(gvars):
                             if len(oldLine) > len(line):
                                 line = line + " "*(len(oldLine)-len(line))
                             content[content.index(oldLine)] = line
-                            print(content)
                             success = True
                 else:
                     doLog("Skipping irrelevant line: " + line, gvars)
