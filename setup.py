@@ -18,6 +18,7 @@ setup(
     install_requires=[
         "configparser",
         "praw>=7.1.0",
+        "alive_progress"
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
