@@ -24,6 +24,7 @@ import praw
 import time
 import sys
 import configparser
+from alive_progress import alive_bar as aliveBar
 from os import remove, rename
 from .gvars import initialiseGlobals, version
 from .__init__ import *
@@ -90,25 +91,30 @@ updateLog("Updating log...", gvars)
 updateLog("Log updated successfully.", gvars)
 
 while True:
+    
     deleted, counted, waitingFor = 0, 0, 0
-
+    
+    doLog("Comments retrieved; checking...", gvars)    
+    
     # Checks all the user's comments, deleting them if they're past the cutoff.
-    for comment in reddit.redditor(gvars.config["user"]).comments.new(limit=gvars.config["limit"]):
-        if comment.body.lower() in gvars.config["blacklist"] and str(comment.subreddit).lower() in gvars.config["subredditList"]:
-            deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
-        counted += 1
-        
-        # Prints success check every 25 comments, or once the limit has been reached.
-        if counted % 25 == 0 or counted in [1000, gvars.config["limit"]]:
-            doLog(f"{counted}/{1000 if gvars.config['limit'] == None else gvars.config['limit']} comments checked successfully.", gvars)
+    with aliveBar(gvars.config["limit"], spinner='classic', bar='classic', enrich_print=False) as progress:
+        for comment in reddit.redditor(gvars.config["user"]).comments.new(limit=gvars.config["limit"]):
+            if comment.body.lower() in gvars.config["blacklist"] and str(comment.subreddit).lower() in gvars.config["subredditList"]:
+                deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
+            counted += 1
+   
+            time.sleep(0.01) # this is for some reason necessary for it to actually up-date per comment rather than every 100
+            progress()
+
+    doLog(f"Successfully checked all {counted} available comments.", gvars)
 
     # Notifies if the end of Reddit's listing is reached (i.e. no new comments due to API limitations)
     try:
         if counted < gvars.config["limit"]:
-            doLog(f"The end of the listing has been reached after {counted} comments; you have deleted all elligible comments.", gvars)
+            doLog(f"OSCR counted less comments than your limit of {gvars.config['limit']}. You may have deleted all available elligible comments, or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.", gvars)
     except TypeError:
-        doLog(f"The end of the listing has been reached after {counted} comments; you have deleted all elligible comments.", gvars)
-
+        if counted < 1000:
+            doLog("OSCR counted less comments than your limit of 1000. You may have deleted all available elligible comments, or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.", gvars)
 
     # Updates statistics
     totalCounted += counted
