@@ -64,6 +64,11 @@ Once properly intialised, there should be a `config.json` file in the following 
             "logUpdates": true,
             "os": "[Your OS here]",
             "recur": true,
+            "regexBlacklist": [
+                "^claim(?!(.|\n)*treasure[\s-]*hunt)",
+                "^done(?!(.|\n)*treasure[\s-]*hunt)",
+                "^unclaim(?!(.|\n)*treasure[\s-]*hunt)"
+            ],
             "torOnly": true,
             "unit": [
                 "minute",
@@ -71,22 +76,29 @@ Once properly intialised, there should be a `config.json` file in the following 
                 60
             ],
             "user": "[Your username here]",
+            "useRegex": False,
+            "subredditList": [
+                "transcribersofreddit"
+            ],
             "wait": 10
         }
     ]
 }
 ```
-- The blacklist is the list of comments it will delete if it comes across. It is not case sensitive, so comments of varying capitalisation will all be deleted, however they will only be deleted if the entire content of the comment matches one of the entries in the blacklist.
-- The cutoff is the number of units of time old a comment must be before it is deleted. This is set to 1 by default. I would recommend a minimum cutoff of 15 minutes, in case the u/transcribersofreddit bot has lag and doesn't register your comment in time.
-- The cutoffTime is one of the unit of time used for the cutoff, converted into seconds. This is set to 3600 (1 hour) by default.
-- The limit is the number of comments the program will check through on your profile; i.e. how far back it will go. This is set to 100 by default, and can go to a maximum of 1000. This maximum is due to Reddit's own API limits.
-- logUpdates is a boolean (true/false) variable that determines whether the program will write the console log to a file. This is set to true by default.
-- The os is your operating system, and can be left blank.
-- recur is a boolean variable that determines whether the program will run only once (false), or continue searching through until you exit it (true). This is set to true by default.
-- torOnly is whether the program will delete blacklisted comments on all subreddits (false), or only on r/transcribersofreddit (true). This is set to true by default.
-- The unit list contains variations on the unit of time used for the wait variable; singular, plural, and the equivalent of one of the unit when converted into seconds. The unit is minutes by default.
-- user is your Reddit username.
-- wait is how many units of time the program waits before re-checking your comments. This is set to 10 by default.
+- The **blacklist** is the list of comments it will delete if it comes across. It is not case sensitive, so comments of varying capitalisation will all be deleted, however they will only be deleted if the entire content of the comment matches one of the entries in the blacklist.
+- The **cutoff** is the number of units of time old a comment must be before it is deleted. This is set to 1 by default. I would recommend a minimum cutoff of 15 minutes, in case the u/transcribersofreddit bot has lag and doesn't register your comment in time.
+- The **cutoffUnit** is one of the unit of time used for the cutoff, converted into seconds. This is set to 3600 (1 hour) by default.
+- The **limit** is the number of comments the program will check through on your profile; i.e. how far back it will go. This is set to 100 by default, and can go to a maximum of 1000. This maximum is due to Reddit's own API limits.
+- **logUpdates** is a boolean (true/false) variable that determines whether the program will write the console log to a file. This is set to true by default.
+- The **os** is your operating system, and can be left blank.
+- **recur** is a boolean variable that determines whether the program will run only once (false), or continue searching through until you exit it (true). This is set to true by default.
+- **regexBlacklist** is an alternative blacklist intended for use of regexes. Users not familiar with regexes are advised to ignore this list, as regexes are turned off by default.
+- **torOnly** is whether the program will delete blacklisted comments on all subreddits (false), or only on r/transcribersofreddit (true). This is set to true by default.
+- The **unit** list contains variations on the unit of time used for the wait variable; singular, plural, and the equivalent of one of the unit when converted into seconds. The unit is minutes by default.
+- **user** is your Reddit username.
+- **useRegex** is a boolean variable determining with the program should use the blacklist key, only deleting comments that exactly match it, or use the regexBlacklist key, which allows for more flexible and powerful control over what the program deletes. It is turned off by default, and users not familiar with regexes should leave it this way, as getting your regex wrong can result in the program deleting a lot more than what you intend.
+- **subredditList** contains a list of subreddits that OSCR cares about. Comments that are in the blacklist or match your set regexes, but are on subreddits *not* in this list, will not be deleted.
+- **wait** is how many units of time the program waits before re-checking your comments. This is set to 10 by default.
 
 You can manually edit the config.json and praw.ini files by running `oscr --settings`.
 
