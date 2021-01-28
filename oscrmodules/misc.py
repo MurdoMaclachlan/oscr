@@ -37,8 +37,9 @@ def getConfig(gvars):
         with open(gvars.home+"/.oscr/config.json") as configFile:
             try:
                 fromConfig = json.load(configFile)
-            except json.decoder.JSONDecodeError:
+            except json.decoder.JSONDecodeError as e:
                 doLog("Failed to get config; could not decode JSON file. Exiting.", gvars)
+                doLog("Error was: " + e, gvars)
                 sys.exit(0)
             gvars.config = fromConfig["config"][0]
             gvars = calculateEssentials(gvars)
@@ -62,12 +63,18 @@ def getConfig(gvars):
             "logUpdates": True,
             "os": os,
             "recur": True,
+            "regexBlacklist": [
+                "^claim(?!(.|\n)*treasure[\s-]*hunt)",
+                "^done(?!(.|\n)*treasure[\s-]*hunt)",
+                "^unclaim(?!(.|\n)*treasure[\s-]*hunt)"
+            ],
             "unit": [
                 "minute",
                 "minutes",
                 60
             ],
             "user": user,
+            "useRegex": False,
             "subredditList": [
                 "transcribersofreddit"
             ],
