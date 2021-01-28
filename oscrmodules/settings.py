@@ -33,8 +33,15 @@ def settingsMain(gvars):
 
     while True:
         # Gets user choice
-        print("\nOPTIONS MENU\n1. Edit config\n2. Edit praw.ini\n3. Continue to program\n4. Exit")
-        results = ["1", "2", "3", "4"]
+        print(
+            "\nOPTIONS MENU"
+            "\n1. Edit config"
+            "\n2. Edit praw.ini"
+            "\n3. How to use this menu"
+            "\n4. Continue to program"
+            "\n5. Exit"
+        )
+        results = ["1", "2", "3", "4", "5"]
         choice = validateChoice(results)
 
         # Determines which result happens
@@ -46,6 +53,8 @@ def settingsMain(gvars):
             doLog("WARNING: edits to praw.ini will require a restart to take effect.", gvars)
             editPraw(gvars)
         elif choice == "3":
+            howToUse()
+        elif choice == "4":
             return doLog("Exiting settings menu, continuing to main program.", gvars)
         else:
             updateLog("Updating log...", gvars)
@@ -60,30 +69,67 @@ def settingsMain(gvars):
 def editConfig(gvars):
 
     # Gets user choice
-    print("\nWhich option would you like?\n1. Add to blacklist\n2. Remove from blacklist\n3. Cutoff\n4. Cutoff unit\n5. Limit\n6. Log updates\n7. Operating system\n8. Recur\n9. Add to subredditList\n10. Remove from subredditList\n11. Wait unit\n12. Username\n13. Wait amount\n14. Return to main settings menu")
-    results = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
+    print(
+        "\nWhich option would you like?"
+        "\n1. Add to blacklist"
+        "\n2. Remove from blacklist"
+        "\n3. Cutoff"
+        "\n4. Cutoff unit"
+        "\n5. Limit"
+        "\n6. Log updates"
+        "\n7. Operating system"
+        "\n8. Recur"
+        "\n9. Add to regexBlacklist"
+        "\n10. Remove from regexBlacklist"
+        "\n11. Add to subredditList"
+        "\n12. Remove from subredditList"
+        "\n13. Wait unit"
+        "\n14. Username"
+        "\n15. Use regex"
+        "\n16. Wait amount"
+        "\n17. Return to main settings menu"
+    )
+    results = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"]
     resultNames = list(gvars.config.keys())
     choice = validateChoice(results)
 
     # Returns to main settings menu
-    if choice == "14":
+    if choice == "17":
         return True
-    
-    # All possible results 
-    if choice == "1":
-        key = resultNames[int(choice)-1]
-    elif int(choice) > 1 and int(choice) < 10:
-        key = resultNames[int(choice)-2]
     else:
-        key = resultNames[int(choice)-3]
+        keys = {
+            "1":"0",
+            "2":"0",
+            "3":"1",
+            "4":"2",
+            "5":"3",
+            "6":"4",
+            "7":"5",
+            "8":"6",
+            "9":"7",
+            "10":"7",
+            "11":"8",
+            "12":"8",
+            "13":"9",
+            "14":"10",
+            "15":"11",
+            "16":"12",
+        }
+    
+    key = resultNames[int(keys[choice])]
     
     # Adds/removes from blacklist
-    if choice in ["1", "2", "9", "10"]:
+    if choice in ["1", "2", "9", "10", "11", "12"]:  
   
-        if choice in ["1", "9"]:
-            gvars.config[key].append(input(f"\nPlease enter the phrase to add to the {key}\n>> "))
+        if choice in ["1", "9", "11"]:
+            value = input(f"\nPlease enter the phrase to add to the {key}\n>> ")
+            if value == "-e":
+                return True
+            gvars.config[key].append()
         else:
             value = input(f"\nPlease enter the phrase to remove from the {key}.\n>> ")
+            if value == "-e":
+                return True
             if value in gvars.config[key]:
                 gvars.config[key].remove(value)
             else:
@@ -93,33 +139,39 @@ def editConfig(gvars):
     else:
 
         # All edits that require one integer value.        
-        if choice in ["3", "4", "5", "13"]:
-            value = "k"
+        if choice in ["3", "4", "5", "16"]:
             while True:
                 value = input(f"\nEditing {key}\nPlease enter an integer value\n>> ")
+                if value == "-e":
+                    return True
                 try:
                     gvars.config[key] = int(value)
-                    break
+                    return True
                 except TypeError as e:
                     print(f"{e} - Not an integer.")
 
         # All edits that require boolean values.
-        elif choice in ["6", "8"]:
-            value = "k"
+        elif choice in ["6", "8", "15"]:
             while True:
                 value = input(f"\nEditing {key}\nPlease enter a boolean value\n>> ")
+                if value == "-e":
+                    return True
                 try:
                     gvars.config[key] = json.loads(value.lower())
-                    break
+                    return True
                 except TypeError as e:
                     print(f"{e} - Not a boolean.")
 
         # All edits that require one string value.
         elif choice in ["7", "12"]:
-            gvars.config[key] = input(f"\nEditing {key}\nPlease enter the new value\n>> ")
+            value = input(f"\nEditing {key}\nPlease enter the new value\n>> ")
+            if value == "-e":
+                return True
+            gvars.config[key] = value
+            
 
         # Replaces waitUnit
-        elif choice == "11":
+        elif choice == "13":
             print(f"Editing {key}")
             newUnit = [
                 input("Please enter the singular noun for the new unit. \n>> "),
@@ -127,10 +179,6 @@ def editConfig(gvars):
                 int(input("Please enter the numerical value of the new unit converted into seconds. \n>> "))
             ]
             gvars.config[key] = newUnit
-
-        # Replaces int, string and bool values
-        else:
-            gvars.config[key] = input(f"\nEditing {key}\nPlease enter the value\n>> ")
 
     gvars.config.pop("cutoffSec")
     gvars.config.pop("waitTime")
@@ -213,10 +261,10 @@ def editPraw(gvars):
             else:
                 if key in resultNames[0:3]:
                     doLog(f"{key} is not in praw.ini.", gvars)
-                #if key in [3]:
+                #if key == resultNames[3]:
                 #    print("If you are using refresh tokens to log in, please choose that option instead.")
                 #    return False
-                #elif key in [4]:
+                #elif key == resultNames[4]:
                 #    print("If you are not using refresh tokens to log in, please choose password instead.")
                 #    return False
                 createIni(gvars)
@@ -228,6 +276,17 @@ def editPraw(gvars):
 
     return True
     
+def howToUse():
+    print(
+        "\nHOW TO USE\n",
+        "This menu is designed for editing the config file and the praw.ini file for this program.\n",
+        "You enter numbers to select a menu, and can from there select specific keys to change the values of.\n",
+        "Currently, you cannot change existing entries in lists, and would have to remove and re-add them to modify them.\n",
+        "If you accidentally select a key you did not mean to, you are not required to close the program;\n",
+        "simply entering '-e' will return you to the main settings menu."
+    )
+    input("\nPress enter to return to the main settings menu.")
+
 # Validates the user's choice to make sure it's in the viable results
 # The only function in this module that doesn't look like shrek got acne
 def validateChoice(results):
