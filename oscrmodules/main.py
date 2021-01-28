@@ -18,11 +18,14 @@
 """
 
 # Credit to /u/--B_L_A_N_K-- for improving the system and allowing it to delete in real-time, and for helping to improve console output formatting.
+# Credit to /u/metaquarx for helping with the code for regexes, helping to write the default regexes, and suggesting the idea.
+# Credit to /u/Tim3303 for helping with the default regexes.
 # Credit to /u/DasherPack for being a handsome boy.
 
 import praw
 import time
 import sys
+import re
 import configparser
 from alive_progress import alive_bar as aliveBar
 from os import remove, rename
@@ -99,8 +102,14 @@ while True:
     # Checks all the user's comments, deleting them if they're past the cutoff.
     with aliveBar(gvars.config["limit"], spinner='classic', bar='classic', enrich_print=False) as progress:
         for comment in reddit.redditor(gvars.config["user"]).comments.new(limit=gvars.config["limit"]):
-            if comment.body.lower() in gvars.config["blacklist"] and str(comment.subreddit).lower() in gvars.config["subredditList"]:
-                deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
+            if gvars.config["regex"] == True: 
+                if sum([True for pattern in gvars.config["regexBlacklist"] if re.match(pattern, comment.body.lower())]) > 0 and str(comment.subreddit).lower() in gvars.config["subredditList"]:
+                    print(comment.body)
+                    #deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
+            else:
+                if comment.body.lower() in gvars.config["blacklist"] and str(comment.subreddit).lower() in gvars.config["subredditList"]:
+                    print(comment.body)
+                    #deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
             counted += 1
    
             time.sleep(0.01) # this is for some reason necessary for it to actually up-date per comment rather than every 100
