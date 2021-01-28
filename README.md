@@ -108,16 +108,16 @@ To use the latest testing version, download either the 1.x branch files (0.x is 
 
 ## Additional Help and FAQ
 
-**Where are the config file and data located?**
+**Where are the config file and data located?**\
 On all operating systems, these are stored under `/home/your_username/.oscr/`, with the data (log and statistics) under the subfolder `data`.
 
-**Where is the praw.ini file?**
+**Where is the praw.ini file?**\
 On Linux, this is under `/home/your_username/.config/`,
 on MacOS it should be under `/home/your_username/.config/`,
 and on Windows, it is under `C:\Users\your_username\AppData\Roaming\`.
 
-**What if I already have a praw.ini in my config folder?**
+**What if I already have a praw.ini in my config folder?**\
 In this scenario, Oscar should append the `oscr` section to it without altering any content that is already there. If you notice any errors with this, please report them immediately.
 
-**How can I contact the developer?**
+**How can I contact the developer?**\
 I'm reachable through `murdo@maclachlans.org.uk` and `murdomaclachlan@gmail.com` (the first address is preferred). You can also open an issue on GitHub if needed.
