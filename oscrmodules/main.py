@@ -104,12 +104,10 @@ while True:
         for comment in reddit.redditor(gvars.config["user"]).comments.new(limit=gvars.config["limit"]):
             if gvars.config["regex"] == True: 
                 if sum([True for pattern in gvars.config["regexBlacklist"] if re.match(pattern, comment.body.lower())]) > 0 and str(comment.subreddit).lower() in gvars.config["subredditList"]:
-                    print(comment.body)
-                    #deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
+                    deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
             else:
                 if comment.body.lower() in gvars.config["blacklist"] and str(comment.subreddit).lower() in gvars.config["subredditList"]:
-                    print(comment.body)
-                    #deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
+                    deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
             counted += 1
    
             time.sleep(0.01) # this is for some reason necessary for it to actually up-date per comment rather than every 100
