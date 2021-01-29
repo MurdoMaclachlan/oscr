@@ -39,7 +39,7 @@ def getConfig(gvars):
                 fromConfig = json.load(configFile)
             except json.decoder.JSONDecodeError as e:
                 doLog("Failed to get config; could not decode JSON file. Exiting.", gvars)
-                doLog("Error was: " + e, gvars)
+                doLog(f"Error was: {e}", gvars)
                 sys.exit(0)
             gvars.config = fromConfig["config"][0]
             gvars = calculateEssentials(gvars)
