@@ -84,8 +84,8 @@ def editConfig(gvars):
         "\n11. Add to subredditList"
         "\n12. Remove from subredditList"
         "\n13. Wait unit"
-        "\n14. Username"
-        "\n15. Use regex"
+        "\n14. Use regex"
+        "\n15. User"
         "\n16. Wait amount"
         "\n17. Return to main settings menu"
     )
@@ -146,24 +146,22 @@ def editConfig(gvars):
                     return True
                 try:
                     gvars.config[key] = int(value)
-                    return True
                 except TypeError as e:
                     print(f"{e} - Not an integer.")
 
         # All edits that require boolean values.
-        elif choice in ["6", "8", "15"]:
+        elif choice in ["6", "8", "14"]:
             while True:
                 value = input(f"\nEditing {key}\nPlease enter a boolean value\n>> ")
                 if value == "-e":
                     return True
                 try:
                     gvars.config[key] = json.loads(value.lower())
-                    return True
                 except TypeError as e:
                     print(f"{e} - Not a boolean.")
 
         # All edits that require one string value.
-        elif choice in ["7", "12"]:
+        elif choice in ["7", "15"]:
             value = input(f"\nEditing {key}\nPlease enter the new value\n>> ")
             if value == "-e":
                 return True
@@ -203,8 +201,8 @@ def editPraw(gvars):
         "client_secret",
         "username",
         "password",
+        "refresh_token",
         "Return to main settings menu"
-        #"refresh_token"
     ]
     
     # Prints menu
@@ -218,7 +216,7 @@ def editPraw(gvars):
     key = resultNames[int(choice)-1]
     
     # Returns to main settings menu
-    if choice == "5":
+    if choice == "6":
         return True
     
     try:
@@ -232,7 +230,7 @@ def editPraw(gvars):
             # Find and replace necessary line
             for line in content:
                 if not line == "":
-                    if list(line)[0] == "[" and line in ["[oscr]", "[oscr]          "]:
+                    if line in ["[oscr]", "[oscr]          "]:
                         allowChanges = True
                     elif list(line)[0] == "[":
                         allowChanges = False
@@ -261,12 +259,12 @@ def editPraw(gvars):
             else:
                 if key in resultNames[0:3]:
                     doLog(f"{key} is not in praw.ini.", gvars)
-                #if key == resultNames[3]:
-                #    print("If you are using refresh tokens to log in, please choose that option instead.")
-                #    return False
-                #elif key == resultNames[4]:
-                #    print("If you are not using refresh tokens to log in, please choose password instead.")
-                #    return False
+                if key == resultNames[3]:
+                    print("If you are using refresh tokens to log in, please choose that option instead.")
+                    return False
+                elif key == resultNames[4]:
+                    print("If you are not using refresh tokens to log in, please choose password instead.")
+                    return False
                 createIni(gvars)
     
     # In case praw.ini is not found
