@@ -33,6 +33,14 @@ if "--help" in sys.argv:
     )
     sys.exit(0)
 
+elif "--show-config" in sys.argv:
+    from oscrmodules import gvars, misc
+    gvars = gvars.initialiseGlobals(gvars.version)
+    gvars.config = misc.getConfig(gvars)
+    for i in gvars.config:
+        print(f"{i}: {gvars.config[i]}")
+    sys.exit(0)
+
 print(
       "Copyright (C) 2020-present, Murdo B. Maclachlan\n"
       "This program comes with ABSOLUTELY NO WARRANTY.\n"
