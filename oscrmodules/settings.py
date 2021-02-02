@@ -201,7 +201,7 @@ def editPraw(gvars):
         "client_secret",
         "username",
         "password",
-        "refresh_token",
+        #"refresh_token",
         "Return to main settings menu"
     ]
     
@@ -216,7 +216,7 @@ def editPraw(gvars):
     key = resultNames[int(choice)-1]
     
     # Returns to main settings menu
-    if choice == "6":
+    if choice == "5":
         return True
     
     try:
@@ -259,12 +259,12 @@ def editPraw(gvars):
             else:
                 if key in resultNames[0:3]:
                     doLog(f"{key} is not in praw.ini.", gvars)
-                if key == resultNames[3]:
-                    print("If you are using refresh tokens to log in, please choose that option instead.")
-                    return False
-                elif key == resultNames[4]:
-                    print("If you are not using refresh tokens to log in, please choose password instead.")
-                    return False
+                #if key == resultNames[3]:
+                #    print("If you are using refresh tokens to log in, please choose that option instead.")
+                #    return False
+                #elif key == resultNames[4]:
+                #    print("If you are not using refresh tokens to log in, please choose password instead.")
+                #    return False
                 createIni(gvars)
     
     # In case praw.ini is not found
