@@ -44,7 +44,7 @@ elif "--credits" in sys.argv:
         "Twitch: https://www.twitch.tv/BLANK_DvTH/ \n",
         "- Real-time deletion\n",
         "- Improved output formatting\n",
-        "- Help with Windows compatibility\n",
+        "- Help with Windows compatibility\n\n"
         "/u/DasherPack\n",
         "Reddit: https://www.reddit.com/user/DasherPack/ \n",
         "- Being a handsome boi\n\n"
