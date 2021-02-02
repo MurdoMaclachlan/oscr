@@ -18,11 +18,59 @@
     Contact me at murdo@maclachlans.org.uk
 """
 
-import re
 import sys
 
 if "--help" in sys.argv:
-    print("List of Arguments:\n --format-cdr:   rename old .cdremover directories, etc. to fit OSCR's new name\n --help:         displays this list\n --no-recur:     forces program to run only one cycle regardless of 'recur' configuration\n --reset-config: resets the config file to defaults\n --settings:     runs the settings menu")
+    
+    print(
+        "List of Arguments:\n",
+        "--credits:      lists everyone who has helped with the creation of the program\n",
+        "--force-regex:  forces the program to enable regex for one instance regardless of configuration\n",
+        "--format-cdr:   rename old .cdremover directories, etc. to fit OSCR's new name\n",
+        "--help:         displays this list\n",
+        "--no-recur:     forces program to run only one cycle regardless of 'recur' configuration\n",
+        "--reset-config: resets the config file to defaults\n",
+        "--settings:     runs the settings menu\n",
+        "--show-config:  displays the contents of the config file\n"
+    )
+    sys.exit(0)
+
+elif "--credits" in sys.argv:
+    print(
+        "Credits (alphabetical):\n\n"
+        "/u/--B_L_A_N_K--\n",
+        "GitHub: https://github.com/BLANK-TH/ \n",
+        "Reddit: https://www.reddit.com/user/--B_L_A_N_K--/ \n",
+        "Twitch: https://www.twitch.tv/BLANK_DvTH/ \n",
+        "- Real-time deletion\n",
+        "- Improved output formatting\n",
+        "- Help with Windows compatibility\n\n"
+        "/u/DasherPack\n",
+        "Reddit: https://www.reddit.com/user/DasherPack/ \n",
+        "- Being a handsome boi\n\n"
+        "/u/metaquarx\n",
+        "GitHub: https://github.com/metaquarx/\n",
+        "Reddit: https://www.reddit.com/u/metaquarx/\n",
+        "Twitch: https://www.twitch.tv/metaquarx/\n",
+        "- Help with regex support\n\n"
+        "/u/MurdoMaclachlan\n",
+        "GitHub: https://github.com/MurdoMaclachlan/\n",
+        "Reddit: https://www.reddit.com/user/MurdoMaclachlan/\n",
+        "Twitch: https://www.twitch.tv/murdomaclachlan/\n",
+        "- Original creator and primary maintainer\n\n"
+        "/u/Tim3303\n",
+        "GitHub: https://github.com/TimJentzsch/\n",
+        "Reddit: http://reddit.com/u/Tim3303/\n",
+        "- Help with default regex list\n"
+    )
+    sys.exit(0)
+
+elif "--show-config" in sys.argv:
+    from oscrmodules import gvars, misc
+    gvars = gvars.initialiseGlobals(gvars.version)
+    gvars.config = misc.getConfig(gvars)
+    for i in gvars.config:
+        print(f"{i}: {gvars.config[i]}")
     sys.exit(0)
 
 print(

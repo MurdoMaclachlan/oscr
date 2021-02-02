@@ -1,12 +1,33 @@
-#!/usr/bin/env python3
+"""
+    Copyright (C) 2020-present, Murdo B. Maclachlan
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
+    
+    Contact me at murdo@maclachlans.org.uk
+"""
 
 # Credit to /u/--B_L_A_N_K-- for improving the system and allowing it to delete in real-time, and for helping to improve console output formatting.
+# Credit to /u/metaquarx for helping with the code for regexes, helping to write the default regexes, and suggesting the idea.
+# Credit to /u/Tim3303 for helping with the default regexes.
 # Credit to /u/DasherPack for being a handsome boy.
 
 import praw
 import time
 import sys
+import re
 import configparser
+from alive_progress import alive_bar as aliveBar
 from os import remove, rename
 from .gvars import initialiseGlobals, version
 from .__init__ import *
@@ -38,6 +59,8 @@ if "--settings" in sys.argv:
     settingsMain(gvars)
 if "--no-recur" in sys.argv:
     gvars.config["recur"] = False
+if "--force-regex" in sys.argv:
+    gvars.config["useRegex"] = True
 
 doLog(f"Running OSCR version {version} with recur set to {gvars.config['recur']}.", gvars)
 
@@ -73,19 +96,34 @@ updateLog("Updating log...", gvars)
 updateLog("Log updated successfully.", gvars)
 
 while True:
+    
     deleted, counted, waitingFor = 0, 0, 0
-
+    
+    doLog("Comments retrieved; checking...", gvars)    
+    
     # Checks all the user's comments, deleting them if they're past the cutoff.
-    for comment in reddit.redditor(gvars.config["user"]).comments.new(limit=gvars.config["limit"]):
-        if gvars.config["torOnly"]:
-            if comment.body.lower() in gvars.config["blacklist"] and str(comment.subreddit).lower() == "transcribersofreddit":
-                deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
-        else:
-            if comment.body.lower() in gvars.config["blacklist"]:
-                deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
-        counted += 1
-        if counted % 25 == 0 or counted in [1000, gvars.config["limit"]]:
-            doLog(f"{counted}/{1000 if gvars.config['limit'] == None else gvars.config['limit']} comments checked successfully.", gvars)
+    with aliveBar(gvars.config["limit"], spinner='classic', bar='classic', enrich_print=False) as progress:
+        for comment in reddit.redditor(gvars.config["user"]).comments.new(limit=gvars.config["limit"]):
+            if gvars.config["useRegex"]: 
+                if sum([True for pattern in gvars.config["regexBlacklist"] if re.match(pattern, comment.body.lower())]) > 0 and str(comment.subreddit).lower() in gvars.config["subredditList"]:
+                    deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
+            else:
+                if comment.body.lower() in gvars.config["blacklist"] and str(comment.subreddit).lower() in gvars.config["subredditList"]:
+                    deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
+            counted += 1
+   
+            time.sleep(0.01) # this is for some reason necessary for it to actually up-date per comment rather than every 100
+            progress()
+
+    doLog(f"Successfully checked all {counted} available comments.", gvars)
+
+    # Notifies if the end of Reddit's listing is reached (i.e. no new comments due to API limitations)
+    try:
+        if counted < gvars.config["limit"]:
+            doLog(f"OSCR counted less comments than your limit of {gvars.config['limit']}. You may have deleted all available elligible comments, or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.", gvars)
+    except TypeError:
+        if counted < 1000:
+            doLog("OSCR counted less comments than your limit of 1000. You may have deleted all available elligible comments, or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.", gvars)
 
     # Notifies if the end of Reddit's listing is reached (i.e. no new comments due to API limitations)
     try:
