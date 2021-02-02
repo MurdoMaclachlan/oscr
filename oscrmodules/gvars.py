@@ -21,7 +21,7 @@ from os.path import expanduser
 
 global version
 
-version = "1.2.0-dev16-20210202"
+version = "1.2.0"
 
 class Globals():
     def __init__(self, version):
