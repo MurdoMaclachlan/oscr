@@ -31,8 +31,14 @@ if "--help" in sys.argv:
         "--no-recur:     forces program to run only one cycle regardless of 'recur' configuration\n",
         "--reset-config: resets the config file to defaults\n",
         "--settings:     runs the settings menu\n",
-        "--show-config:  displays the contents of the config file\n"
+        "--show-config:  displays the contents of the config file\n",
+        "--version:      displays the currently installed version\n"
     )
+    sys.exit(0)
+
+elif "--version" in sys.argv:
+    from oscrmodules.gvars import version
+    print(version)
     sys.exit(0)
 
 elif "--credits" in sys.argv:
