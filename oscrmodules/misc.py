@@ -42,7 +42,6 @@ def getConfig(gvars):
                 doLog(f"Error was: {e}", gvars)
                 sys.exit(0)
             gvars.config = fromConfig["config"][0]
-            gvars = calculateEssentials(gvars)
 
     except FileNotFoundError:
         user = input("No config file found. Please enter your Reddit username:  /u/")
@@ -80,9 +79,8 @@ def getConfig(gvars):
             ],
             "wait": 10
         }
-        outConfig = {}
-        outConfig["config"] = []
-        outConfig["config"].append(defaultConfig)
+        gvars.config = defaultConfig
+        outConfig = {"config": [defaultConfig]}
 
         try:
             dumpConfig(outConfig, gvars)
@@ -91,14 +89,10 @@ def getConfig(gvars):
             if not isdir(gvars.home+"/.oscr"):
                 mkdir(gvars.home+"/.oscr")
                 dumpConfig(outConfig, gvars)
-            
-        gvars.config = outConfig["config"][0]
-
-    # Performs any necessary one-time calculations and changes relating to the config
-    gvars = calculateEssentials(gvars)
     
-    return gvars.config
+    return calculateEssentials(gvars)
 
+# Performs any necessary one-time calculations and changes relating to the config
 def calculateEssentials(gvars):
     
     if not str(gvars.config["limit"]).isnumeric() or gvars.config["limit"] >= 1000:
@@ -109,7 +103,7 @@ def calculateEssentials(gvars):
         gvars.config["cutoffSec"] = gvars.config["cutoff"]*3600
     gvars.config["waitTime"] = gvars.config["wait"]*gvars.config["unit"][2]
     
-    return gvars
+    return gvars.config
 
 # Attempts to update the config file
 def dumpConfig(outConfig, gvars):
