@@ -17,11 +17,6 @@
     Contact me at murdo@maclachlans.org.uk
 """
 
-# Credit to /u/--B_L_A_N_K-- for improving the system and allowing it to delete in real-time, and for helping to improve console output formatting.
-# Credit to /u/metaquarx for helping with the code for regexes, helping to write the default regexes, and suggesting the idea.
-# Credit to /u/Tim3303 for helping with the default regexes.
-# Credit to /u/DasherPack for being a handsome boy.
-
 import praw
 import time
 import sys
@@ -111,8 +106,7 @@ while True:
                 if comment.body.lower() in gvars.config["blacklist"] and str(comment.subreddit).lower() in gvars.config["subredditList"]:
                     deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
             counted += 1
-   
-            time.sleep(0.01) # this is for some reason necessary for it to actually up-date per comment rather than every 100
+            
             progress()
 
     doLog(f"Successfully checked all {counted} available comments.", gvars)
@@ -125,13 +119,6 @@ while True:
         if counted < 1000:
             doLog("OSCR counted less comments than your limit of 1000. You may have deleted all available elligible comments, or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.", gvars)
 
-    # Notifies if the end of Reddit's listing is reached (i.e. no new comments due to API limitations)
-    try:
-        if counted < gvars.config["limit"]:
-            doLog(f"The end of the listing has been reached after {counted} comments; you have deleted all elligible comments.", gvars)
-    except TypeError:
-        doLog(f"The end of the listing has been reached after {counted} comments; you have deleted all elligible comments.", gvars)
-    
     # Updates statistics
     totalCounted += counted
     totalDeleted += deleted

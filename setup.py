@@ -17,8 +17,8 @@ setup(
     packages=find_packages(),
     install_requires=[
         "configparser",
-        "praw>=7.1.0",
-        "alive_progress"
+        "praw>=7.1.2",
+        "alive_progress>=1.6.1"
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

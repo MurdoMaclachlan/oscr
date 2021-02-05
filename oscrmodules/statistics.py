@@ -58,8 +58,7 @@ def update(statistic, value, gvars):
     if statistic in gvars.failedStats:
         doLog(f"Skipping update of following statistic: {statistic}", gvars)
         return False
-
-    content = []    
+ 
     lineToReplace = 0
     newLine = f"{statistic}: {str(value)}"
 
@@ -69,11 +68,12 @@ def update(statistic, value, gvars):
             content = file.read().splitlines()
     except FileNotFoundError:
         doLog("No stats.txt found; creating.", gvars)
+        content = None
 
     with open(gvars.home+"/.oscr/data/stats.txt", "w") as file:
         
         # If it can't find any statistics, this adds the statistic to be updated and sets the other to 0.
-        if content == []:
+        if content == None:
             if statistic == "counted":
                 file.write(newLine+"\ndeleted: 0")
             else:
