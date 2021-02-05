@@ -30,11 +30,11 @@ def doLog(output, gvars):
         try:
             gvars.log.append(f"{currentTime} - {output}\n")
             print(f"{currentTime} - {output}")
+            return True
         except AttributeError as e:
             print(currentTime+" - "+f"Failed to update log; log is {gvars.log}.")
             print(f"Error is {e}")
-            return False
-    return True
+    return False
 
 # Updates the log file with the current log.
 def updateLog(message, gvars):
@@ -61,13 +61,11 @@ def writeLog(gvars):
 def attemptLog(gvars):
     
     try:
-        writeLog(gvars)
-        return True
+        return writeLog(gvars)
         
     # Creates log.txt and/or the data directory, if necessary.
     except FileNotFoundError:
         doLog("No log.txt found; attempting to create.", gvars)
         if not isdir(gvars.home+"/.oscr/data"):
             mkdir(gvars.home+"/.oscr/data")
-            writeLog(gvars)
-        return True
+        return writeLog(gvars)
