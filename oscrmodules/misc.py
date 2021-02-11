@@ -31,7 +31,7 @@ def getTime(timeToFind):
 from .log import doLog
 
 # Retrieves the user configurations from a .json file, or creates a config file from default values if one can't be found.
-def getConfig(gvars):
+def getConfig(gvars, calculateEssentials):
 
     try:
         with open(gvars.home+"/.oscr/config.json") as configFile:
@@ -90,7 +90,10 @@ def getConfig(gvars):
                 mkdir(gvars.home+"/.oscr")
                 dumpConfig(outConfig, gvars)
     
-    return calculateEssentials(gvars)
+    if calculateEssentials:
+        return calculateEssentials(gvars)
+    else:
+        return gvars
 
 # Performs any necessary one-time calculations and changes relating to the config
 def calculateEssentials(gvars):
