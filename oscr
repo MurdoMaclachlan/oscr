@@ -74,7 +74,7 @@ elif "--credits" in sys.argv:
 elif "--show-config" in sys.argv:
     from oscrmodules import gvars, misc
     gvars = gvars.initialiseGlobals(gvars.version)
-    gvars.config = misc.getConfig(gvars)
+    gvars = misc.getConfig(gvars)
     for i in gvars.config:
         print(f"{i}: {gvars.config[i]}")
     sys.exit(0)
