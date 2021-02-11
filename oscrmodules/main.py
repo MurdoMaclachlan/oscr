@@ -46,12 +46,16 @@ if "--reset-config" in sys.argv:
         doLog("Config file already absent.", gvars)
 
 # config setup and start message
-gvars.config = getConfig(gvars)
+
 
 if "--settings" in sys.argv:
     from .settings import *
+    gvars.config = getConfig(gvars, False)
     doLog(f"Running OSCR version {version} with --settings parameter, entering settings menu.", gvars)
     settingsMain(gvars)
+else:
+    gvars.config = getConfig(gvars, True)
+
 if "--no-recur" in sys.argv:
     gvars.config["recur"] = False
 if "--force-regex" in sys.argv:

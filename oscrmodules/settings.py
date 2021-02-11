@@ -55,6 +55,7 @@ def settingsMain(gvars):
         elif choice == "3":
             howToUse()
         elif choice == "4":
+            gvars = calculateEssentials(gvars)
             return doLog("Exiting settings menu, continuing to main program.", gvars)
         else:
             updateLog("Updating log...", gvars)
@@ -185,8 +186,6 @@ def editConfig(gvars):
     outConfig["config"].append(gvars.config)
     with open(gvars.home+"/.oscr/config.json", "w") as outFile:
         outFile.write(json.dumps(outConfig, indent=4, sort_keys=True))
-
-    gvars = calculateEssentials(gvars)
 
     return True
 
