@@ -147,6 +147,7 @@ def editConfig(gvars):
                     return True
                 try:
                     gvars.config[key] = int(value)
+                    break
                 except TypeError as e:
                     print(f"{e} - Not an integer.")
 
@@ -158,6 +159,7 @@ def editConfig(gvars):
                     return True
                 try:
                     gvars.config[key] = json.loads(value.lower())
+                    break
                 except TypeError as e:
                     print(f"{e} - Not a boolean.")
 
@@ -179,8 +181,6 @@ def editConfig(gvars):
             ]
             gvars.config[key] = newUnit
 
-    gvars.config.pop("cutoffSec")
-    gvars.config.pop("waitTime")
     outConfig = {}
     outConfig["config"] = []
     outConfig["config"].append(gvars.config)
