@@ -93,7 +93,7 @@ def getConfig(gvars, essentialsNeeded):
     if essentialsNeeded:
         return calculateEssentials(gvars)
     else:
-        return gvars
+        return gvars.config
 
 # Performs any necessary one-time calculations and changes relating to the config
 def calculateEssentials(gvars):
