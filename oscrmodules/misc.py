@@ -79,16 +79,7 @@ def getConfig(gvars, essentialsNeeded):
             ],
             "wait": 10
         }
-        gvars.config = defaultConfig
-        outConfig = {"config": [defaultConfig]}
-
-        try:
-            dumpConfig(outConfig, gvars)
-        except FileNotFoundError:
-            doLog("home/.config/oscr directory not found; creating.", gvars)
-            if not isdir(gvars.home+"/.config/oscr"):
-                mkdir(gvars.home+"/.config/oscr")
-                dumpConfig(outConfig, gvars)
+        tryDumpConfig(gvars.config, gvars)
     
     if essentialsNeeded:
         return calculateEssentials(gvars)
@@ -108,11 +99,24 @@ def calculateEssentials(gvars):
     
     return gvars.config
 
-# Attempts to update the config file
+# Write to config.json
 def dumpConfig(outConfig, gvars):
     
     with open(gvars.home+"/.config/oscr/config.json", "w") as outFile:
         outFile.write(json.dumps(outConfig, indent=4, sort_keys=True))
+    return True
+
+# Attempts to update hte config file
+def tryDumpConfig(gvars):
+    outConfig = {"config": [gvars.config]}
+    try:
+        dumpConfig(outConfig, gvars)
+    except FileNotFoundError:
+        doLog("home/.config/oscr directory not found; creating.", gvars)
+        if not isdir(gvars.home+"/.config/oscr"):
+            mkdir(gvars.home+"/.config/oscr")
+            dumpConfig(outConfig, gvars)
+    
     return True
 
 # Creates praw.ini file, if it is missing
