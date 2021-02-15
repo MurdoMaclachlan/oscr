@@ -23,7 +23,7 @@
 import sys
 import json
 from .log import doLog, updateLog
-from .misc import calculateEssentials, createIni
+from .misc import calculateEssentials, createIni, tryDumpConfig
 
 # Main settings menu
 # If-tree the first, but not the last
@@ -170,7 +170,6 @@ def editConfig(gvars):
                 return True
             gvars.config[key] = value
             
-
         # Replaces waitUnit
         elif choice == "13":
             print(f"Editing {key}")
@@ -181,11 +180,7 @@ def editConfig(gvars):
             ]
             gvars.config[key] = newUnit
 
-    outConfig = {}
-    outConfig["config"] = []
-    outConfig["config"].append(gvars.config)
-    with open(gvars.home+"/.oscr/config.json", "w") as outFile:
-        outFile.write(json.dumps(outConfig, indent=4, sort_keys=True))
+    tryDumpConfig(gvars)    
 
     return True
 
