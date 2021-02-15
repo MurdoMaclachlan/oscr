@@ -46,7 +46,7 @@ def getConfig(gvars, essentialsNeeded):
     except FileNotFoundError:
         user = input("No config file found. Please enter your Reddit username:  /u/")
         os = input("Optionally, you may also enter your operating system. This is only used in the user_agent and can be left blank by simply pressing enter:  ")
-        defaultConfig = {
+        gvars.config = {
             "blacklist": [
                 "claim",
                 "done",
@@ -79,7 +79,7 @@ def getConfig(gvars, essentialsNeeded):
             ],
             "wait": 10
         }
-        tryDumpConfig(gvars.config, gvars)
+        tryDumpConfig(gvars)
     
     if essentialsNeeded:
         return calculateEssentials(gvars)
