@@ -34,7 +34,7 @@ from .log import doLog
 def getConfig(gvars, essentialsNeeded):
 
     try:
-        with open(gvars.home+"/.oscr/config.json") as configFile:
+        with open(gvars.home+"/.config/oscr/config.json") as configFile:
             try:
                 fromConfig = json.load(configFile)
             except json.decoder.JSONDecodeError as e:
@@ -85,9 +85,9 @@ def getConfig(gvars, essentialsNeeded):
         try:
             dumpConfig(outConfig, gvars)
         except FileNotFoundError:
-            doLog("home/.oscr directory not found; creating.", gvars)
-            if not isdir(gvars.home+"/.oscr"):
-                mkdir(gvars.home+"/.oscr")
+            doLog("home/.config/oscr directory not found; creating.", gvars)
+            if not isdir(gvars.home+"/.config/oscr"):
+                mkdir(gvars.home+"/.config/oscr")
                 dumpConfig(outConfig, gvars)
     
     if essentialsNeeded:
@@ -111,7 +111,7 @@ def calculateEssentials(gvars):
 # Attempts to update the config file
 def dumpConfig(outConfig, gvars):
     
-    with open(gvars.home+"/.oscr/config.json", "w") as outFile:
+    with open(gvars.home+"/.config/oscr/config.json", "w") as outFile:
         outFile.write(json.dumps(outConfig, indent=4, sort_keys=True))
     return True
 
