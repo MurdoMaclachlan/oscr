@@ -98,11 +98,13 @@ while True:
     
     deleted, counted, waitingFor = 0, 0, 0
     
-    doLog("Comments retrieved; checking...", gvars)    
+    doLog("Retrieving comments...", gvars)
+    commentList = reddit.redditor(gvars.config["user"]).comments.new(limit=gvars.config["limit"])
+    doLog("Comments retrieved; checking...", gvars)     
     
     # Checks all the user's comments, deleting them if they're past the cutoff.
     with aliveBar(gvars.config["limit"], spinner='classic', bar='classic', enrich_print=False) as progress:
-        for comment in reddit.redditor(gvars.config["user"]).comments.new(limit=gvars.config["limit"]):
+        for comment in commentList:
             if gvars.config["useRegex"]: 
                 if sum([True for pattern in gvars.config["regexBlacklist"] if re.match(pattern, comment.body.lower())]) > 0 and str(comment.subreddit).lower() in gvars.config["subredditList"]:
                     deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
