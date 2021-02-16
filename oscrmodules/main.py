@@ -41,12 +41,9 @@ if "--format-cdr" in sys.argv:
 if "--reset-config" in sys.argv:
     doLog("Resetting config file.", gvars)
     try:
-        remove(gvars.home+"/.oscr/config.json")
+        remove(gvars.home+"/.config/oscr/config.json")
     except FileNotFoundError:
         doLog("Config file already absent.", gvars)
-
-# config setup and start message
-
 
 if "--settings" in sys.argv:
     from .settings import *
@@ -100,16 +97,16 @@ while True:
     
     doLog("Retrieving comments...", gvars)
     commentList = reddit.redditor(gvars.config["user"]).comments.new(limit=gvars.config["limit"])
-    doLog("Comments retrieved; checking...", gvars)     
+    doLog("Comments retrieved; checking...", gvars)
     
     # Checks all the user's comments, deleting them if they're past the cutoff.
     with aliveBar(gvars.config["limit"], spinner='classic', bar='classic', enrich_print=False) as progress:
         for comment in commentList:
             if gvars.config["useRegex"]: 
-                if sum([True for pattern in gvars.config["regexBlacklist"] if re.match(pattern, comment.body.lower())]) > 0 and str(comment.subreddit).lower() in gvars.config["subredditList"]:
+                if sum([True for pattern in gvars.config["regexBlacklist"] if re.match(pattern, (comment.body.lower(), comment.body)[gvars.config["caseSensitive"]])]) > 0 and str(comment.subreddit).lower() in gvars.config["subredditList"]:
                     deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
             else:
-                if comment.body.lower() in gvars.config["blacklist"] and str(comment.subreddit).lower() in gvars.config["subredditList"]:
+                if (comment.body.lower(), comment.body)[gvars.config["caseSensitive"]] in gvars.config["blacklist"] and str(comment.subreddit).lower() in gvars.config["subredditList"]:
                     deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
             counted += 1
             
