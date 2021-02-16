@@ -44,41 +44,9 @@ def getConfig(gvars, essentialsNeeded):
             gvars.config = fromConfig["config"][0]
 
     except FileNotFoundError:
-        user = input("No config file found. Please enter your Reddit username:  /u/")
-        os = input("Optionally, you may also enter your operating system. This is only used in the user_agent and can be left blank by simply pressing enter:  ")
-        gvars.config = {
-            "blacklist": [
-                "claim",
-                "done",
-                "unclaim",
-                "claim -- this was a automated action. please contact me with any questions.",
-                "done -- this was a automated action. please contact me with any questions.",
-                "unclaim -- this was a automated action. please contact me with any questions.",
-                "claiming"
-            ],
-            "cutoff": 1,
-            "cutoffUnit": 3600,
-            "limit": 100,
-            "logUpdates": True,
-            "os": os,
-            "recur": True,
-            "regexBlacklist": [
-                "^claim(?!(.|\n)*treasure[\s-]*hunt)",
-                "^done(?!(.|\n)*treasure[\s-]*hunt)",
-                "^unclaim(?!(.|\n)*treasure[\s-]*hunt)"
-            ],
-            "unit": [
-                "minute",
-                "minutes",
-                60
-            ],
-            "user": user,
-            "useRegex": False,
-            "subredditList": [
-                "transcribersofreddit"
-            ],
-            "wait": 10
-        }
+        from .gvars import defaultConfig
+        gvars.config = defaultConfig
+        gvars.config["user"] = input("No config file found. Please enter your Reddit username:  /u/")
         tryDumpConfig(gvars)
     
     if essentialsNeeded:
