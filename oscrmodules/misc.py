@@ -95,7 +95,7 @@ def createIni(gvars):
     iniVars = {
         "client_id": input("Please input your client id:  "),
         "client_secret": input("Please input your client secret:  "),
-        "username": input("Please input your Reddit username:  /u/"),
+        "username": gvars.config["user"],
         "password": input("Please input your Reddit password:  ")
     }
     with open(savePath+"/praw.ini", "a+") as file:
