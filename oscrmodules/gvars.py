@@ -18,10 +18,43 @@
 """
 
 from os.path import expanduser
+from sys import platform
 
-global version
+global defaultConfig, version
 
-version = "2.0.0-dev5-20210215"
+defaultConfig = {
+    "blacklist": [
+        "claim",
+        "done",
+        "unclaim",
+        "claim -- this was a automated action. please contact me with any questions.",
+        "done -- this was a automated action. please contact me with any questions.",
+        "unclaim -- this was a automated action. please contact me with any questions.",
+        "claiming"
+    ],
+    "cutoff": 1,
+    "cutoffUnit": 3600,
+    "limit": 100,
+    "logUpdates": True,
+    "os": platform,
+    "recur": True,
+    "regexBlacklist": [
+        "^claim(?!(.|\n)*treasure[\s-]*hunt)",
+        "^done(?!(.|\n)*treasure[\s-]*hunt)",
+        "^unclaim(?!(.|\n)*treasure[\s-]*hunt)"
+    ],
+    "unit": [
+        "minute",
+        "minutes",
+        60
+    ],
+    "useRegex": False,
+    "subredditList": [
+        "transcribersofreddit"
+    ],
+    "wait": 10
+}
+version = "2.0.0-dev6-20210216"
 
 class Globals():
     def __init__(self, version):
