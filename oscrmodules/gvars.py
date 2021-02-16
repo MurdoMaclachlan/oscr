@@ -25,13 +25,15 @@ global defaultConfig, version
 defaultConfig = {
     "blacklist": [
         "claim",
-        "done",
-        "unclaim",
+        "claiming",
         "claim -- this was a automated action. please contact me with any questions.",
+        "done",
         "done -- this was a automated action. please contact me with any questions.",
-        "unclaim -- this was a automated action. please contact me with any questions.",
-        "claiming"
+        "unclaim",
+        "unclaiming",
+        "unclaim -- this was a automated action. please contact me with any questions."
     ],
+    "caseSensitive": False,
     "cutoff": 1,
     "cutoffUnit": 3600,
     "limit": 100,
@@ -54,7 +56,7 @@ defaultConfig = {
     ],
     "wait": 10
 }
-version = "2.0.0-dev7-20210216"
+version = "2.0.0-dev8-20210216"
 
 class Globals():
     def __init__(self, version):
