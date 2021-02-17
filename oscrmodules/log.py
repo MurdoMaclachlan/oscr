@@ -25,11 +25,11 @@ from .misc import getTime
 # Updates the log array and prints to console
 def doLog(output, gvars):
     
-    if not output == "" and gvars.config["printLogs"]:
+    if not output == "":
         currentTime = getTime(time.time())
         try:
             gvars.log.append(f"{currentTime} - {output}\n")
-            print(f"{currentTime} - {output}")
+            print(f"{currentTime} - {output}") if gvars.config["printLogs"] else None
             return True
         except AttributeError as e:
             print(currentTime+" - "+f"Failed to output log; log is {gvars.log}.")
