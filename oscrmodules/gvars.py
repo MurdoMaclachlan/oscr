@@ -39,6 +39,7 @@ defaultConfig = {
     "limit": 100,
     "logUpdates": True,
     "os": platform,
+    "printLogs": True,
     "recur": True,
     "regexBlacklist": [
         "^claim(?!(.|\n)*treasure[\s-]*hunt)",
@@ -56,7 +57,7 @@ defaultConfig = {
     ],
     "wait": 10
 }
-version = "2.0.0-dev8-20210216"
+version = "2.0.0-dev9-20210217"
 
 class Globals():
     def __init__(self, version):
