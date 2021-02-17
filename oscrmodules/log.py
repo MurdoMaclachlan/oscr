@@ -25,16 +25,17 @@ from .misc import getTime
 # Updates the log array and prints to console
 def doLog(output, gvars):
     
-    if not output == "":
+    if not output == "" and gvars.config["printLogs"]:
         currentTime = getTime(time.time())
         try:
             gvars.log.append(f"{currentTime} - {output}\n")
             print(f"{currentTime} - {output}")
             return True
         except AttributeError as e:
-            print(currentTime+" - "+f"Failed to update log; log is {gvars.log}.")
-            print(f"Error is {e}")
-    return False
+            print(currentTime+" - "+f"Failed to output log; log is {gvars.log}.")
+            print(f"Error is: {e}")
+            return False
+    return True
 
 # Updates the log file with the current log.
 def updateLog(message, gvars):
