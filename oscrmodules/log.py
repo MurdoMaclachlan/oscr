@@ -29,12 +29,13 @@ def doLog(output, gvars):
         currentTime = getTime(time.time())
         try:
             gvars.log.append(f"{currentTime} - {output}\n")
-            print(f"{currentTime} - {output}")
+            print(f"{currentTime} - {output}") if gvars.config["printLogs"] else None
             return True
         except AttributeError as e:
-            print(currentTime+" - "+f"Failed to update log; log is {gvars.log}.")
-            print(f"Error is {e}")
-    return False
+            print(currentTime+" - "+f"Failed to output log; log is {gvars.log}.")
+            print(f"Error is: {e}")
+            return False
+    return True
 
 # Updates the log file with the current log.
 def updateLog(message, gvars):

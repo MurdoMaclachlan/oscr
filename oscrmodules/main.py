@@ -53,10 +53,12 @@ if "--settings" in sys.argv:
 else:
     gvars.config = getConfig(gvars, True)
 
-if "--no-recur" in sys.argv:
-    gvars.config["recur"] = False
 if "--force-regex" in sys.argv:
     gvars.config["useRegex"] = True
+if "--no-recur" in sys.argv:
+    gvars.config["recur"] = False
+if "--print-logs" in sys.argv:
+    gvars.config["printLogs"] = True
 
 doLog(f"Running OSCR version {version} with recur set to {gvars.config['recur']}.", gvars)
 
