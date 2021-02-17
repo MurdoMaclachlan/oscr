@@ -46,6 +46,7 @@ defaultConfig = {
         "^done(?!(.|\n)*treasure[\s-]*hunt)",
         "^unclaim(?!(.|\n)*treasure[\s-]*hunt)"
     ],
+    "reportTotals": True,
     "unit": [
         "minute",
         "minutes",
@@ -57,7 +58,7 @@ defaultConfig = {
     ],
     "wait": 10
 }
-version = "2.0.0-dev9-20210217"
+version = "2.0.0-dev10-20210217"
 
 class Globals():
     def __init__(self, version):

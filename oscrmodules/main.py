@@ -59,6 +59,8 @@ if "--no-recur" in sys.argv:
     gvars.config["recur"] = False
 if "--print-logs" in sys.argv:
     gvars.config["printLogs"] = True
+if "--report-totals" in sys.argv:
+    gvars.config["reportTotals"] = True
 
 doLog(f"Running OSCR version {version} with recur set to {gvars.config['recur']}.", gvars)
 
@@ -87,8 +89,8 @@ def remover(comment, cutoff, deleted, waitingFor):
     return deleted, waitingFor
 
 # Fetches statistics
-totalCounted = fetch("counted", gvars)
-totalDeleted = fetch("deleted", gvars)
+if gvars.config["reportTotals"]:
+    totalCounted, totalDeleted = fetch("counted", gvars), fetch("deleted", gvars)
 
 updateLog("Updating log...", gvars)
 updateLog("Log updated successfully.", gvars)
@@ -125,17 +127,19 @@ while True:
             doLog("OSCR counted less comments than your limit of 1000. You may have deleted all available elligible comments, or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.", gvars)
 
     # Updates statistics
-    totalCounted += counted
-    totalDeleted += deleted
-    update("counted", totalCounted, gvars)
-    update("deleted", totalDeleted, gvars)
+    if gvars.config["reportTotals"]:
+        totalCounted += counted
+        totalDeleted += deleted
+        update("counted", totalCounted, gvars)
+        update("deleted", totalDeleted, gvars)
     
     # Gives info about this iteration; how many comments were counted, deleted, still waiting for.
     doLog(f"Counted this cycle: {str(counted)}", gvars)
     doLog(f"Deleted this cycle: {str(deleted)}", gvars)
     doLog(f"Waiting for: {str(waitingFor)}", gvars)
-    doLog(f"Total Counted: {str(totalCounted)}", gvars)
-    doLog(f"Total Deleted: {str(totalDeleted)}", gvars)
+    if gvars.config["reportTotals"]:
+        doLog(f"Total Counted: {str(totalCounted)}", gvars)
+        doLog(f"Total Deleted: {str(totalDeleted)}", gvars)
 
     # If recur is set to false, updates log and kills the program.
     if not gvars.config["recur"]:
