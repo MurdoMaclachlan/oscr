@@ -31,7 +31,7 @@ def getTime(timeToFind):
 from .log import doLog
 
 # Retrieves the user configurations from a .json file, or creates a config file from default values if one can't be found.
-def getConfig(gvars, essentialsNeeded):
+def getConfig(gvars):
 
     try:
         with open(gvars.home+"/.config/oscr/config.json") as configFile:
@@ -48,11 +48,8 @@ def getConfig(gvars, essentialsNeeded):
         gvars.config = defaultConfig
         gvars.config["user"] = input("No config file found. Please enter your Reddit username:  /u/")
         tryDumpConfig(gvars)
-    
-    if essentialsNeeded:
-        return calculateEssentials(gvars)
-    else:
-        return gvars.config
+
+    return gvars
 
 # Performs any necessary one-time calculations and changes relating to the config
 def calculateEssentials(gvars):
@@ -65,7 +62,7 @@ def calculateEssentials(gvars):
         gvars.config["cutoffSec"] = gvars.config["cutoff"]*3600
     gvars.config["waitTime"] = gvars.config["wait"]*gvars.config["unit"][2]
     
-    return gvars.config
+    return gvars
 
 # Write to config.json
 def dumpConfig(outConfig, gvars):
