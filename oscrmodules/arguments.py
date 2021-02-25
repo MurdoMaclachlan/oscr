@@ -1,7 +1,6 @@
 import sys
 from os import remove, rename
 from .gvars import defaultConfig, version
-from .settings import settingsMain
 from .log import doLog
 from .misc import calculateEssentials, reformatIni
 
@@ -83,7 +82,6 @@ def checkArgs(gvars):
 """
 
 def formatCDR(gvars):
-    from .log import doLog
     doLog("Reformatting CDRemover files to OSCR.", gvars)
     try:
         rename(gvars.home+"/.cdremover", gvars.home+"/.oscr")
@@ -149,6 +147,7 @@ def resetConfig(gvars):
     return gvars
 
 def settings(gvars):
+    from .settings import settingsMain
     doLog(f"Running OSCR version {version} with --settings parameter, entering settings menu.", gvars)
     gvars = settingsMain(gvars)
     return gvars
