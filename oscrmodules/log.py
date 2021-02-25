@@ -22,43 +22,16 @@ from os import mkdir
 from os.path import isdir
 from .misc import getTime
 
-# Updates the log array and prints to console
-def doLog(output, gvars):
+"""
+    This module contains functions relating to the handling
+    of log output within OSCR, from printing to console to
+    saving that output to a .txt file in ~/.oscr/data.
     
-    if not output == "":
-        currentTime = getTime(time.time())
-        try:
-            gvars.log.append(f"{currentTime} - {output}\n")
-            print(f"{currentTime} - {output}") if gvars.config["printLogs"] else None
-            return True
-        except AttributeError as e:
-            print(currentTime+" - "+f"Failed to output log; log is {gvars.log}.")
-            print(f"Error is: {e}")
-            return False
-    return True
+    As with all other modules, the functions are listed in
+    alphabetical order.
+"""
 
-# Updates the log file with the current log.
-def updateLog(message, gvars):
-    
-    if gvars.config["logUpdates"]:
-        doLog(message, gvars)
-        if attemptLog(gvars):
-            del gvars.log[:]
-            return True
-        else:
-            print(f"{getTime(time.time())} - Log error; disabling log updates for this instance.")
-            gvars.config["logUpdates"] = False
-    return False
-
-# Writes the contents of the log array to the log.txt file
-def writeLog(gvars):
-    
-    with open(gvars.home+"/.oscr/data/log.txt", "a") as file:
-        for i in gvars.log:
-            file.write(i)
-    return True
-    
-# Attempts to update log.txt file, creating any missing files/directories.
+# Attempts to update log.txt, creating any missing files/directories.
 def attemptLog(gvars):
     
     try:
@@ -70,3 +43,54 @@ def attemptLog(gvars):
         if not isdir(gvars.home+"/.oscr/data"):
             mkdir(gvars.home+"/.oscr/data")
         return writeLog(gvars)
+
+# Updates the log array and prints to console
+def doLog(output, gvars):
+    
+    currentTime = getTime(time.time())
+    
+    try:
+        gvars.log.append(f"{currentTime} - {output}\n")
+        print(f"{currentTime} - {output}") if gvars.config["printLogs"] else None
+        return True
+    except AttributeError as e:
+        print(currentTime+" - "+f"Failed to output log; log is {gvars.log}.")
+        print(f"Error is: {e}")
+        return False
+    
+    return True
+
+# Updates the log file with the current log.
+def updateLog(message, gvars):
+    
+    # This check is necessary to avoid empty lines in log.txt and the console output,
+    # as in some places in the program, updateLog() is called with an empty string to
+    # prompt the program to update the file without adding any new lines.
+    if message:
+        doLog(message, gvars)
+        
+    if gvars.config["logUpdates"]:
+        if attemptLog(gvars):
+            del gvars.log[:]
+            return True
+        else:
+            
+            print(f"{getTime(time.time())} - Log error; disabling log updates for this instance.")
+            gvars.config["logUpdates"] = False
+    
+    return False
+
+# Writes the contents of the log array to the log.txt file
+def writeLog(gvars):
+    
+    try:
+        with open(gvars.home+"/.oscr/data/log.txt", "a") as file:
+            for i in gvars.log:
+                file.write(i)
+    
+    # Catch all exceptions to avoid the program crashing;
+    # updateLog will disable further log updates if it receives False.
+    except Exception:
+        return False
+    
+    return True
