@@ -23,7 +23,7 @@
 import sys
 import json
 from .log import doLog, updateLog
-from .misc import calculateEssentials, createIni, tryDumpConfig
+from .misc import createIni, tryDumpConfig
 
 # Main settings menu
 # If-tree the first, but not the last
@@ -55,8 +55,8 @@ def settingsMain(gvars):
         elif choice == "3":
             howToUse()
         elif choice == "4":
-            gvars = calculateEssentials(gvars)
-            return doLog("Exiting settings menu, continuing to main program.", gvars)
+            doLog("Exiting settings menu, continuing to main program.", gvars)
+            return gvars
         else:
             updateLog("Updating log...", gvars)
             doLog("Log updated successfully.", gvars)
@@ -80,24 +80,25 @@ def editConfig(gvars):
         "\n6. Limit"
         "\n7. Log updates"
         "\n8. Operating system"
-        "\n9. Recur"
-        "\n10. Add to regexBlacklist"
-        "\n11. Remove from regexBlacklist"
-        "\n12. Add to subredditList"
-        "\n13. Remove from subredditList"
-        "\n14. Wait unit"
-        "\n15. Use regex"
-        "\n16. User"
-        "\n17. Wait amount"
-        "\n18. Return to main settings menu"
+        "\n9. Print logs"
+        "\n10. Recur"
+        "\n11. Add to regexBlacklist"
+        "\n12. Remove from regexBlacklist"
+        "\n13. Add to subredditList"
+        "\n14. Remove from subredditList"
+        "\n15. Wait unit"
+        "\n16. Use regex"
+        "\n17. User"
+        "\n18. Wait amount"
+        "\n19. Return to main settings menu"
     )
-    results = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"]
+    results = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19"]
     resultNames = list(gvars.config.keys())
     choice = validateChoice(results)
 
     # Returns to main settings menu
-    if choice == "18":
-        return True
+    if choice == "19":
+        return True      
     else:
         keys = {
             "1":"0",
@@ -110,13 +111,14 @@ def editConfig(gvars):
             "8":"6",
             "9":"7",
             "10":"8",
-            "11":"8",
+            "11":"9",
             "12":"9",
-            "13":"9",
+            "13":"10",
             "14":"10",
             "15":"11",
             "16":"12",
             "17":"13",
+            "18":"14",
         }
     
     key = resultNames[int(keys[choice])]
