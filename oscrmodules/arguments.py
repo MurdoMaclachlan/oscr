@@ -89,7 +89,7 @@ def formatCDR(gvars):
         pass
     reformatIni(gvars)
     doLog("Reformatting complete.", gvars)
-    return True
+    return gvars
 
 def helpMenu():
     print(
