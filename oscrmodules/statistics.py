@@ -19,60 +19,68 @@
 
 from .log import doLog
 
+"""
+    This module contains file handling for the statistics,
+    deleted and counted, including a function to fetch
+    the stats at the beginning of run-time, and another
+    to update them after each iteration.
+"""
+
+# Retrieve statistics from stats.txt
 def fetch(statistic, gvars):
+    
+    def checkIfEmpty(array):
+        if array == []:          
+            doLog(f"No stats for {statistic} found; returning 0.", gvars)
+            return True
     
     result = []
 
-    # If stats.txt doesn't exist, this returns 0. Otherwise it reads the file.
     try:    
         with open(gvars.home+"/.oscr/data/stats.txt", "r") as file:
             content = file.read().splitlines()
+        
+    # Default stat to 0 if file not found.
     except FileNotFoundError:
         doLog(f"No stats for {statistic} found; returning 0.", gvars)
         return 0
 
-    # If it can't find a value for any statistic, this returns 0.
-    if content == []:
-        doLog(f"No stats for {statistic} found; returning 0.", gvars)
-        return 0
+
+    # Default stat to 0 if file found, but appropriate statistic not found.
+    if checkIfEmpty(content): return 0
     
     for line in content:
         
-        # If it can find the value for the statistic being fetched, this returns it. (I swear this shithole of a for-if-for-if tree must be condensable)
-        if list(line)[0] == list(statistic)[0]:
-            for i in list(line):
-                if i.isnumeric():
-                    result.append(str(i))
-            break
+        # If the value for the statistic being fetched can be found, return it.
+        if line.startswith(statistic):
+            doLog(f"Fetched {statistic} successfully.", gvars)
+            return int(line.split(" ")[1])
 
-    # If it can only find one statistic, and it isn't the one being fetched, this returns 0.
-    if result == []:          
-        doLog(f"No stats for {statistic} found; returning 0.", gvars)
-        return 0
+    # If only stat found is not the one being searched for, return 0.
+    if checkIfEmpty(result): return 0
 
-    doLog(f"Fetched {statistic} successfully.", gvars)
-    return int(''.join(result))
-
+# Updates statistics in stats.txt
 def update(statistic, value, gvars):
 
+    # Necessary check to avoid further errors if stat has previously failed to update
     if statistic in gvars.failedStats:
         doLog(f"Skipping update of following statistic: {statistic}", gvars)
         return False
  
-    lineToReplace = 0
     newLine = f"{statistic}: {str(value)}"
 
-    # Creates the stats.txt file if it doesn't exist.
     try:
         with open(gvars.home+"/.oscr/data/stats.txt", "r") as file:
             content = file.read().splitlines()
+    
+    # If stats.txt doesn't exist, create in.
     except FileNotFoundError:
         doLog("No stats.txt found; creating.", gvars)
         content = None
 
     with open(gvars.home+"/.oscr/data/stats.txt", "w") as file:
         
-        # If it can't find any statistics, this adds the statistic to be updated and sets the other to 0.
+        # If no stats found, add the stat to be updated and default other to 0.
         if content == None:
             if statistic == "counted":
                 file.write(newLine+"\ndeleted: 0")
@@ -83,21 +91,21 @@ def update(statistic, value, gvars):
 
         for line in content:
             
-            # If it can find both statistics, this updates as normal.
-            if list(line)[0] == list(statistic)[0]:
-                lineToReplace = content.index(line)
-                content[lineToReplace] = newLine
+            # If both stats found, update required stat.
+            if line.startswith(statistic):
+                content[content.index(line)] = newLine
                 file.write('\n'.join(content))
                 doLog(f"Updated {statistic} successfully.", gvars)
                 return True
             
-        # If it can only find one statistic, and it isn't the right one, this adds the right one.
+        # If only stat found is not the one being searched for, add the required stat.
         content.append(newLine)
         file.seek(0)
         file.write('\n'.join(content))
         doLog(f"Updated {statistic} successfully.", gvars)
         return True
     
+    # If something goes very wrong and the stat can't be updated for some reason
     doLog(f"Statistics error: failed to update {statistic}, will no longer attempt to update this statistic for this instance.")
     gvars.failedStats.append(statistic)
     return False
