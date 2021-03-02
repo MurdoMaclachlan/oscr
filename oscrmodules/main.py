@@ -23,7 +23,8 @@ import sys
 import re
 import configparser
 from alive_progress import alive_bar as aliveBar
-from .__init__ import *
+from .gvars import version
+from .log import doLog, updateLog
 
 """
     Beneath is the main program. From here, all run-time flow
@@ -40,12 +41,16 @@ from .__init__ import *
 def oscr(gvars):
 
     doLog(f"Running OSCR version {version} with recur set to {gvars.config['recur']}.", gvars)
-    doLog(f"WARNING: log updates are OFF. Console log will not be saved for this instance.", gvars) if not gvars.config["logUpdates"] else None
+    doLog("WARNING: log updates are OFF. Console log will not be saved for this instance.", gvars) if not gvars.config["logUpdates"] else None
     
     # Initialises Reddit() instance
     try:
         reddit = praw.Reddit("oscr", user_agent=gvars.config["os"]+":oscr:v"+version+" (by /u/MurdoMaclachlan)")
+    
+    # Catch for invalid ini, will create a new one then restart the program;
+    # the restart is required due to current PRAW limitations. :'(
     except (configparser.NoSectionError, praw.exceptions.MissingRequiredAttributeException):
+        from .misc import createIni
         if createIni(gvars):
             doLog("praw.ini successfully created, program restart required for this to take effect.", gvars)
             if not updateLog("Exiting...", gvars):
@@ -56,40 +61,33 @@ def oscr(gvars):
                 print("Exiting...")
         sys.exit(0)
     
-    def remover(comment, cutoff, deleted, waitingFor):
-        if time.time() - getDate(comment) > cutoff:
-            doLog(f"Obsolete '{comment.body}' found, deleting.", gvars)
-            comment.delete()
-            deleted += 1
-        else:
-            doLog(f"Waiting for '{comment.body}'.", gvars)
-            waitingFor += 1
-        return deleted, waitingFor
-    
     # Fetches statistics
     if gvars.config["reportTotals"]:
+        from .statistics import fetch, update
         totalCounted, totalDeleted = fetch("counted", gvars), fetch("deleted", gvars)
     
     updateLog("Updating log...", gvars)
     updateLog("Log updated successfully.", gvars)
     
     while True:
-        
         deleted, counted, waitingFor = 0, 0, 0
         
+        # Fetches the comment list from Reddit
         doLog("Retrieving comments...", gvars)
         commentList = reddit.redditor(gvars.config["user"]).comments.new(limit=gvars.config["limit"])
         doLog("Comments retrieved; checking...", gvars)
         
-        # Checks all the user's comments, deleting them if they're past the cutoff.
+        # Initialises the progress bar
         with aliveBar(gvars.config["limit"], spinner='classic', bar='classic', enrich_print=False) as progress:
+            
+            # Checks all the user's comments, deleting them if they're past the cutoff.
             for comment in commentList:
                 if gvars.config["useRegex"]: 
                     if sum([True for pattern in gvars.config["regexBlacklist"] if re.match(pattern, (comment.body.lower(), comment.body)[gvars.config["caseSensitive"]])]) > 0 and str(comment.subreddit).lower() in gvars.config["subredditList"]:
-                        deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
+                        deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor, gvars)
                 else:
                     if (comment.body.lower(), comment.body)[gvars.config["caseSensitive"]] in gvars.config["blacklist"] and str(comment.subreddit).lower() in gvars.config["subredditList"]:
-                        deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor)
+                        deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor, gvars)
                 counted += 1
                 
                 progress()
@@ -133,3 +131,21 @@ def oscr(gvars):
         updateLog("", gvars)
     
         time.sleep(gvars.config["waitTime"])
+
+"""
+    As a PRAW-related function, this function will be defined
+    here rather than misc.py. This is the code for actually
+    deleting the comments, and the real core OSCR as a whole.
+"""
+
+def remover(comment, cutoff, deleted, waitingFor, gvars):
+        
+    # Only delete comments older than the cutoff
+    if time.time() - comment.created_utc > cutoff:
+        doLog(f"Obsolete '{comment.body}' found, deleting.", gvars)
+        comment.delete()
+        deleted += 1
+    else:
+        doLog(f"Waiting for '{comment.body}'.", gvars)
+        waitingFor += 1
+    return deleted, waitingFor

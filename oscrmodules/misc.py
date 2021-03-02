@@ -179,11 +179,14 @@ def calculateEssentials(gvars):
     # Attempts to calculate the cutoff time and wait time in seconds
     for keyList in [["cutoffSec", "cutoff", "cutoffUnit", 3600], ["waitTime", "wait", "unit", 1800]]:
         try:
-            gvars.config[keyList[0]] = gvars.config[keyList[1]]*gvars.config[keyList[2]]
+            if type(gvars.config[keyList[2]]) is list:
+                gvars.config[keyList[0]] = gvars.config[keyList[1]]*gvars.config[keyList[2]][2]
+            else:
+                gvars.config[keyList[0]] = gvars.config[keyList[1]]*gvars.config[keyList[2]]
         
         # Defaults to one hour / half an hour if any of the related variables is missing or corrupted
         except (KeyError, TypeError):
-            gvars.config[keyList[0]] = gvars.config[keyList[1]]*keyList[4]
+            gvars.config[keyList[0]] = keyList[3]
     
     return gvars
 
