@@ -18,13 +18,14 @@
 """
 
 import praw
-import time
 import sys
 import re
 import configparser
+from time import time
 from alive_progress import alive_bar as aliveBar
 from .gvars import version
 from .log import doLog, updateLog
+from .comment import removeNonAlpha, remover
 
 """
     Beneath is the main program. From here, all run-time flow
@@ -86,7 +87,7 @@ def oscr(gvars):
                     if sum([True for pattern in gvars.config["regexBlacklist"] if re.match(pattern, (comment.body.lower(), comment.body)[gvars.config["caseSensitive"]])]) > 0 and str(comment.subreddit).lower() in gvars.config["subredditList"]:
                         deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor, gvars)
                 else:
-                    if (comment.body.lower(), comment.body)[gvars.config["caseSensitive"]] in gvars.config["blacklist"] and str(comment.subreddit).lower() in gvars.config["subredditList"]:
+                    if (removeNonAlpha(comment.body.lower()), comment.body)[gvars.config["caseSensitive"]] in gvars.config["blacklist"] and str(comment.subreddit).lower() in gvars.config["subredditList"]:
                         deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor, gvars)
                 counted += 1
                 
@@ -131,21 +132,3 @@ def oscr(gvars):
         updateLog("", gvars)
     
         time.sleep(gvars.config["waitTime"])
-
-"""
-    As a PRAW-related function, this function will be defined
-    here rather than misc.py. This is the code for actually
-    deleting the comments, and the real core OSCR as a whole.
-"""
-
-def remover(comment, cutoff, deleted, waitingFor, gvars):
-        
-    # Only delete comments older than the cutoff
-    if time.time() - comment.created_utc > cutoff:
-        doLog(f"Obsolete '{comment.body}' found, deleting.", gvars)
-        comment.delete()
-        deleted += 1
-    else:
-        doLog(f"Waiting for '{comment.body}'.", gvars)
-        waitingFor += 1
-    return deleted, waitingFor
