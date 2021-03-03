@@ -18,7 +18,7 @@
 """
 
 from time import time
-from .misc import doLog
+from .log import doLog 
 
 """
     This module handles methods related to working with
@@ -34,9 +34,9 @@ def removeNonAlpha(comment):
     return ''.join(newArray)
 
 def remover(comment, cutoff, deleted, waitingFor, gvars):
-        
+    
     # Only delete comments older than the cutoff
-    if time.time() - comment.created_utc > cutoff:
+    if time() - comment.created_utc > cutoff:
         doLog(f"Obsolete '{comment.body}' found, deleting.", gvars)
         comment.delete()
         deleted += 1
