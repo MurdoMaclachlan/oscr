@@ -9,6 +9,10 @@ from .arguments import showConfig
 from .arguments import showVersion
 from .arguments import tempChangeConfig
 
+# comments handling
+from .comment import removeNonAlpha
+from .comment import remover
+
 # global variables
 from .gvars import initialiseGlobals
 from .gvars import version
