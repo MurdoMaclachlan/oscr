@@ -10,7 +10,7 @@
 ![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/MurdoMaclachlan/oscr/latest)
 ![GitHub repo size](https://img.shields.io/github/repo-size/MurdoMaclachlan/oscr)
 
-**This is an unofficial program and is not officially endorsed by the Transcribers of Reddit; they are in no way involved with this program and are not liable for any matters relating to it. This is developed unofficially, in my capacity as a *volunteer*, NOT, a moderator.**
+**This is an unofficial program and is not officially endorsed by the Transcribers of Reddit; they are in no way involved with this program and are not liable for any matters relating to it. This is developed unofficially, in my capacity as a *volunteer*, NOT a moderator.**
 
 **WARNING: use of this bot can cause the ToR-Stats Discord bot to freeze, if you have the bad luck to delete a comment while it is being processed. This has happened to at least two users (including myself).**
 
