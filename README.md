@@ -86,7 +86,7 @@ Once properly intialised, there should be a `config.json` file in the following 
 }
 ```
 
-Variable | Type | Description
+Name | Type | Description
 --------|----|-----------
 blacklist | Array | The list of comments OSCR will delete. It is not case sensitive, so comments of varying capitalisation will all be deleted, however they will only be deleted if the entire content of the comment matches one of the entries in the blacklist.
 cutoff | Integer | The number of units of time old a comment must be before it will be deleted. This is set to 1 by default. I would recommend a minimum cutoff of 15 minutes, in case the u/transcribersofreddit bot has lag and doesn't register your comment in time.
