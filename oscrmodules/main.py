@@ -21,7 +21,7 @@ import praw
 import sys
 import re
 import configparser
-from time import time
+from time import sleep
 from alive_progress import alive_bar as aliveBar
 from .gvars import version
 from .log import doLog, updateLog
@@ -131,4 +131,4 @@ def oscr(gvars):
         doLog(f"Waiting {str(gvars.config['wait'])} {gvars.config['unit'][0] if gvars.config['wait'] == 1 else gvars.config['unit'][1]} before checking again...", gvars)
         updateLog("", gvars)
     
-        time.sleep(gvars.config["waitTime"])
+        sleep(gvars.config["waitTime"])
