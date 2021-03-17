@@ -23,9 +23,11 @@ import re
 import configparser
 from time import sleep
 from alive_progress import alive_bar as aliveBar
+from os.path import isfile
 from .gvars import version
 from .log import doLog, updateLog
 from .comment import removeNonAlpha, remover
+from .ini import getCredentials
 
 """
     Beneath is the main program. From here, all run-time flow
@@ -46,11 +48,13 @@ def oscr(gvars):
     
     # Initialises Reddit() instance
     try:
-        reddit = praw.Reddit("oscr", user_agent=gvars.config["os"]+":oscr:v"+version+" (by /u/MurdoMaclachlan)")
+        reddit = praw.Reddit(**getCredentials(gvars), user_agent=gvars.config["os"]+":oscr:v"+version+" (by /u/MurdoMaclachlan)")
     
     # Catch for invalid ini, will create a new one then restart the program;
     # the restart is required due to current PRAW limitations. :'(
-    except (configparser.NoSectionError, praw.exceptions.MissingRequiredAttributeException):
+    except (configparser.NoSectionError, praw.exceptions.MissingRequiredAttributeException, KeyError):
+        if isfile(gvars.home+"/.config/praw.ini"):
+            pass
         from .misc import createIni
         if createIni(gvars):
             doLog("praw.ini successfully created, program restart required for this to take effect.", gvars)
