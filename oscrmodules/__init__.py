@@ -28,7 +28,6 @@ from .misc import defineSavePath
 from .misc import dumpConfig
 from .misc import getTime
 from .misc import getConfig
-
 from .misc import tryDumpConfig
 
 # log handling functions functions
