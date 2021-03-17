@@ -104,7 +104,7 @@ useRegex | Boolean | Determines whether the program should use the blacklist key
 subredditList | Array | The list of subreddits that OSCR cares about. Comments that are int he blacklist or match your set regexes, but are on subreddits *not* in this list, will not be deleted.
 wait | Integer | The number of units of time (unit being determined by the **unit** variable) OSCr will wait before re-checking your comments. It is set to 10 by default.
 
-You can manually edit the config.json and praw.ini files by running `oscr --settings`.
+You can edit the config.json and praw.ini files from within OSCR by running `oscr --settings`.
 
 ## Using the latest testing version
 
@@ -121,7 +121,7 @@ on MacOS it should be under `/home/your_username/.config/`,
 and on Windows, it is under `C:\Users\your_username\AppData\Roaming\`.
 
 **What if I already have a praw.ini in my config folder?**\
-In this scenario, Oscar should append the `oscr` section to it without altering any content that is already there. If you notice any errors with this, please report them immediately.
+In this scenario, OSCR should append the `oscr` section to it without altering any content that is already there. If you notice any errors with this, please report them immediately.
 
 **How can I contact the developer?**\
 I'm reachable through `murdo@maclachlans.org.uk` and `murdomaclachlan@gmail.com` (the first address is preferred). You can also open an issue on GitHub if needed.
