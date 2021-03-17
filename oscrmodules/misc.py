@@ -51,7 +51,6 @@ def createIni(gvars):
     
     from .log import doLog
     
-    savePath = defineSavePath(gvars)
     doLog("praw.ini missing, incomplete or incorrect. It will need to be created.", gvars)
     iniVars = {
         "client_id": input("Please input your client id:  "),
@@ -59,7 +58,7 @@ def createIni(gvars):
         "username": gvars.config["user"], # Since createIni is never called before the config is initialised, this is safe to draw from
         "password": input("Please input your Reddit password:  ")
     }
-    with open(savePath+"/praw.ini", "a+") as file:
+    with open(gvars.savePath+"/praw.ini", "a+") as file:
         file.write("[oscr]\n")
         for i in iniVars:
             file.write(i+"="+iniVars[i]+"\n")
@@ -68,7 +67,7 @@ def createIni(gvars):
 # Write to config.json
 def dumpConfig(outConfig, gvars):
     
-    with open(gvars.home+"/.config/oscr/config.json", "w") as outFile:
+    with open(gvars.savePath+ "/config.json", "w") as outFile:
         outFile.write(json.dumps(outConfig, indent=4, sort_keys=True))
     return True
 
@@ -78,7 +77,7 @@ def getConfig(gvars):
     from .log import doLog    
 
     try:
-        with open(gvars.home+"/.config/oscr/config.json") as configFile:
+        with open(gvars.savePath + "/config.json") as configFile:
             try:
                 fromConfig = json.load(configFile)
             
@@ -99,13 +98,16 @@ def getConfig(gvars):
 
     return gvars
    
+def getCredentials(gvars):
+    credentials = ConfigParser()
+    credentials.read(gvars.savePath + "/praw.ini")
+    return dict(credentials["oscr"])
+   
 def reformatIni(gvars):
   
     from .log import doLog
-  
-    savePath = defineSavePath(gvars)
     try:
-        with open(savePath+"/praw.ini", "r+") as file:
+        with open(gvars.home+"/.config/praw.ini", "r+") as file:
             content = file.read().splitlines()
             
             # If praw.ini is empty
@@ -191,15 +193,15 @@ def calculateEssentials(gvars):
     return gvars
 
 # Finds the correct save path for config files, based on OS
-def defineSavePath(gvars):
+def defineSavePath(home):
     
     platformConfs = {
         "linux": "/.config",
         "darwin": "/.config"
     }
     if sys.platform.startswith("win"):
-        savePath = environ["APPDATA"]
+        savePath = environ["APPDATA"] + "\\oscr"
     else:
-        savePath = gvars.home + platformConfs[sys.platform]
+        savePath = home + platformConfs[sys.platform] + "/oscr"
     
     return savePath
