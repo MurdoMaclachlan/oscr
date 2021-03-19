@@ -1,6 +1,6 @@
 # arguments handling
 from .arguments import checkArgs
-from .arguments import formatCDR
+from .arguments import formatOld
 from .arguments import helpMenu
 from .arguments import printCredits
 from .arguments import resetConfig
