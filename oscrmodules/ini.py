@@ -17,12 +17,11 @@
     Contact me at murdo@maclachlans.org.uk
 """
 
+from os import remove
+from os.path import isfile
 from configparser import ConfigParser
 from .log import doLog
-
-"""
-    This module contains handling for the praw.ini file.
-"""
+from .misc import writeToFile
 
 def createIni(gvars):
     
@@ -39,46 +38,79 @@ def createIni(gvars):
             file.write(i+"="+iniVars[i]+"\n")
     return True
 
+def extractIniDetails(gvars):
+    with open(gvars.home+"/.config/praw.ini", "r+") as file:
+        content = file.read().splitlines()
+        return None if content == [] else oscrOnly(content) # return None if praw.ini is empty
+
 def getCredentials(gvars):
+    
+    # Use configparser magic to get the credentials from praw.ini
     credentials = ConfigParser()
     credentials.read(gvars.savePath + "/praw.ini")
     return dict(credentials["oscr"])
    
+def oscrOnly(content, gvars):
+    oscrContent = []
+    append = False
+    for line in content:
+        if line.startswith("[") and not line in ["[oscr]", "[oscr]          "]:
+            append = False
+        elif line in ["[cdrcredentials]", "[oscr]", "[oscr]          "]:
+            append = True
+        if line == "[cdrcredentials]":
+            doLog(f"Replacing line '{line}' with '[oscr]'.", gvars)
+            line = "[oscr]"
+        if append: oscrContent.append(line)
+    return oscrContent
+
 def reformatIni(gvars):
-    
+
     try:
-        with open(gvars.home+"/.config/praw.ini", "r+") as file:
+        with open(gvars.home+"/.config/praw.ini", "r") as file:
             content = file.read().splitlines()
-            
-            # If praw.ini is empty
-            if content == []:
-                doLog("praw.ini file is empty. Proceeding to create.", gvars)
-                return createIni(gvars)
-            
-            else:
-                success = False
-                file.seek(0)
+        
+        # If praw.ini is empty
+        if content == []:
+            doLog("praw.ini file is empty. Proceeding to create.", gvars)
+            return createIni(gvars)
+        
+        else:
+            with open(gvars.home+"/.config/oscr/praw.ini", "w+") as file:
                 
-                # Replace necessary line and write all lines to file
-                for line in content:
-                    if line == "[cdrcredentials]":
-                        doLog(f"Replacing line '{line}' with '[oscr]'.", gvars)
-                        line = "[oscr]          "
-                        success = True
-                    elif line in ["[oscr]", "[oscr]          "]:
-                        success = True
-                        doLog("praw.ini file already formatted to OSCR.", gvars)
-                    file.write(line+"\n")
+                # Keep only OSCR content
+                oscrContent = oscrOnly(content, gvars)
                 
-                # If successfully formatted to OSCR
-                if success:
-                    return True
-                
-                # If no cdrcredentials or oscr section was found
-                else:
+                # If no cdrcredentials or OSCR section was found
+                if oscrContent == []:
                     doLog("praw.ini file is missing a section for OSCR. Proceeding to create.", gvars)
-                    return createIni(gvars)
-    
+                    success = False
+                
+                # Else, write all OSCR content to new file
+                else:
+                    success = writeToFile(gvars, oscrContent, file)
+                    
+        # Remove OSCR section from old praw.ini, and remove file if no other sections are present
+        strippedContent = stripOSCR(content)
+        remove(gvars.home+"/.config/praw.ini")
+        with open(gvars.home+"/.config/praw.ini", "w+") as file:
+            for line in strippedContent:
+                file.write(line+"\n")
+            delete = True if file.readlines() == [] else False
+        if delete: remove(gvars.home+"/.config/praw.ini")
+        
+        return True if success else createIni(gvars)
+
     # Catch missing praw.ini                
     except FileNotFoundError:
-        return createIni(gvars)
+        if isfile(gvars.savePath + "/praw.ini"):
+            doLog("praw.ini already formatted.", gvars)
+        else: createIni(gvars)
+           
+def stripOSCR(content):
+    delete = False
+    for line in content:
+        if line in ["[oscr]", "[oscr]          "]: delete = True
+        elif line.startswith("["): delete = False
+        if delete: content.pop(content.index(line))
+    return content
