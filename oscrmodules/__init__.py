@@ -38,7 +38,6 @@ from .log import writeLog
 
 # main program
 from .main import oscr
-from .main import remover
 
 # settings
 from .settings import editConfig
