@@ -105,8 +105,7 @@ def formatCDR(gvars):
     doLog("Reformatting CDRemover files to OSCR.", gvars)
     try:
         rename(gvars.home+"/.cdremover", gvars.home+"/.oscr")
-    except FileNotFoundError:
-        pass
+    except FileNotFoundError: pass
     reformatIni(gvars)
     doLog("Reformatting complete.", gvars)
     return gvars
