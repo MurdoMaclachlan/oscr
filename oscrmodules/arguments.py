@@ -21,7 +21,8 @@ import sys
 from os import remove, rename
 from .gvars import defaultConfig, version
 from .log import doLog
-from .misc import calculateEssentials, reformatIni
+from .ini import reformatIni
+from .misc import calculateEssentials
 
 def checkArgs(gvars):
     
