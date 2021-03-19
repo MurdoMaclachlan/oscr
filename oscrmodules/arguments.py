@@ -36,7 +36,7 @@ def checkArgs(gvars):
         "-c": printCredits,
         "--show-config": showConfig, # priority 4
         "-s": showConfig,
-        "--format-cdr": formatCDR, # priority 5
+        "--format-old": formatOld, # priority 5
         "-F": formatCDR,
         "--reset-config": resetConfig, # priority 6
         "-R": resetConfig,
@@ -101,7 +101,7 @@ def checkArgs(gvars):
     'arguments' dictionary in checkArgs(), above.
 """
 
-def formatCDR(gvars):
+def formatOld(gvars):
     doLog("Reformatting CDRemover files to OSCR.", gvars)
     try:
         rename(gvars.home+"/.cdremover", gvars.home+"/.oscr")
@@ -115,7 +115,7 @@ def helpMenu():
         "List of Arguments:\n",
         "--credits, -c:       lists everyone who has helped with the creation of the program\n",
         "--force-regex, -f:   forces the program to enable regex for one instance regardless of configuration\n",
-        "--format-cdr, -F:    rename old .cdremover directories, etc. to fit OSCR's new name\n",
+        "--format-old, -F:    rename old .cdremover directories, etc. to fit OSCR's new name, and move old praw.ini to new location\n",
         "--help, -h:          displays this list\n",
         "--no-recur, -n:      forces program to run only one cycle regardless of 'recur' configuration\n",
         "--print-logs, -p:    forces program to print logs for one instance regardless of 'printLogs' configuration\n",
