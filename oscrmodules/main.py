@@ -18,14 +18,16 @@
 """
 
 import praw
-import sys
 import re
 import configparser
 from time import sleep
 from alive_progress import alive_bar as aliveBar
+from os.path import isfile
 from .gvars import version
 from .log import doLog, updateLog
 from .comment import removeNonAlpha, remover
+from .ini import extractIniDetails, getCredentials
+from .misc import exitWithLog, writeToFile
 
 """
     Beneath is the main program. From here, all run-time flow
@@ -46,21 +48,24 @@ def oscr(gvars):
     
     # Initialises Reddit() instance
     try:
-        reddit = praw.Reddit("oscr", user_agent=gvars.config["os"]+":oscr:v"+version+" (by /u/MurdoMaclachlan)")
+        reddit = praw.Reddit(
+            user_agent = gvars.config["os"] + ":oscr:v" + version + " (by /u/MurdoMaclachlan)",
+            **getCredentials(gvars)
+        )
     
     # Catch for invalid ini, will create a new one then restart the program;
     # the restart is required due to current PRAW limitations. :'(
-    except (configparser.NoSectionError, praw.exceptions.MissingRequiredAttributeException):
+    except (configparser.NoSectionError, praw.exceptions.MissingRequiredAttributeException, KeyError):
+        if isfile(gvars.home+"/.config/praw.ini"):
+            iniDetails = extractIniDetails(gvars)
+            if iniDetails is None: pass
+            else: writeToFile(gvars, iniDetails, open(gvars.home+"/.config/oscr/praw.ini", "w+"))
+            exitWithLog(gvars, "praw.ini successfully created, program restart required for this to take effect.")
+
         from .misc import createIni
-        if createIni(gvars):
-            doLog("praw.ini successfully created, program restart required for this to take effect.", gvars)
-            if not updateLog("Exiting...", gvars):
-                print("Exiting...")
-        else:
-            doLog("Failed to create praw.ini file, something went wrong.", gvars)
-            if not updateLog("Exiting...", gvars):
-                print("Exiting...")
-        sys.exit(0)
+        
+        if createIni(gvars): exitWithLog(gvars, "praw.ini successfully created, program restart required for this to take effect.")
+        else: exitWithLog(gvars, "Failed to create praw.ini file, something went wrong.")
     
     # Fetches statistics
     if gvars.config["reportTotals"]:

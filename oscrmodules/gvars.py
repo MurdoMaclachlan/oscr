@@ -19,7 +19,7 @@
 
 from os.path import expanduser
 from sys import platform
-
+from .misc import defineSavePath
 global defaultConfig, version
 
 defaultConfig = {
@@ -66,6 +66,7 @@ class Globals():
         self.failedStats = []
         self.home = expanduser("~")
         self.log = []
+        self.savePath = defineSavePath(self.home)
         self.version = version
 
 def initialiseGlobals(version):

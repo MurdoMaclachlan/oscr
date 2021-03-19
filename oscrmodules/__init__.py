@@ -17,14 +17,17 @@ from .comment import remover
 from .gvars import initialiseGlobals
 from .gvars import version
 
+# ini handling
+from .ini import createIni
+from .ini import getCredentials
+from .ini import reformatIni
+
 # miscellaneous functions
 from .misc import calculateEssentials
-from .misc import createIni
 from .misc import defineSavePath
 from .misc import dumpConfig
 from .misc import getTime
 from .misc import getConfig
-from .misc import reformatIni
 from .misc import tryDumpConfig
 
 # log handling functions functions
@@ -35,7 +38,6 @@ from .log import writeLog
 
 # main program
 from .main import oscr
-from .main import remover
 
 # settings
 from .settings import editConfig

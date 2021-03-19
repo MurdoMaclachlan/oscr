@@ -51,7 +51,6 @@ def createIni(gvars):
     
     from .log import doLog
     
-    savePath = defineSavePath(gvars)
     doLog("praw.ini missing, incomplete or incorrect. It will need to be created.", gvars)
     iniVars = {
         "client_id": input("Please input your client id:  "),
@@ -59,7 +58,7 @@ def createIni(gvars):
         "username": gvars.config["user"], # Since createIni is never called before the config is initialised, this is safe to draw from
         "password": input("Please input your Reddit password:  ")
     }
-    with open(savePath+"/praw.ini", "a+") as file:
+    with open(gvars.savePath+"/praw.ini", "a+") as file:
         file.write("[oscr]\n")
         for i in iniVars:
             file.write(i+"="+iniVars[i]+"\n")
@@ -68,7 +67,7 @@ def createIni(gvars):
 # Write to config.json
 def dumpConfig(outConfig, gvars):
     
-    with open(gvars.home+"/.config/oscr/config.json", "w") as outFile:
+    with open(gvars.savePath+ "/config.json", "w") as outFile:
         outFile.write(json.dumps(outConfig, indent=4, sort_keys=True))
     return True
 
@@ -78,7 +77,7 @@ def getConfig(gvars):
     from .log import doLog    
 
     try:
-        with open(gvars.home+"/.config/oscr/config.json") as configFile:
+        with open(gvars.savePath + "/config.json") as configFile:
             try:
                 fromConfig = json.load(configFile)
             
@@ -98,48 +97,6 @@ def getConfig(gvars):
         tryDumpConfig(gvars)
 
     return gvars
-   
-def reformatIni(gvars):
-  
-    from .log import doLog
-  
-    savePath = defineSavePath(gvars)
-    try:
-        with open(savePath+"/praw.ini", "r+") as file:
-            content = file.read().splitlines()
-            
-            # If praw.ini is empty
-            if content == []:
-                doLog("praw.ini file is empty. Proceeding to create.", gvars)
-                return createIni(gvars)
-            
-            else:
-                success = False
-                file.seek(0)
-                
-                # Replace necessary line and write all lines to file
-                for line in content:
-                    if line == "[cdrcredentials]":
-                        doLog(f"Replacing line '{line}' with '[oscr]'.", gvars)
-                        line = "[oscr]          "
-                        success = True
-                    elif line in ["[oscr]", "[oscr]          "]:
-                        success = True
-                        doLog("praw.ini file already formatted to OSCR.", gvars)
-                    file.write(line+"\n")
-                
-                # If successfully formatted to OSCR
-                if success:
-                    return True
-                
-                # If no cdrcredentials or oscr section was found
-                else:
-                    doLog("praw.ini file is missing a section for OSCR. Proceeding to create.", gvars)
-                    return createIni(gvars)
-    
-    # Catch missing praw.ini                
-    except FileNotFoundError:
-        return createIni(gvars)
 
 # Attempts to update the config file
 def tryDumpConfig(gvars):
@@ -191,15 +148,27 @@ def calculateEssentials(gvars):
     return gvars
 
 # Finds the correct save path for config files, based on OS
-def defineSavePath(gvars):
+def defineSavePath(home):
     
     platformConfs = {
         "linux": "/.config",
         "darwin": "/.config"
     }
     if sys.platform.startswith("win"):
-        savePath = environ["APPDATA"]
+        savePath = environ["APPDATA"] + "\\oscr"
     else:
-        savePath = gvars.home + platformConfs[sys.platform]
+        savePath = home + platformConfs[sys.platform] + "/oscr"
     
     return savePath
+
+def exitWithLog(gvars, message):
+    from .log import doLog, updateLog
+    doLog(message, gvars)
+    if not updateLog("Exiting...", gvars):
+        print("Exiting...")
+    sys.exit(0)
+
+def writeToFile(gvars, content, file):
+    for line in content:     
+        file.write(line+"\n")
+    return True
