@@ -26,7 +26,7 @@ from os.path import isfile
 from .gvars import version
 from .log import doLog, updateLog
 from .comment import removeNonAlpha, remover
-from .ini import extractIniDetails, getCredentials
+from .ini import createIni, extractIniDetails, getCredentials
 from .misc import exitWithLog, writeToFile
 
 """
@@ -56,14 +56,13 @@ def oscr(gvars):
     # Catch for invalid ini, will create a new one then restart the program;
     # the restart is required due to current PRAW limitations. :'(
     except (configparser.NoSectionError, praw.exceptions.MissingRequiredAttributeException, KeyError):
-        if isfile(gvars.home+"/.config/praw.ini"):
+        if isfile(gvars.savePath+"/praw.ini"):
             iniDetails = extractIniDetails(gvars)
             if iniDetails is None: pass
-            else: writeToFile(gvars, iniDetails, open(gvars.home+"/.config/oscr/praw.ini", "w+"))
-            exitWithLog(gvars, "praw.ini successfully created, program restart required for this to take effect.")
+            else:
+                writeToFile(gvars, iniDetails, open(gvars.savePath+"/oscr/praw.ini", "w+"))
+                exitWithLog(gvars, "praw.ini successfully created, program restart required for this to take effect.")
 
-        from .misc import createIni
-        
         if createIni(gvars): exitWithLog(gvars, "praw.ini successfully created, program restart required for this to take effect.")
         else: exitWithLog(gvars, "Failed to create praw.ini file, something went wrong.")
     
