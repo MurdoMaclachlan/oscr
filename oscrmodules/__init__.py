@@ -19,16 +19,22 @@ from .gvars import version
 
 # ini handling
 from .ini import createIni
+from .ini import extractIniDetails
 from .ini import getCredentials
+from .ini import oscrOnly
 from .ini import reformatIni
+from .ini import stripOSCR
 
 # miscellaneous functions
 from .misc import calculateEssentials
 from .misc import defineSavePath
 from .misc import dumpConfig
+from .misc import exitWithLog
+from .misc import filterArray
 from .misc import getTime
 from .misc import getConfig
 from .misc import tryDumpConfig
+from .misc import writeToFile
 
 # log handling functions functions
 from .log import attemptLog
