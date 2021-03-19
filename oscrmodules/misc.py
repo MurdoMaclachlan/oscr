@@ -46,28 +46,10 @@ def getTime(timeToFind):
     the creation, retrieval and management of these files.
 """
 
-# Creates praw.ini file, if it is missing
-def createIni(gvars):
-    
-    from .log import doLog
-    
-    doLog("praw.ini missing, incomplete or incorrect. It will need to be created.", gvars)
-    iniVars = {
-        "client_id": input("Please input your client id:  "),
-        "client_secret": input("Please input your client secret:  "),
-        "username": gvars.config["user"], # Since createIni is never called before the config is initialised, this is safe to draw from
-        "password": input("Please input your Reddit password:  ")
-    }
-    with open(gvars.savePath+"/praw.ini", "a+") as file:
-        file.write("[oscr]\n")
-        for i in iniVars:
-            file.write(i+"="+iniVars[i]+"\n")
-    return True
-
 # Write to config.json
 def dumpConfig(outConfig, gvars):
     
-    with open(gvars.savePath+ "/config.json", "w") as outFile:
+    with open(gvars.savePath+"/oscr/config.json", "w") as outFile:
         outFile.write(json.dumps(outConfig, indent=4, sort_keys=True))
     return True
 
@@ -77,7 +59,7 @@ def getConfig(gvars):
     from .log import doLog    
 
     try:
-        with open(gvars.savePath + "/config.json") as configFile:
+        with open(gvars.savePath+"/oscr/config.json") as configFile:
             try:
                 fromConfig = json.load(configFile)
             
@@ -150,16 +132,8 @@ def calculateEssentials(gvars):
 # Finds the correct save path for config files, based on OS
 def defineSavePath(home):
     
-    platformConfs = {
-        "linux": "/.config",
-        "darwin": "/.config"
-    }
-    if sys.platform.startswith("win"):
-        savePath = environ["APPDATA"] + "\\oscr"
-    else:
-        savePath = home + platformConfs[sys.platform] + "/oscr"
-    
-    return savePath
+    if sys.platform.startswith("win"): return home + environ["APPDATA"]
+    else: return home + "/.config"
 
 def exitWithLog(gvars, message):
     from .log import doLog, updateLog
@@ -167,6 +141,12 @@ def exitWithLog(gvars, message):
     if not updateLog("Exiting...", gvars):
         print("Exiting...")
     sys.exit(0)
+
+def filterArray(array, elements):
+    start = array.index(elements[0])
+    end = array.index(elements[len(elements)-1])
+    del array[start:end]
+    return array
 
 def writeToFile(gvars, content, file):
     for line in content:     
