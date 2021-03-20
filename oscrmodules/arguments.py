@@ -37,7 +37,7 @@ def checkArgs(gvars):
         "--show-config": showConfig, # priority 4
         "-s": showConfig,
         "--format-old": formatOld, # priority 5
-        "-F": formatCDR,
+        "-F": formatOld,
         "--reset-config": resetConfig, # priority 6
         "-R": resetConfig,
         "--settings": settings, # priority 7
