@@ -22,8 +22,9 @@
 
 import sys
 import json
+from .ini import createIni
 from .log import doLog, updateLog
-from .misc import createIni, tryDumpConfig
+from .misc import tryDumpConfig
 
 # Main settings menu
 # If-tree the first, but not the last
