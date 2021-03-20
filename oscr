@@ -22,14 +22,14 @@ from oscrmodules.gvars import initialiseGlobals, version
 from oscrmodules.misc import getConfig
 from oscrmodules.arguments import checkArgs
 
-gvars = checkArgs(getConfig(initialiseGlobals(version)))
-
 print(
       "Copyright (C) 2020-present, Murdo B. Maclachlan\n"
       "This program comes with ABSOLUTELY NO WARRANTY.\n"
       "This is free software, and you are welcome to redistribute it\n"
       "under certain conditions; see LICENCE in dist-info for conditions."
 )
+
+gvars = checkArgs(getConfig(initialiseGlobals(version)))
 
 from oscrmodules.main import oscr
 
