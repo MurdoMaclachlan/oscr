@@ -18,7 +18,7 @@
 """
 
 from time import time
-from .log import doLog 
+from .log import doLog
 
 """
     This module handles methods related to working with

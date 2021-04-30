@@ -87,12 +87,16 @@ def oscr(gvars):
             
             # Checks all the user's comments, deleting them if they're past the cutoff.
             for comment in commentList:
-                if gvars.config["useRegex"]: 
-                    if sum([True for pattern in gvars.config["regexBlacklist"] if re.match(pattern, (comment.body.lower(), comment.body)[gvars.config["caseSensitive"]])]) > 0 and str(comment.subreddit).lower() in gvars.config["subredditList"]:
-                        deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor, gvars)
-                else:
-                    if (removeNonAlpha(comment.body.lower()), comment.body)[gvars.config["caseSensitive"]] in gvars.config["blacklist"] and str(comment.subreddit).lower() in gvars.config["subredditList"]:
-                        deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor, gvars)
+                try:
+                    if str(comment.subreddit).lower() in gvars.config["subredditList"] and comment.parent().author.name in gvars.config["userList"]:
+                        if gvars.config["useRegex"]: 
+                            if sum([True for pattern in gvars.config["regexBlacklist"] if re.match(pattern, (comment.body.lower(), comment.body)[gvars.config["caseSensitive"]])]) > 0:
+                                deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor, gvars)
+                        else:
+                            if (removeNonAlpha(comment.body.lower()), comment.body)[gvars.config["caseSensitive"]] in gvars.config["blacklist"]:
+                                deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor, gvars)
+                except AttributeError as e:
+                    doLog(f"Handled error on iteration {counted}: {e} | Comment at {comment.permalink}", gvars)
                 counted += 1
                 
                 progress()

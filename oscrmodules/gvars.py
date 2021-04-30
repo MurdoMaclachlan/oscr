@@ -47,18 +47,21 @@ defaultConfig = {
         "^unclaim(?!(.|\n)*treasure[\s-]*hunt)"
     ],
     "reportTotals": True,
+    "subredditList": [
+        "transcribersofreddit"
+    ],
     "unit": [
         "minute",
         "minutes",
         60
     ],
     "useRegex": False,
-    "subredditList": [
+    "userList": [
         "transcribersofreddit"
     ],
     "wait": 10
 }
-version = "2.0.0-dev17-20210320"
+version = "2.0.0-dev18-20210430"
 
 class Globals():
     def __init__(self, version):
