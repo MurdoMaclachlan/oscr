@@ -90,15 +90,17 @@ def editConfig(gvars):
         "\n15. Wait unit"
         "\n16. Use regex"
         "\n17. User"
-        "\n18. Wait amount"
-        "\n19. Return to main settings menu"
+        "\n18. Add to userList"
+        "\n19. Remove from userList"
+        "\n20. Wait amount"
+        "\n21. Return to main settings menu"
     )
-    results = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19"]
+    results = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"]
     resultNames = list(gvars.config.keys())
     choice = validateChoice(results)
 
     # Returns to main settings menu
-    if choice == "19":
+    if choice == "21":
         return True      
     else:
         keys = {
@@ -120,12 +122,14 @@ def editConfig(gvars):
             "16":"12",
             "17":"13",
             "18":"14",
+            "19":"14",
+            "20":"15",
         }
     
     key = resultNames[int(keys[choice])]
     
     # Adds/removes from blacklist
-    if choice in ["1", "2", "10", "11", "12", "13"]:  
+    if choice in ["1", "2", "10", "11", "12", "13", "14", "18", "19"]:  
   
         if choice in ["1", "10", "12"]:
             value = input(f"\nPlease enter the phrase to add to the {key}\n>> ")
@@ -145,7 +149,7 @@ def editConfig(gvars):
     else:
 
         # All edits that require one integer value.        
-        if choice in ["4", "5", "6", "17"]:
+        if choice in ["4", "5", "6", "20"]:
             while True:
                 value = input(f"\nEditing {key}\nPlease enter an integer value\n>> ")
                 if value == "-e":
@@ -157,7 +161,7 @@ def editConfig(gvars):
                     print(f"{e} - Not an integer.")
 
         # All edits that require boolean values.
-        elif choice in ["3", "7", "9", "15"]:
+        elif choice in ["3", "7", "9", "16"]:
             while True:
                 value = input(f"\nEditing {key}\nPlease enter a boolean value\n>> ")
                 if value == "-e":
@@ -169,14 +173,14 @@ def editConfig(gvars):
                     print(f"{e} - Not a boolean.")
 
         # All edits that require one string value.
-        elif choice in ["8", "16"]:
+        elif choice in ["8", "17"]:
             value = input(f"\nEditing {key}\nPlease enter the new value\n>> ")
             if value == "-e":
                 return True
             gvars.config[key] = value
             
         # Replaces waitUnit
-        elif choice == "14":
+        elif choice == "15":
             print(f"Editing {key}")
             newUnit = [
                 input("Please enter the singular noun for the new unit. \n>> "),
