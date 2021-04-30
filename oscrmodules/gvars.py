@@ -47,13 +47,16 @@ defaultConfig = {
         "^unclaim(?!(.|\n)*treasure[\s-]*hunt)"
     ],
     "reportTotals": True,
+    "subredditList": [
+        "transcribersofreddit"
+    ],
     "unit": [
         "minute",
         "minutes",
         60
     ],
     "useRegex": False,
-    "subredditList": [
+    "userList": [
         "transcribersofreddit"
     ],
     "wait": 10
