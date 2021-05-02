@@ -26,9 +26,8 @@ from .log import doLog
 """
 
 def removeNonAlpha(comment):
-    charArray = list(comment)
     newArray = []
-    for i in charArray:
+    for i in list(comment):
         if i.isalpha():
             newArray.append(i)
     return ''.join(newArray)
