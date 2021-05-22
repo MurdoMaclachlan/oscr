@@ -73,8 +73,8 @@ def checkArgs(gvars):
             closing = True
     
     # Checks through all the lists to work out what to do with each arg
-    for argument in arguments:
-        if argument in sys.argv:
+    for argument in sys.argv[1:]:
+        if argument in arguments:
             if argument in passGvars and not closing:
                 gvars = arguments[argument](gvars)
             elif argument in configChanges and not closing:
@@ -83,6 +83,8 @@ def checkArgs(gvars):
                 global config
                 config = gvars.config
                 arguments[argument]()
+        else:
+            print(f"WARNING: Unknown argument '{argument}' passed - ignoring.")
     
     if closing:
         sys.exit(0)   
