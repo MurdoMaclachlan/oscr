@@ -106,7 +106,7 @@ You can edit the config.json and praw.ini files from within OSCR by running `osc
 
 ## Using the latest testing version
 
-To use the latest testing version, download either the 1.x branch files (0.x is deprecated), extract the archive you have downloaded, and use `pip3 install .` after navigating into the directory the files were extracted to.
+To use the latest testing version, download the 2.x branch files (0.x is deprecated), extract the archive you have downloaded, and use `pip3 install .` after navigating into the directory the files were extracted to.
 
 ## Additional Help and FAQ
 
