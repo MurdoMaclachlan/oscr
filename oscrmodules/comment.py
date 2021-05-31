@@ -25,11 +25,21 @@ from .log import doLog
     the comments retrieved from Reddit.
 """
 
+def checkArray(array, value):
+    
+    # The value passes either if it is in the array or if the array is empty
+    if len(array) < 1: return True
+    elif value in array: return True
+    else: return False
+
 def removeNonAlpha(comment):
+    
+    # Creates new array that includes only the alpha characters
     newArray = []
     for i in list(comment):
         if i.isalpha():
             newArray.append(i)
+
     return ''.join(newArray)
 
 def remover(comment, cutoff, deleted, waitingFor, gvars):
