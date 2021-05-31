@@ -15,6 +15,12 @@
 
 **WARNING: use of this bot can cause the ToR-Stats Discord bot to freeze, if you have the bad luck to delete a comment while it is being processed. This has happened to at least two users (including myself).**
 
+---
+
+The documentation for this project is being moved to Read the Docs. Find it [here](https://oscr.readthedocs.io/en/latest/). This README will soon be condensed.
+
+---
+
 More lovingly known as Oscar, this program removes blacklisted comments after a period of time. It is designed with r/TranscribersOfReddit transcribers in mind; specifically those who are tired of these comments clogging up their profiles, thus the contents of the default blacklist.
 
 If set to recur, this program should delete new blacklisted comments periodically as they move past the cutoff time.
