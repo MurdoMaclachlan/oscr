@@ -18,14 +18,13 @@
 """
 
 import praw
-import re
 import configparser
 from time import sleep
 from alive_progress import alive_bar as aliveBar
 from os.path import isfile
 from .gvars import version
 from .log import doLog, updateLog
-from .comment import removeNonAlpha, remover
+from .comment import checkArray, removeNonAlpha, remover
 from .ini import createIni, extractIniDetails, getCredentials
 from .misc import exitWithLog, writeToFile
 
@@ -66,6 +65,9 @@ def oscr(gvars):
         if createIni(gvars): exitWithLog(gvars, "praw.ini successfully created, program restart required for this to take effect.")
         else: exitWithLog(gvars, "Failed to create praw.ini file, something went wrong.")
     
+    # Only import regex functions if regexes are being used
+    if gvars.config["useRegex"]: import re; from .misc import checkRegex
+    
     # Fetches statistics
     if gvars.config["reportTotals"]:
         from .statistics import fetch, update
@@ -88,13 +90,20 @@ def oscr(gvars):
             # Checks all the user's comments, deleting them if they're past the cutoff.
             for comment in commentList:
                 try:
-                    if str(comment.subreddit).lower() in gvars.config["subredditList"] and comment.parent().author.name in gvars.config["userList"]:
-                        if gvars.config["useRegex"]: 
-                            if sum([True for pattern in gvars.config["regexBlacklist"] if re.match(pattern, (comment.body.lower(), comment.body)[gvars.config["caseSensitive"]])]) > 0:
+                    
+                    # Regex path
+                    if gvars.config["useRegex"]:
+                        if checkRegex(gvars, re, comment):
+                            if checkArray(gvars.config["subredditList"], str(comment.subreddit).lower()) and checkArray(gvars.config["userList"], comment.parent().author.name):
                                 deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor, gvars)
-                        else:
-                            if (removeNonAlpha(comment.body.lower()), comment.body)[gvars.config["caseSensitive"]] in gvars.config["blacklist"]:
+                    
+                    # Blacklist path
+                    else:
+                        if removeNonAlpha((comment.body.lower(), comment.body)[gvars.config["caseSensitive"]]) in gvars.config["blacklist"]:
+                            if checkArray(gvars.config["subredditList"], str(comment.subreddit).lower()) and checkArray(gvars.config["userList"], comment.parent().author.name):
                                 deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor, gvars)
+                
+                # Result of a comment being in reply to a deleted/removed submission
                 except AttributeError as e:
                     doLog(f"Handled error on iteration {counted}: {e} | Comment at {comment.permalink}", gvars)
                 counted += 1
@@ -106,10 +115,10 @@ def oscr(gvars):
         # Notifies if the end of Reddit's listing is reached (i.e. no new comments due to API limitations)
         try:
             if counted < gvars.config["limit"]:
-                doLog(f"OSCR counted less comments than your limit of {gvars.config['limit']}. You may have deleted all available elligible comments, or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.", gvars)
+                doLog(f"WARNING: OSCR counted less comments than your limit of {gvars.config['limit']}. You may have deleted all available elligible comments, or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.", gvars)
         except TypeError:
             if counted < 1000:
-                doLog("OSCR counted less comments than your limit of 1000. You may have deleted all available elligible comments, or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.", gvars)
+                doLog("WARNING: OSCR counted less comments than your limit of 1000. You may have deleted all available elligible comments, or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.", gvars)
     
         # Updates statistics
         if gvars.config["reportTotals"]:
