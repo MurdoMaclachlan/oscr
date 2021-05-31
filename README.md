@@ -96,10 +96,10 @@ os | String | Your operating system. Can be left blank.
 printLogs | Boolean | Determines whether or not OSCR will print log output to the console. Set to true by default.
 recur | Boolean | Determines whether the program will run through only once (if False), or continue re-checking your profile in regular intervals until you exit (if True). It is set to True by default. The length of time between program iterations is determined by the **wait** variable.
 regexBlacklist | Array | An alternative blacklist intended for use with regexes. Users not familiar with regexes are advised to ignore this list, as regexes are turned off by default and can cause harm to your profile if used without care.
+subredditList | Array | The list of subreddits that OSCR cares about. Comments that are int he blacklist or match your set regexes, but are on subreddits *not* in this list, will not be deleted.
 unit | Array | A list containing all the variations on the unit of time used for the **wait** variable; singular word, plural word, and integer equivalent converted into seconds. The default unit is minutes.
 user | String | Your Reddit username.
 useRegex | Boolean | Determines whether the program should use the blacklist key, only deleting comments that exactly match it, or the regexBlacklist key, which allows for more flexible and powerful control over what the programs delete. It is set to False by default, and users not familiar with regexes should leave it this way, as getting your regex wrong can result in OSCR deleting a lot more than you intend.
-subredditList | Array | The list of subreddits that OSCR cares about. Comments that are int he blacklist or match your set regexes, but are on subreddits *not* in this list, will not be deleted.
 wait | Integer | The number of units of time (unit being determined by the **unit** variable) OSCr will wait before re-checking your comments. It is set to 10 by default.
 
 You can edit the config.json and praw.ini files from within OSCR by running `oscr --settings`.
