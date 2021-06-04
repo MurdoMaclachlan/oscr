@@ -23,7 +23,7 @@
 import sys
 import json
 from .ini import createIni
-from .log import doLog, updateLog
+from .log import doLog, updateLog, warn
 from .misc import tryDumpConfig
 
 # Main settings menu
@@ -50,7 +50,7 @@ def settingsMain(gvars):
             editConfig(gvars)
         elif choice == "2":
             doLog("Opening praw.ini edit menu.", gvars)
-            doLog("WARNING: edits to praw.ini will require a restart to take effect.", gvars)
+            doLog(warn("WARNING: edits to praw.ini will require a restart to take effect.", gvars), gvars)
             editPraw(gvars)
         elif choice == "3":
             howToUse()
