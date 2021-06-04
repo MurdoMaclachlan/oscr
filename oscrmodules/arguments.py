@@ -20,7 +20,7 @@
 import sys
 from os import remove, rename
 from .gvars import defaultConfig, version
-from .log import doLog
+from .log import doLog, warn
 from .ini import reformatIni
 from .misc import calculateEssentials
 
@@ -68,7 +68,7 @@ def checkArgs(gvars):
     # not to process non-closing args and to kill the program after
     # it's done.
     closing = False
-    for argument in list(arguments.keys())[0:8]:
+    for argument in list(arguments.keys())[:8]:
         if argument in sys.argv:
             closing = True
     
@@ -80,7 +80,7 @@ def checkArgs(gvars):
             elif argument in configChanges and not closing:
                 arguments[argument](*configChanges[argument])
             elif (argument in passGvars or argument in configChanges) and closing:
-                print(f"WARNING: '{argument}' was passed but was accompanied by a closing argument and will not be processed.")
+                print(warn(f"WARNING: '{argument}' was passed but was accompanied by a closing argument and will not be processed.", gvars))
             else:
                 global config
                 config = gvars.config
