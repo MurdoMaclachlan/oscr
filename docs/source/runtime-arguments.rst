@@ -49,4 +49,8 @@ The lowest priority is 8; these are all arguments that affect the main program a
 
 An example command to run OSCR would be as follows:
 
-``oscr --no-recur --print-logs --report-totals``, or in short form, ``oscr -n -p -r``
+``oscr --no-recur --print-logs --report-totals``,
+
+or in short form,
+
+``oscr -n -p -r``.
