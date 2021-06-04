@@ -72,7 +72,7 @@ class Globals():
         self.log = []
         self.savePath = defineSavePath(self.home)
         self.version = version
-        self.printc = Colours()
+        self.ConsoleColours = Colours()
 
 class Colours():
     def __init__(self):
