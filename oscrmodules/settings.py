@@ -42,8 +42,7 @@ def settingsMain(gvars):
             "\n4. Continue to program"
             "\n5. Exit"
         )
-        results = ["1", "2", "3", "4", "5"]
-        choice = validateChoice(results)
+        choice = validateChoice(["1", "2", "3", "4", "5"])
 
         # Determines which result happens
         if choice == "1":
@@ -88,16 +87,15 @@ def editConfig(gvars):
         "\n13. Add to subredditList"
         "\n14. Remove from subredditList"
         "\n15. Wait unit"
-        "\n16. Use regex"
-        "\n17. User"
+        "\n16. User"
+        "\n17. Use regex"
         "\n18. Add to userList"
         "\n19. Remove from userList"
         "\n20. Wait amount"
         "\n21. Return to main settings menu"
     )
-    results = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"]
     resultNames = list(gvars.config.keys())
-    choice = validateChoice(results)
+    choice = validateChoice(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"])
 
     # Returns to main settings menu
     if choice == "21":
@@ -161,7 +159,7 @@ def editConfig(gvars):
                     print(f"{e} - Not an integer.")
 
         # All edits that require boolean values.
-        elif choice in ["3", "7", "9", "16"]:
+        elif choice in ["3", "7", "9", "17"]:
             while True:
                 value = input(f"\nEditing {key}\nPlease enter a boolean value\n>> ")
                 if value == "-e":
@@ -173,7 +171,7 @@ def editConfig(gvars):
                     print(f"{e} - Not a boolean.")
 
         # All edits that require one string value.
-        elif choice in ["8", "17"]:
+        elif choice in ["8", "16"]:
             value = input(f"\nEditing {key}\nPlease enter the new value\n>> ")
             if value == "-e":
                 return True
@@ -225,7 +223,7 @@ def editPraw(gvars):
     try:
         
         # Retrieve information from praw.ini
-        with open(gvars.home+"/.config/praw.ini", "r+") as file:
+        with open(gvars.home+"/.config/oscr/praw.ini", "r+") as file:
             content = file.read().splitlines()
             success = False
             allowChanges = False
