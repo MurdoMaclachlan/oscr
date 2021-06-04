@@ -52,6 +52,9 @@ The following is an explanation of what each configuration option does:
    * - blacklist
      - Array
      - The list of comments OSCR will delete. It is not case sensitive, so comments of varying capitalisation will all be deleted, however they will only be deleted if the entire content of the comment matches one of the entries in the blacklist.
+   * - caseSensitive
+     - Boolean
+     - When using the blacklist, this value determines whether or not the program is case sensitive in its search for comments. Not applicable when using regexes.
    * - cutoff
      - Integer
      - The number of units of time old a comment must be before it will be deleted. This is set to 1 by default. I would recommend a minimum cutoff of 15 minutes, in case the u/transcribersofreddit bot has lag and doesn't register your comment in time.
@@ -85,12 +88,12 @@ The following is an explanation of what each configuration option does:
    * - user
      - String
      - Your Reddit username.
-   * - userList
-     - Array
-     - The list of users that OSCR cares about. Comments that are in the blacklist or match your set regexes but are not in reply to one of these users will be ignored. If the list is empty, OSCR will check comments regardless of whom they are in reply to.
    * - useRegex
      - Boolean
      - Determines whether the program should use the blacklist key, only deleting comments that exactly match it, or the regexBlacklist key, which allows for more flexible and powerful control over what the programs delete. It is set to False by default, and users not familiar with regexes should leave it this way, as getting your regex wrong can result in OSCR deleting a lot more than you intend.
+   * - userList
+     - Array
+     - The list of users that OSCR cares about. Comments that are in the blacklist or match your set regexes but are not in reply to one of these users will be ignored. If the list is empty, OSCR will check comments regardless of whom they are in reply to.
    * - wait
      - Integer
      - The number of units of time (unit being determined by the unit variable) OSCr will wait before re-checking your comments. It is set to 10 by default.
