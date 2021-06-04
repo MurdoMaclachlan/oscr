@@ -20,7 +20,7 @@
 import sys
 from os import remove, rename
 from .gvars import defaultConfig, version
-from .log import doLog
+from .log import doLog, warn
 from .ini import reformatIni
 from .misc import calculateEssentials
 
@@ -68,7 +68,7 @@ def checkArgs(gvars):
     # not to process non-closing args and to kill the program after
     # it's done.
     closing = False
-    for argument in list(arguments.keys())[0:8]:
+    for argument in list(arguments.keys())[:8]:
         if argument in sys.argv:
             closing = True
     
@@ -80,7 +80,7 @@ def checkArgs(gvars):
             elif argument in configChanges and not closing:
                 arguments[argument](*configChanges[argument])
             elif (argument in passGvars or argument in configChanges) and closing:
-                print(f"WARNING: '{argument}' was passed but was accompanied by a closing argument and will not be processed.")
+                print(warn(f"WARNING: '{argument}' was passed but was accompanied by a closing argument and will not be processed.", gvars))
             else:
                 global config
                 config = gvars.config
@@ -88,7 +88,7 @@ def checkArgs(gvars):
     
     for argument in sys.argv[1:]:
         if argument not in arguments:
-            print(f"WARNING: Unknown argument '{argument}' passed - ignoring.")
+            print(warn(f"WARNING: Unknown argument '{argument}' passed - ignoring.", gvars))
     
     if closing:
         sys.exit(0)   
@@ -135,7 +135,7 @@ def helpMenu():
 
 def printCredits():
     print(
-        "\nCredits (alphabetical):\n\n"
+        "Credits (alphabetical):\n\n"
         "/u/--B_L_A_N_K--\n",
         "GitHub: https://github.com/BLANK-TH/ \n",
         "Reddit: https://www.reddit.com/user/--B_L_A_N_K--/ \n",
@@ -178,12 +178,12 @@ def settings(gvars):
     return gvars
 
 def showConfig():
-    print("\nThe config is as follows:\n")
+    print("The config is as follows:\n")
     for i in config:
         print(f"{i}: {config[i]}")
 
 def showVersion():
-    print(f"\nThe installed version of OSCR is: {version}")
+    print(f"The installed version of OSCR is: {version}")
 
 def tempChangeConfig(gvars, key, val):
     gvars.config[key] = val

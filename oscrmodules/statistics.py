@@ -17,7 +17,7 @@
     Contact me at murdo@maclachlans.org.uk
 """
 
-from .log import doLog
+from .log import doLog, warn
 
 """
     This module contains file handling for the statistics,
@@ -106,6 +106,6 @@ def update(statistic, value, gvars):
         return True
     
     # If something goes very wrong and the stat can't be updated for some reason
-    doLog(f"Statistics error: failed to update {statistic}, will no longer attempt to update this statistic for this instance.")
+    doLog(warn(f"WARNING: failed to update {statistic}, will no longer attempt to update this statistic for this instance.", gvars), gvars)
     gvars.failedStats.append(statistic)
     return False
