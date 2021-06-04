@@ -16,9 +16,10 @@ setup(
     url="https://github.com/MurdoMaclachlan/oscr",
     packages=find_packages(),
     install_requires=[
+        "alive_progress>=1.6.1",
+        "colored",
         "configparser",
         "praw>=7.1.2",
-        "alive_progress>=1.6.1"
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
