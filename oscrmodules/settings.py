@@ -129,7 +129,7 @@ def editConfig(gvars):
     # Adds/removes from blacklist
     if choice in ["1", "2", "10", "11", "12", "13", "14", "18", "19"]:  
   
-        if choice in ["1", "10", "12"]:
+        if choice in ["1", "10", "12", "18"]:
             value = input(f"\nPlease enter the phrase to add to the {key}\n>> ")
             if value == "-e":
                 return True
