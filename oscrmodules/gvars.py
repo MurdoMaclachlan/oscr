@@ -19,6 +19,7 @@
 
 from os.path import expanduser
 from sys import platform
+from colored import fg, attr
 from .misc import defineSavePath
 global defaultConfig, version
 
@@ -71,6 +72,12 @@ class Globals():
         self.log = []
         self.savePath = defineSavePath(self.home)
         self.version = version
+        self.printc = Colours()
+
+class Colours():
+    def __init__(self):
+        self.warning = fg(130)
+        self.reset = attr(0)
 
 def initialiseGlobals(version):
     gvars = Globals(version)
