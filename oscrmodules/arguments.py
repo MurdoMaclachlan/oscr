@@ -135,7 +135,7 @@ def helpMenu():
 
 def printCredits():
     print(
-        "\nCredits (alphabetical):\n\n"
+        "Credits (alphabetical):\n\n"
         "/u/--B_L_A_N_K--\n",
         "GitHub: https://github.com/BLANK-TH/ \n",
         "Reddit: https://www.reddit.com/user/--B_L_A_N_K--/ \n",
@@ -178,12 +178,12 @@ def settings(gvars):
     return gvars
 
 def showConfig():
-    print("\nThe config is as follows:\n")
+    print("The config is as follows:\n")
     for i in config:
         print(f"{i}: {config[i]}")
 
 def showVersion():
-    print(f"\nThe installed version of OSCR is: {version}")
+    print(f"The installed version of OSCR is: {version}")
 
 def tempChangeConfig(gvars, key, val):
     gvars.config[key] = val
