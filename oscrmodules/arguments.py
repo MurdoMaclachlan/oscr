@@ -88,7 +88,7 @@ def checkArgs(gvars):
     
     for argument in sys.argv[1:]:
         if argument not in arguments:
-            print(warn(f"WARNING: Unknown argument '{argument}' passed - ignoring."), gvars)
+            print(warn(f"WARNING: Unknown argument '{argument}' passed - ignoring.", gvars))
     
     if closing:
         sys.exit(0)   
