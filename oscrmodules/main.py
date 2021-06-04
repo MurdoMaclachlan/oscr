@@ -23,7 +23,7 @@ from time import sleep
 from alive_progress import alive_bar as aliveBar
 from os.path import isfile
 from .gvars import version
-from .log import doLog, updateLog
+from .log import doLog, updateLog, warn
 from .comment import checkArray, removeNonAlpha, remover
 from .ini import createIni, extractIniDetails, getCredentials
 from .misc import exitWithLog, writeToFile
@@ -43,7 +43,7 @@ from .misc import exitWithLog, writeToFile
 def oscr(gvars):
 
     doLog(f"Running OSCR version {version} with recur set to {gvars.config['recur']}.", gvars)
-    doLog("WARNING: log updates are OFF. Console log will not be saved for this instance.", gvars) if not gvars.config["logUpdates"] else None
+    doLog(warn("WARNING: log updates are OFF. Console log will not be saved for this instance.", gvars), gvars) if not gvars.config["logUpdates"] else None
     
     # Initialises Reddit() instance
     try:
@@ -105,7 +105,7 @@ def oscr(gvars):
                 
                 # Result of a comment being in reply to a deleted/removed submission
                 except AttributeError as e:
-                    doLog(f"Handled error on iteration {counted}: {e} | Comment at {comment.permalink}", gvars)
+                    doLog(warn(f"Handled error on iteration {counted}: {e} | Comment at {comment.permalink}", gvars), gvars)
                 counted += 1
                 
                 progress()
@@ -115,10 +115,10 @@ def oscr(gvars):
         # Notifies if the end of Reddit's listing is reached (i.e. no new comments due to API limitations)
         try:
             if counted < gvars.config["limit"]:
-                doLog(f"WARNING: OSCR counted less comments than your limit of {gvars.config['limit']}. You may have deleted all available elligible comments, or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.", gvars)
+                doLog(warn(f"WARNING: OSCR counted less comments than your limit of {gvars.config['limit']}. You may have deleted all available elligible comments, or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.", gvars), gvars)
         except TypeError:
             if counted < 1000:
-                doLog("WARNING: OSCR counted less comments than your limit of 1000. You may have deleted all available elligible comments, or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.", gvars)
+                doLog(warn("WARNING: OSCR counted less comments than your limit of 1000. You may have deleted all available elligible comments, or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.", gvars), gvars)
     
         # Updates statistics
         if gvars.config["reportTotals"]:
