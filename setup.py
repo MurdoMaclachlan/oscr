@@ -19,7 +19,7 @@ setup(
         "alive_progress>=1.6.1",
         "colored",
         "configparser",
-        "praw>=7.1.2",
+        "praw>=7.1.2"
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
