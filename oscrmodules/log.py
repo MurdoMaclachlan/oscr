@@ -80,6 +80,10 @@ def updateLog(message, gvars):
     
     return False
 
+# Colours warnings orange so that they stand out
+def warn(message, gvars):
+    return gvars.ConsoleColours.warning + message + gvars.ConsoleColours.reset
+
 # Writes the contents of the log array to the log.txt file
 def writeLog(gvars):
     
