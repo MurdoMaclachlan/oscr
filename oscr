@@ -18,7 +18,7 @@
     Contact me at murdo@maclachlans.org.uk
 """
 
-from oscrmodules.gvars import initialiseGlobals, VERSION
+from oscrmodules.globals import initialiseGlobals, VERSION
 from oscrmodules.misc import getConfig
 from oscrmodules.arguments import checkArgs
 
