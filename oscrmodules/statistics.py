@@ -37,7 +37,7 @@ def fetch(statistic, gvars):
     result = []
 
     try:    
-        with open(gvars.home+"/.oscr/data/stats.txt", "r") as file:
+        with open(gvars.HOME+"/.oscr/data/stats.txt", "r") as file:
             content = file.read().splitlines()
         
     # Default stat to 0 if file not found.
@@ -70,7 +70,7 @@ def update(statistic, value, gvars):
     newLine = f"{statistic}: {str(value)}"
 
     try:
-        with open(gvars.home+"/.oscr/data/stats.txt", "r") as file:
+        with open(gvars.HOME+"/.oscr/data/stats.txt", "r") as file:
             content = file.read().splitlines()
     
     # If stats.txt doesn't exist, create in.
@@ -78,7 +78,7 @@ def update(statistic, value, gvars):
         doLog(["No stats.txt found; creating."], gvars)
         content = None
 
-    with open(gvars.home+"/.oscr/data/stats.txt", "w") as file:
+    with open(gvars.HOME+"/.oscr/data/stats.txt", "w") as file:
         
         # If no stats found, add the stat to be updated and default other to 0.
         if content == None:
