@@ -10,12 +10,13 @@ from .arguments import showVersion
 from .arguments import tempChangeConfig
 
 # comments handling
+from .comment import checkArray
 from .comment import removeNonAlpha
 from .comment import remover
 
 # global variables
 from .gvars import initialiseGlobals
-from .gvars import version
+from .gvars import VERSION
 
 # ini handling
 from .ini import createIni
@@ -27,9 +28,9 @@ from .ini import stripOSCR
 
 # miscellaneous functions
 from .misc import calculateEssentials
+from .misc import checkRegex
 from .misc import defineSavePath
 from .misc import dumpConfig
-from .misc import exitWithLog
 from .misc import filterArray
 from .misc import getTime
 from .misc import getConfig
@@ -39,6 +40,7 @@ from .misc import writeToFile
 # log handling functions functions
 from .log import attemptLog
 from .log import doLog
+from .log import exitWithLog
 from .log import updateLog
 from .log import writeLog
 
