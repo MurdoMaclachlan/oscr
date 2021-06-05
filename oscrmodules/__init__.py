@@ -15,8 +15,8 @@ from .comment import removeNonAlpha
 from .comment import remover
 
 # global variables
-from .gvars import initialiseGlobals
-from .gvars import VERSION
+from .globals import initialiseGlobals
+from .globals import VERSION
 
 # ini handling
 from .ini import createIni

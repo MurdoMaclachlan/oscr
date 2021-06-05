@@ -18,7 +18,7 @@
     Contact me at murdo@maclachlans.org.uk
 """
 
-from oscrmodules.gvars import initialiseGlobals, VERSION
+from oscrmodules.globals import initialiseGlobals, VERSION
 from oscrmodules.misc import getConfig
 from oscrmodules.arguments import checkArgs
 
@@ -29,8 +29,8 @@ print(
       "under certain conditions; see LICENCE in dist-info for conditions."
 )
 
-gvars = checkArgs(getConfig(initialiseGlobals(VERSION)))
+Globals = checkArgs(getConfig(initialiseGlobals(VERSION)))
 
 from oscrmodules.main import oscr
 
-oscr(gvars)
+oscr(Globals)

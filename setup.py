@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-from oscrmodules.gvars import VERSION
+from oscrmodules.globals import VERSION
 
 def readme():
     return open('README.md', 'r').read()

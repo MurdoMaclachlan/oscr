@@ -42,14 +42,14 @@ def removeNonAlpha(comment):
 
     return ''.join(newArray)
 
-def remover(comment, cutoff, deleted, waitingFor, gvars):
+def remover(comment, cutoff, deleted, waitingFor, Globals):
     
     # Only delete comments older than the cutoff
     if time() - comment.created_utc > cutoff:
-        doLog([f"Obsolete '{comment.body}' found, deleting."], gvars)
+        doLog([f"Obsolete '{comment.body}' found, deleting."], Globals)
         comment.delete()
         deleted += 1
     else:
-        doLog([f"Waiting for '{comment.body}'."], gvars)
+        doLog([f"Waiting for '{comment.body}'."], Globals)
         waitingFor += 1
     return deleted, waitingFor

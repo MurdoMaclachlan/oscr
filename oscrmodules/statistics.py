@@ -27,22 +27,22 @@ from .log import doLog, warn
 """
 
 # Retrieve statistics from stats.txt
-def fetch(statistic, gvars):
+def fetch(statistic, Globals):
     
     def checkIfEmpty(array):
         if array == []:          
-            doLog([f"No stats for {statistic} found; returning 0."], gvars)
+            doLog([f"No stats for {statistic} found; returning 0."], Globals)
             return True
     
     result = []
 
     try:    
-        with open(gvars.HOME+"/.oscr/data/stats.txt", "r") as file:
+        with open(Globals.HOME+"/.oscr/data/stats.txt", "r") as file:
             content = file.read().splitlines()
         
     # Default stat to 0 if file not found.
     except FileNotFoundError:
-        doLog([f"No stats for {statistic} found; returning 0."], gvars)
+        doLog([f"No stats for {statistic} found; returning 0."], Globals)
         return 0
 
 
@@ -53,32 +53,32 @@ def fetch(statistic, gvars):
         
         # If the value for the statistic being fetched can be found, return it.
         if line.startswith(statistic):
-            doLog([f"Fetched {statistic} successfully."], gvars)
+            doLog([f"Fetched {statistic} successfully."], Globals)
             return int(line.split(" ")[1])
 
     # If only stat found is not the one being searched for, return 0.
     if checkIfEmpty(result): return 0
 
 # Updates statistics in stats.txt
-def update(statistic, value, gvars):
+def update(statistic, value, Globals):
 
     # Necessary check to avoid further errors if stat has previously failed to update
-    if statistic in gvars.failedStats:
-        doLog([f"Skipping update of following statistic: {statistic}"], gvars)
+    if statistic in Globals.failedStats:
+        doLog([f"Skipping update of following statistic: {statistic}"], Globals)
         return False
  
     newLine = f"{statistic}: {str(value)}"
 
     try:
-        with open(gvars.HOME+"/.oscr/data/stats.txt", "r") as file:
+        with open(Globals.HOME+"/.oscr/data/stats.txt", "r") as file:
             content = file.read().splitlines()
     
     # If stats.txt doesn't exist, create in.
     except FileNotFoundError:
-        doLog(["No stats.txt found; creating."], gvars)
+        doLog(["No stats.txt found; creating."], Globals)
         content = None
 
-    with open(gvars.HOME+"/.oscr/data/stats.txt", "w") as file:
+    with open(Globals.HOME+"/.oscr/data/stats.txt", "w") as file:
         
         # If no stats found, add the stat to be updated and default other to 0.
         if content == None:
@@ -86,7 +86,7 @@ def update(statistic, value, gvars):
                 file.write(newLine+"\ndeleted: 0")
             else:
                 file.write("counted: 0\n"+newLine)
-            doLog([f"Updated {statistic} successfully."], gvars)
+            doLog([f"Updated {statistic} successfully."], Globals)
             return True
 
         for line in content:
@@ -95,17 +95,17 @@ def update(statistic, value, gvars):
             if line.startswith(statistic):
                 content[content.index(line)] = newLine
                 file.write('\n'.join(content))
-                doLog([f"Updated {statistic} successfully."], gvars)
+                doLog([f"Updated {statistic} successfully."], Globals)
                 return True
             
         # If only stat found is not the one being searched for, add the required stat.
         content.append(newLine)
         file.seek(0)
         file.write('\n'.join(content))
-        doLog([f"Updated {statistic} successfully."], gvars)
+        doLog([f"Updated {statistic} successfully."], Globals)
         return True
     
     # If something goes very wrong and the stat can't be updated for some reason
-    doLog([warn(f"WARNING: failed to update {statistic}, will no longer attempt to update this statistic for this instance.", gvars)], gvars)
-    gvars.failedStats.append(statistic)
+    doLog([warn(f"WARNING: failed to update {statistic}, will no longer attempt to update this statistic for this instance.", Globals)], Globals)
+    Globals.failedStats.append(statistic)
     return False
