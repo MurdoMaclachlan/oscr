@@ -30,7 +30,7 @@ from .misc import writeToFile
 """
     Beneath is the main program. From here, all run-time flow
     of OSCR is controlled through the oscr() function, passed
-    gvars by the oscr top-level script run through the console
+    Globals by the oscr top-level script run through the console
     command.
     
     This function initiates after all arguments have been
@@ -39,107 +39,107 @@ from .misc import writeToFile
     ends.
 """
 
-def oscr(gvars):
+def oscr(Globals):
 
     doLog(
         [
-            f"Running OSCR version {gvars.VERSION} with recur set to {gvars.config['recur']}.",
-            warn("WARNING: Log updates are OFF. Console log will not be saved for this instance.", gvars) if not gvars.config["logUpdates"] else None
-        ], gvars
+            f"Running OSCR version {Globals.VERSION} with recur set to {Globals.config['recur']}.",
+            warn("WARNING: Log updates are OFF. Console log will not be saved for this instance.", Globals) if not Globals.config["logUpdates"] else None
+        ], Globals
     )
     
     # Initialises Reddit() instance
     try:
         reddit = praw.Reddit(
-            user_agent = gvars.config["os"] + ":oscr:v" + VERSION + " (by /u/MurdoMaclachlan)",
-            **getCredentials(gvars)
+            user_agent = Globals.config["os"] + ":oscr:v" + Globals.VERSION + " (by /u/MurdoMaclachlan)",
+            **getCredentials(Globals)
         )
     
     # Catch for invalid ini, will create a new one then restart the program;
     # the restart is required due to current PRAW limitations. :'(
     except (configparser.NoSectionError, praw.exceptions.MissingRequiredAttributeException, KeyError):
-        if isfile(gvars.SAVE_PATH+"/praw.ini"):
-            iniDetails = extractIniDetails(gvars)
+        if isfile(Globals.SAVE_PATH+"/praw.ini"):
+            iniDetails = extractIniDetails(Globals)
             if iniDetails is None: pass
             else:
-                writeToFile(gvars, iniDetails, open(gvars.SAVE_PATH+"/oscr/praw.ini", "w+"))
-                exitWithLog(["praw.ini successfully created, program restart required for this to take effect."], gvars)
+                writeToFile(Globals, iniDetails, open(Globals.SAVE_PATH+"/oscr/praw.ini", "w+"))
+                exitWithLog(["praw.ini successfully created, program restart required for this to take effect."], Globals)
 
-        exitWithLog(["praw.ini successfully created, program restart required for this to take effect."], gvars) if createIni(gvars) else exitWithLog([warn("WARNING: Failed to create praw.ini file, something went wrong.", gvars)], gvars)
+        exitWithLog(["praw.ini successfully created, program restart required for this to take effect."], Globals) if createIni(Globals) else exitWithLog([warn("WARNING: Failed to create praw.ini file, something went wrong.", Globals)], Globals)
     
     # Only import regex functions if regexes are being used
-    if gvars.config["useRegex"]: import re; from .misc import checkRegex
+    if Globals.config["useRegex"]: import re; from .misc import checkRegex
     
     # Fetches statistics
-    if gvars.config["reportTotals"]:
+    if Globals.config["reportTotals"]:
         from .statistics import fetch, update
-        totalCounted, totalDeleted = fetch("counted", gvars), fetch("deleted", gvars)
+        totalCounted, totalDeleted = fetch("counted", Globals), fetch("deleted", Globals)
     
     updateLog(
         [
             "Updating log...",
             "Log updated successfully."
-        ], gvars
-    ) if gvars.config["logUpdates"] else None
+        ], Globals
+    ) if Globals.config["logUpdates"] else None
     
     while True:
         deleted, counted, waitingFor = 0, 0, 0
         
         # Fetches the comment list from Reddit
-        doLog(["Retrieving comments..."], gvars)
-        commentList = reddit.redditor(gvars.config["user"]).comments.new(limit=gvars.config["limit"])
-        doLog(["Comments retrieved; checking..."], gvars)
+        doLog(["Retrieving comments..."], Globals)
+        commentList = reddit.redditor(Globals.config["user"]).comments.new(limit=Globals.config["limit"])
+        doLog(["Comments retrieved; checking..."], Globals)
         
         # Initialises the progress bar
-        with aliveBar(gvars.config["limit"], spinner='classic', bar='classic', enrich_print=False) as progress:
+        with aliveBar(Globals.config["limit"], spinner='classic', bar='classic', enrich_print=False) as progress:
             
             # Checks all the user's comments, deleting them if they're past the cutoff.
             for comment in commentList:
                 try:
                     
                     # Regex path
-                    if gvars.config["useRegex"]:
-                        if checkRegex(gvars, re, comment):
-                            if checkArray(gvars.config["subredditList"], str(comment.subreddit).lower()) and checkArray(gvars.config["userList"], comment.parent().author.name):
-                                deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor, gvars)
+                    if Globals.config["useRegex"]:
+                        if checkRegex(Globals, re, comment):
+                            if checkArray(Globals.config["subredditList"], str(comment.subreddit).lower()) and checkArray(Globals.config["userList"], comment.parent().author.name):
+                                deleted, waitingFor = remover(comment, Globals.config["cutoffSec"], deleted, waitingFor, Globals)
                     
                     # Blacklist path
                     else:
-                        if removeNonAlpha((comment.body.lower(), comment.body)[gvars.config["caseSensitive"]]) in gvars.config["blacklist"]:
-                            if checkArray(gvars.config["subredditList"], str(comment.subreddit).lower()) and checkArray(gvars.config["userList"], comment.parent().author.name):
-                                deleted, waitingFor = remover(comment, gvars.config["cutoffSec"], deleted, waitingFor, gvars)
+                        if removeNonAlpha((comment.body.lower(), comment.body)[Globals.config["caseSensitive"]]) in Globals.config["blacklist"]:
+                            if checkArray(Globals.config["subredditList"], str(comment.subreddit).lower()) and checkArray(Globals.config["userList"], comment.parent().author.name):
+                                deleted, waitingFor = remover(comment, Globals.config["cutoffSec"], deleted, waitingFor, Globals)
                 
                 # Result of a comment being in reply to a deleted/removed submission
                 except AttributeError as e:
-                    doLog([warn(f"Handled error on iteration {counted}: {e} | Comment at {comment.permalink}", gvars)], gvars)
+                    doLog([warn(f"Handled error on iteration {counted}: {e} | Comment at {comment.permalink}", Globals)], Globals)
                 counted += 1
                 
                 progress()
     
-        doLog([f"Successfully checked all {counted} available comments."], gvars)
+        doLog([f"Successfully checked all {counted} available comments."], Globals)
     
         # Notifies if the end of Reddit's listing is reached (i.e. no new comments due to API limitations)
         try:
-            if counted < gvars.config["limit"]:
+            if counted < Globals.config["limit"]:
                 doLog([warn(
-                    f"WARNING: OSCR counted less comments than your limit of {gvars.config['limit']}. You may have deleted all available elligible comments,",
+                    f"WARNING: OSCR counted less comments than your limit of {Globals.config['limit']}. You may have deleted all available elligible comments,",
                     "or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.",
-                    gvars
-                )], gvars)
+                    Globals
+                )], Globals)
         except TypeError:
             if counted < 1000:
                 doLog([warn(
                     "WARNING: OSCR counted less comments than your limit of 1000. You may have deleted all available elligible comments,",
                     "or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.",
-                    gvars
-                )], gvars)
+                    Globals
+                )], Globals)
     
         # Updates statistics
-        if gvars.config["reportTotals"]:
+        if Globals.config["reportTotals"]:
             totalCounted += counted
-            update("counted", totalCounted, gvars)
+            update("counted", totalCounted, Globals)
             totalDeleted += deleted
-            update("deleted", totalDeleted, gvars)
+            update("deleted", totalDeleted, Globals)
         
         # Gives info about this iteration; how many comments were counted, deleted, still waiting for.
         doLog(
@@ -147,23 +147,23 @@ def oscr(gvars):
                 f"Counted this cycle: {str(counted)}",
                 f"Deleted this cycle: {str(deleted)}",
                 f"Waiting for: {str(waitingFor)}"
-            ], gvars
+            ], Globals
         )
-        if gvars.config["reportTotals"]:
+        if Globals.config["reportTotals"]:
             doLog(
                 [
                     f"Total Counted: {str(totalCounted)}",
                     f"Total Deleted: {str(totalDeleted)}"
-                ], gvars
+                ], Globals
             )
     
         # If recur is set to false, updates log and kills the program.
-        if not gvars.config["recur"]:
+        if not Globals.config["recur"]:
             exitWithLog(
                 [
                     "Updating log...",
                     "Log updated successfully."
-                ], gvars
+                ], Globals
             )
     
         # Updates log, prepares for next cycle.
@@ -171,8 +171,8 @@ def oscr(gvars):
             [
                 "Updating log...",
                 "Log updated successfully.",
-                f"Waiting {str(gvars.config['wait'])} {gvars.config['unit'][0] if gvars.config['wait'] == 1 else gvars.config['unit'][1]} before checking again..."
-            ], gvars
+                f"Waiting {str(Globals.config['wait'])} {Globals.config['unit'][0] if Globals.config['wait'] == 1 else Globals.config['unit'][1]} before checking again..."
+            ], Globals
         )
 
-        sleep(gvars.config["waitTime"])
+        sleep(Globals.config["waitTime"])
