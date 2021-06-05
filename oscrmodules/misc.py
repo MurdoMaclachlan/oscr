@@ -47,58 +47,58 @@ def getTime(timeToFind):
 """
 
 # Write to config.json
-def dumpConfig(outConfig, gvars):
+def dumpConfig(outConfig, Globals):
     
-    with open(gvars.SAVE_PATH+"/oscr/config.json", "w") as outFile:
+    with open(Globals.SAVE_PATH+"/oscr/config.json", "w") as outFile:
         outFile.write(json.dumps(outConfig, indent=4, sort_keys=True))
     return True
 
 # Retrieves the user configurations from a .json file, or creates a config file from default values if one can't be found.
-def getConfig(gvars):
+def getConfig(Globals):
 
     from .log import doLog    
 
     try:
-        with open(gvars.SAVE_PATH+"/oscr/config.json") as configFile:
+        with open(Globals.SAVE_PATH+"/oscr/config.json") as configFile:
             try:
                 fromConfig = json.load(configFile)
             
             # Catch invalid JSON in the config file (usually a result of manual editing)
             except json.decoder.JSONDecodeError as e:
-                doLog([warn("Failed to get config; could not decode JSON file. Exiting.", gvars), f"Error was: {e}"], gvars)
+                doLog([warn("Failed to get config; could not decode JSON file. Exiting.", Globals), f"Error was: {e}"], Globals)
                 sys.exit(0)
             
-            gvars.config = fromConfig["config"][0]
+            Globals.config = fromConfig["config"][0]
 
     # Catch missing config file
     except FileNotFoundError:
         from .gvars import defaultConfig
-        gvars.config = defaultConfig
-        gvars.config["user"] = input("No config file found. Please enter your Reddit username:  /u/")
-        tryDumpConfig(gvars)
+        Globals.config = defaultConfig
+        Globals.config["user"] = input("No config file found. Please enter your Reddit username:  /u/")
+        tryDumpConfig(Globals)
 
-    return gvars
+    return Globals
 
 # Attempts to update the config file
-def tryDumpConfig(gvars):
+def tryDumpConfig(Globals):
     
     from .log import doLog
     
-    outConfig = {"config": [gvars.config]}
+    outConfig = {"config": [Globals.config]}
     
     try:
-        return dumpConfig(outConfig, gvars)
+        return dumpConfig(outConfig, Globals)
     
     # Catch missing config directory for OSCR
     except FileNotFoundError:
-        doLog(["home/.config/oscr directory not found; creating."], gvars)
-        if not isdir(gvars.HOME+"/.config/oscr"):
-            mkdir(gvars.HOME+"/.config/oscr")
-            return dumpConfig(outConfig, gvars)
+        doLog(["home/.config/oscr directory not found; creating."], Globals)
+        if not isdir(Globals.HOME+"/.config/oscr"):
+            mkdir(Globals.HOME+"/.config/oscr")
+            return dumpConfig(outConfig, Globals)
         
         # I don't think this will ever be reached, but it's here just in case
         else:
-            return doLog(["What the hell happened here?"], gvars)
+            return doLog(["What the hell happened here?"], Globals)
 
 """
     TRUE MISCELLANEOUS
@@ -108,33 +108,33 @@ def tryDumpConfig(gvars):
 """
 
 # Performs any necessary one-time calculations and changes relating to the config
-def calculateEssentials(gvars):
+def calculateEssentials(Globals):
     
     # Will default any non-numeric limits, or a limit of 1000, to None.
-    if not str(gvars.config["limit"]).isnumeric() or gvars.config["limit"] >= 1000:
-        gvars.config["limit"] = None
+    if not str(Globals.config["limit"]).isnumeric() or Globals.config["limit"] >= 1000:
+        Globals.config["limit"] = None
     
     # Attempts to calculate the cutoff time and wait time in seconds
     for keyList in [["cutoffSec", "cutoff", "cutoffUnit", 3600], ["waitTime", "wait", "unit", 1800]]:
         try:
-            if type(gvars.config[keyList[2]]) is list:
-                gvars.config[keyList[0]] = gvars.config[keyList[1]]*gvars.config[keyList[2]][2]
+            if type(Globals.config[keyList[2]]) is list:
+                Globals.config[keyList[0]] = Globals.config[keyList[1]]*Globals.config[keyList[2]][2]
             else:
-                gvars.config[keyList[0]] = gvars.config[keyList[1]]*gvars.config[keyList[2]]
+                Globals.config[keyList[0]] = Globals.config[keyList[1]]*Globals.config[keyList[2]]
         
         # Defaults to one hour / half an hour if any of the related variables is missing or corrupted
         except (KeyError, TypeError):
-            gvars.config[keyList[0]] = keyList[3]
+            Globals.config[keyList[0]] = keyList[3]
     
-    return gvars
+    return Globals
 
-def checkRegex(gvars, re, comment):
-    return True if sum([True for pattern in gvars.config["regexBlacklist"] if re.match(pattern, (comment.body.lower(), comment.body)[gvars.config["caseSensitive"]])]) > 0 else False
+def checkRegex(Globals, re, comment):
+    return True if sum([True for pattern in Globals.config["regexBlacklist"] if re.match(pattern, (comment.body.lower(), comment.body)[Globals.config["caseSensitive"]])]) > 0 else False
 
 # Finds the correct save path for config files, based on OS
 def defineSavePath(home):
     
-    if sys.platform.startswith("win"): return home + environ["APPDATA"]
+    if sys.platform.startswith("win"): return environ["APPDATA"] + "\\oscr"
     else: return home + "/.config"
 
 def filterArray(array, elements):
@@ -143,7 +143,7 @@ def filterArray(array, elements):
     del array[start:end]
     return array
 
-def writeToFile(gvars, content, file):
+def writeToFile(Globals, content, file):
     for line in content:     
         file.write(line+"\n")
     return True
