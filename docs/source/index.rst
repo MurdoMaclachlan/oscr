@@ -10,3 +10,4 @@ OSCR
    configuration
    runtime-arguments
    additional-help-and-faq
+   changelogs
