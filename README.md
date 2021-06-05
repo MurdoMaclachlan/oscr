@@ -3,7 +3,7 @@
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/MurdoMaclachlan/oscr/graphs/commit-activity)
 ![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability-percentage/MurdoMaclachlan/oscr)
 [![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/murdo@maclachlans.org.uk)  
-[![Documentation Status](https://readthedocs.org/projects/oscr/badge/?version=latest)](https://oscr.murdomaclachlan.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/oscr/badge/?version=latest)](https://oscr.murdomaclachlan.io/en/latest/)
 [![GitHub issues](https://img.shields.io/github/issues/MurdoMaclachlan/oscr)](https://github.com/MurdoMaclachlan/oscr/issues)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/MurdoMaclachlan/oscr)
 [![GitHub license](https://img.shields.io/github/license/MurdoMaclachlan/oscr)](https://github.com/MurdoMaclachlan/oscr/blob/master/LICENSE)
