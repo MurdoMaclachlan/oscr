@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
-from oscrmodules.gvars import version
+from oscrmodules.gvars import VERSION
 
 def readme():
     return open('README.md', 'r').read()
 
 setup(
     name="oscr",
-    version=version,
+    version=VERSION,
     scripts=["oscr"],
     author="Murdo Maclachlan",
     author_email="murdo@maclachlans.org.uk",

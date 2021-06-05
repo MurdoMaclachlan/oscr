@@ -65,8 +65,7 @@ def getConfig(gvars):
             
             # Catch invalid JSON in the config file (usually a result of manual editing)
             except json.decoder.JSONDecodeError as e:
-                doLog("Failed to get config; could not decode JSON file. Exiting.", gvars)
-                doLog(f"Error was: {e}", gvars)
+                doLog([warn("Failed to get config; could not decode JSON file. Exiting.", gvars), f"Error was: {e}"], gvars)
                 sys.exit(0)
             
             gvars.config = fromConfig["config"][0]
@@ -92,14 +91,14 @@ def tryDumpConfig(gvars):
     
     # Catch missing config directory for OSCR
     except FileNotFoundError:
-        doLog("home/.config/oscr directory not found; creating.", gvars)
+        doLog(["home/.config/oscr directory not found; creating."], gvars)
         if not isdir(gvars.home+"/.config/oscr"):
             mkdir(gvars.home+"/.config/oscr")
             return dumpConfig(outConfig, gvars)
         
         # I don't think this will ever be reached, but it's here just in case
         else:
-            return doLog("What the hell happened here?")
+            return doLog(["What the hell happened here?"], gvars)
 
 """
     TRUE MISCELLANEOUS
@@ -129,18 +128,14 @@ def calculateEssentials(gvars):
     
     return gvars
 
+def checkRegex(gvars, re, comment):
+    return True if sum([True for pattern in gvars.config["regexBlacklist"] if re.match(pattern, (comment.body.lower(), comment.body)[gvars.config["caseSensitive"]])]) > 0 else False
+
 # Finds the correct save path for config files, based on OS
 def defineSavePath(home):
     
     if sys.platform.startswith("win"): return home + environ["APPDATA"]
     else: return home + "/.config"
-
-def exitWithLog(gvars, message):
-    from .log import doLog, updateLog
-    doLog(message, gvars)
-    if not updateLog("Exiting...", gvars):
-        print("Exiting...")
-    sys.exit(0)
 
 def filterArray(array, elements):
     start = array.index(elements[0])

@@ -19,7 +19,7 @@
 
 import sys
 from os import remove, rename
-from .gvars import defaultConfig, version
+from .gvars import defaultConfig, VERSION
 from .log import doLog, warn
 from .ini import reformatIni
 from .misc import calculateEssentials
@@ -108,12 +108,12 @@ def checkArgs(gvars):
 """
 
 def formatOld(gvars):
-    doLog("Reformatting CDRemover files to OSCR.", gvars)
+    doLog(["Reformatting CDRemover files to OSCR."], gvars)
     try:
         rename(gvars.home+"/.cdremover", gvars.home+"/.oscr")
     except FileNotFoundError: pass
     reformatIni(gvars)
-    doLog("Reformatting complete.", gvars)
+    doLog(["Reformatting complete."], gvars)
     return gvars
 
 def helpMenu():
@@ -163,17 +163,17 @@ def printCredits():
     )
 
 def resetConfig(gvars):
-    doLog("Resetting config file.", gvars)
+    doLog(["Resetting config file."], gvars)
     try:
         remove(gvars.home+"/.config/oscr/config.json")
     except FileNotFoundError:
-        doLog("Config file already absent.", gvars)
+        doLog(["Config file already absent."], gvars)
     gvars.config = defaultConfig
     return gvars
 
 def settings(gvars):
     from .settings import settingsMain
-    doLog(f"Running OSCR version {version} with --settings parameter, entering settings menu.", gvars)
+    doLog([f"Running OSCR version {VERSION} with --settings parameter, entering settings menu."], gvars)
     gvars = settingsMain(gvars)
     return gvars
 
@@ -183,7 +183,7 @@ def showConfig():
         print(f"{i}: {config[i]}")
 
 def showVersion():
-    print(f"The installed version of OSCR is: {version}")
+    print(f"The installed version of OSCR is: {VERSION}")
 
 def tempChangeConfig(gvars, key, val):
     gvars.config[key] = val

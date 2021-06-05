@@ -25,7 +25,7 @@ from .misc import filterArray, writeToFile
 
 def createIni(gvars):
     
-    doLog("praw.ini missing, incomplete or incorrect. It will need to be created.", gvars)
+    doLog(["praw.ini missing, incomplete or incorrect. It will need to be created."], gvars)
     iniVars = {
         "client_id": input("Please input your client id:  "),
         "client_secret": input("Please input your client secret:  "),
@@ -58,7 +58,7 @@ def oscrOnly(content, gvars):
         elif line in ["[cdrcredentials]", "[oscr]", "[oscr]          "]:
             append = True
         if line == "[cdrcredentials]":
-            doLog(f"Replacing line '{line}' with '[oscr]'.", gvars)
+            doLog([f"Replacing line '{line}' with '[oscr]'."], gvars)
             line = "[oscr]"
         if append: oscrContent.append(line)
     return oscrContent
@@ -76,7 +76,7 @@ def reformatIni(gvars):
         # If no OSCR content was found
         if oscrContent is None:
             if isfile(gvars.savePath+"/oscr/praw.ini"):
-                doLog("praw.ini already formatted.", gvars)
+                doLog(["praw.ini already formatted."], gvars)
                 return True
             else: createIni(gvars)
         
@@ -100,9 +100,9 @@ def reformatIni(gvars):
     # Catch missing praw.ini                
     except FileNotFoundError:
         if isfile(gvars.savePath + "/praw.ini"):
-            doLog("praw.ini already formatted.", gvars)
+            doLog(["praw.ini already formatted."], gvars)
         else: createIni(gvars)
-           
+
 def stripOSCR(content):
     delete = False
     linesToDelete = []

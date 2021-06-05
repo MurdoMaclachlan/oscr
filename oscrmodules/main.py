@@ -22,11 +22,10 @@ import configparser
 from time import sleep
 from alive_progress import alive_bar as aliveBar
 from os.path import isfile
-from .gvars import version
-from .log import doLog, updateLog, warn
+from .log import doLog, exitWithLog, updateLog, warn
 from .comment import checkArray, removeNonAlpha, remover
 from .ini import createIni, extractIniDetails, getCredentials
-from .misc import exitWithLog, writeToFile
+from .misc import writeToFile
 
 """
     Beneath is the main program. From here, all run-time flow
@@ -42,13 +41,17 @@ from .misc import exitWithLog, writeToFile
 
 def oscr(gvars):
 
-    doLog(f"Running OSCR version {version} with recur set to {gvars.config['recur']}.", gvars)
-    doLog(warn("WARNING: log updates are OFF. Console log will not be saved for this instance.", gvars), gvars) if not gvars.config["logUpdates"] else None
+    doLog(
+        [
+            f"Running OSCR version {gvars.version} with recur set to {gvars.config['recur']}.",
+            warn("WARNING: Log updates are OFF. Console log will not be saved for this instance.", gvars) if not gvars.config["logUpdates"] else None
+        ], gvars
+    )
     
     # Initialises Reddit() instance
     try:
         reddit = praw.Reddit(
-            user_agent = gvars.config["os"] + ":oscr:v" + version + " (by /u/MurdoMaclachlan)",
+            user_agent = gvars.config["os"] + ":oscr:v" + VERSION + " (by /u/MurdoMaclachlan)",
             **getCredentials(gvars)
         )
     
@@ -60,10 +63,9 @@ def oscr(gvars):
             if iniDetails is None: pass
             else:
                 writeToFile(gvars, iniDetails, open(gvars.savePath+"/oscr/praw.ini", "w+"))
-                exitWithLog(gvars, "praw.ini successfully created, program restart required for this to take effect.")
+                exitWithLog(["praw.ini successfully created, program restart required for this to take effect."], gvars)
 
-        if createIni(gvars): exitWithLog(gvars, "praw.ini successfully created, program restart required for this to take effect.")
-        else: exitWithLog(gvars, "Failed to create praw.ini file, something went wrong.")
+        exitWithLog(["praw.ini successfully created, program restart required for this to take effect."], gvars) if createIni(gvars) else exitWithLog([warn("WARNING: Failed to create praw.ini file, something went wrong.", gvars)], gvars)
     
     # Only import regex functions if regexes are being used
     if gvars.config["useRegex"]: import re; from .misc import checkRegex
@@ -73,16 +75,20 @@ def oscr(gvars):
         from .statistics import fetch, update
         totalCounted, totalDeleted = fetch("counted", gvars), fetch("deleted", gvars)
     
-    updateLog("Updating log...", gvars)
-    updateLog("Log updated successfully.", gvars)
+    updateLog(
+        [
+            "Updating log...",
+            "Log updated successfully."
+        ], gvars
+    ) if gvars.config["logUpdates"] else None
     
     while True:
         deleted, counted, waitingFor = 0, 0, 0
         
         # Fetches the comment list from Reddit
-        doLog("Retrieving comments...", gvars)
+        doLog(["Retrieving comments..."], gvars)
         commentList = reddit.redditor(gvars.config["user"]).comments.new(limit=gvars.config["limit"])
-        doLog("Comments retrieved; checking...", gvars)
+        doLog(["Comments retrieved; checking..."], gvars)
         
         # Initialises the progress bar
         with aliveBar(gvars.config["limit"], spinner='classic', bar='classic', enrich_print=False) as progress:
@@ -105,47 +111,68 @@ def oscr(gvars):
                 
                 # Result of a comment being in reply to a deleted/removed submission
                 except AttributeError as e:
-                    doLog(warn(f"Handled error on iteration {counted}: {e} | Comment at {comment.permalink}", gvars), gvars)
+                    doLog([warn(f"Handled error on iteration {counted}: {e} | Comment at {comment.permalink}", gvars)], gvars)
                 counted += 1
                 
                 progress()
     
-        doLog(f"Successfully checked all {counted} available comments.", gvars)
+        doLog([f"Successfully checked all {counted} available comments."], gvars)
     
         # Notifies if the end of Reddit's listing is reached (i.e. no new comments due to API limitations)
         try:
             if counted < gvars.config["limit"]:
-                doLog(warn(f"WARNING: OSCR counted less comments than your limit of {gvars.config['limit']}. You may have deleted all available elligible comments, or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.", gvars), gvars)
+                doLog([warn(
+                    f"WARNING: OSCR counted less comments than your limit of {gvars.config['limit']}. You may have deleted all available elligible comments,",
+                    "or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.",
+                    gvars
+                )], gvars)
         except TypeError:
             if counted < 1000:
-                doLog(warn("WARNING: OSCR counted less comments than your limit of 1000. You may have deleted all available elligible comments, or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.", gvars), gvars)
+                doLog([warn(
+                    "WARNING: OSCR counted less comments than your limit of 1000. You may have deleted all available elligible comments,",
+                    "or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.",
+                    gvars
+                )], gvars)
     
         # Updates statistics
         if gvars.config["reportTotals"]:
             totalCounted += counted
-            totalDeleted += deleted
             update("counted", totalCounted, gvars)
+            totalDeleted += deleted
             update("deleted", totalDeleted, gvars)
         
         # Gives info about this iteration; how many comments were counted, deleted, still waiting for.
-        doLog(f"Counted this cycle: {str(counted)}", gvars)
-        doLog(f"Deleted this cycle: {str(deleted)}", gvars)
-        doLog(f"Waiting for: {str(waitingFor)}", gvars)
+        doLog(
+            [
+                f"Counted this cycle: {str(counted)}",
+                f"Deleted this cycle: {str(deleted)}",
+                f"Waiting for: {str(waitingFor)}"
+            ], gvars
+        )
         if gvars.config["reportTotals"]:
-            doLog(f"Total Counted: {str(totalCounted)}", gvars)
-            doLog(f"Total Deleted: {str(totalDeleted)}", gvars)
+            doLog(
+                [
+                    f"Total Counted: {str(totalCounted)}",
+                    f"Total Deleted: {str(totalDeleted)}"
+                ], gvars
+            )
     
         # If recur is set to false, updates log and kills the program.
         if not gvars.config["recur"]:
-            updateLog("Updating log...", gvars)
-            updateLog("Log updated successfully.", gvars)
-            updateLog("Exiting...", gvars)
-            break
+            exitWithLog(
+                [
+                    "Updating log...",
+                    "Log updated successfully."
+                ], gvars
+            )
     
         # Updates log, prepares for next cycle.
-        updateLog("Updating log...", gvars)
-        updateLog("Log updated successfully.", gvars)
-        doLog(f"Waiting {str(gvars.config['wait'])} {gvars.config['unit'][0] if gvars.config['wait'] == 1 else gvars.config['unit'][1]} before checking again...", gvars)
-        updateLog("", gvars)
-    
+        updateLog(
+            [
+                "Updating log...",
+                "Log updated successfully.",
+                f"Waiting {str(gvars.config['wait'])} {gvars.config['unit'][0] if gvars.config['wait'] == 1 else gvars.config['unit'][1]} before checking again..."
+            ], gvars
+        )
+
         sleep(gvars.config["waitTime"])

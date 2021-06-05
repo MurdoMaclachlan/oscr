@@ -23,14 +23,12 @@
 import sys
 import json
 from .ini import createIni
-from .log import doLog, updateLog, warn
+from .log import doLog, exitWithLog, updateLog, warn
 from .misc import tryDumpConfig
 
 # Main settings menu
 # If-tree the first, but not the last
 def settingsMain(gvars):
-
-    doLog("Success: reached settings menu.", gvars)
 
     while True:
         # Gets user choice
@@ -46,21 +44,24 @@ def settingsMain(gvars):
 
         # Determines which result happens
         if choice == "1":
-            doLog("Opening config edit menu.", gvars)
+            doLog(["Opening config edit menu."], gvars)
             editConfig(gvars)
         elif choice == "2":
-            doLog("Opening praw.ini edit menu.", gvars)
-            doLog(warn("WARNING: edits to praw.ini will require a restart to take effect.", gvars), gvars)
+            doLog(
+                [
+                    "Opening praw.ini edit menu.",
+                    warn("WARNING: edits to praw.ini will require a restart to take effect.", gvars)
+                ], gvars
+            )
             editPraw(gvars)
         elif choice == "3":
             howToUse()
         elif choice == "4":
-            doLog("Exiting settings menu, continuing to main program.", gvars)
+            doLog(["Exiting settings menu, continuing to main program."], gvars)
             return gvars
         else:
-            updateLog("Updating log...", gvars)
-            doLog("Log updated successfully.", gvars)
-            updateLog("Exiting OSCR...", gvars)
+            updateLog(["Updating log..."], gvars)
+            exitWithLog(["Log updated successfully."], gvars)
             sys.exit(0)
 
 # This fucking shite is the bane of my existence
@@ -245,7 +246,7 @@ def editPraw(gvars):
                             content[content.index(oldLine)] = line
                             success = True
                 else:
-                    doLog("Skipping irrelevant line: " + line, gvars)
+                    doLog(["Skipping irrelevant line: " + line], gvars)
             
             # Writes content back into file
             if success:
@@ -259,7 +260,7 @@ def editPraw(gvars):
             # In case necessary line is not found
             else:
                 if key in resultNames[0:3]:
-                    doLog(f"{key} is not in praw.ini.", gvars)
+                    doLog([f"{key} is not in praw.ini."], gvars)
                 #if key == resultNames[3]:
                 #    print("If you are using refresh tokens to log in, please choose that option instead.")
                 #    return False
@@ -270,7 +271,7 @@ def editPraw(gvars):
     
     # In case praw.ini is not found
     except FileNotFoundError:
-        doLog("praw.ini file not found.", gvars)
+        doLog([warn("praw.ini file not found.", gvars)], gvars)
         createIni(gvars)
 
     return True
