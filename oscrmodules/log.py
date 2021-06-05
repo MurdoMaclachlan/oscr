@@ -88,7 +88,7 @@ def updateLog(messages, Globals):
 
 # Colours warnings orange so that they stand out
 def warn(message, Globals):
-    return Globals.ConsoleColours.warning + message + Globals.ConsoleColours.reset
+    return Globals.ConsoleColours.WARNING + message + Globals.ConsoleColours.RESET
 
 # Writes the contents of the log array to the log.txt file
 def writeLog(Globals):
