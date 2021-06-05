@@ -22,6 +22,7 @@ import json
 import sys
 from os import environ, mkdir
 from os.path import isdir
+from typing import Dict, List, TextIO
 
 """
     This module is divided into several categories,
@@ -29,15 +30,15 @@ from os.path import isdir
     you just shush there, meta. This is my module
     and I'll modulate it how I want to.
     
-    getTime and the doLog import need to be here to
-    avoid a circular import and now my nicely organised
-    module is shite. I hate everything.
+    getTime needs to be here to avoid a circular
+    import and now my nicely organised module is shite.
+    I hate everything.
 """
    
 # Finds the current time and returns it in a human readable format.
-def getTime(timeToFind):
+def getTime(timeToFind: int) -> str:
     currentTime = datetime.datetime.fromtimestamp(timeToFind)
-    return currentTime.strftime("%Y-%m-%d %H:%M:%S") 
+    return currentTime.strftime("%Y-%m-%d %H:%M:%S")
 
 """
     CONFIGURATION FUNCTIONS
@@ -47,14 +48,14 @@ def getTime(timeToFind):
 """
 
 # Write to config.json
-def dumpConfig(outConfig, Globals):
+def dumpConfig(outConfig: Dict, Globals: object) -> bool:
     
     with open(Globals.SAVE_PATH+"/oscr/config.json", "w") as outFile:
         outFile.write(json.dumps(outConfig, indent=4, sort_keys=True))
     return True
 
 # Retrieves the user configurations from a .json file, or creates a config file from default values if one can't be found.
-def getConfig(Globals):
+def getConfig(Globals: object) -> object:
 
     from .log import doLog    
 
@@ -80,7 +81,7 @@ def getConfig(Globals):
     return Globals
 
 # Attempts to update the config file
-def tryDumpConfig(Globals):
+def tryDumpConfig(Globals: object) -> bool:
     
     from .log import doLog
     
@@ -98,7 +99,8 @@ def tryDumpConfig(Globals):
         
         # I don't think this will ever be reached, but it's here just in case
         else:
-            return doLog(["What the hell happened here?"], Globals)
+            doLog(["What the hell happened here?"], Globals)
+            return False
 
 """
     TRUE MISCELLANEOUS
@@ -108,7 +110,7 @@ def tryDumpConfig(Globals):
 """
 
 # Performs any necessary one-time calculations and changes relating to the config
-def calculateEssentials(Globals):
+def calculateEssentials(Globals: object) -> object:
     
     # Will default any non-numeric limits, or a limit of 1000, to None.
     if not str(Globals.config["limit"]).isnumeric() or Globals.config["limit"] >= 1000:
@@ -128,22 +130,21 @@ def calculateEssentials(Globals):
     
     return Globals
 
-def checkRegex(Globals, re, comment):
+def checkRegex(Globals: object, re, comment: object) -> bool:
     return True if sum([True for pattern in Globals.config["regexBlacklist"] if re.match(pattern, (comment.body.lower(), comment.body)[Globals.config["caseSensitive"]])]) > 0 else False
 
 # Finds the correct save path for config files, based on OS
-def defineSavePath(home):
-    
+def defineSavePath(home: str) -> str:
     if sys.platform.startswith("win"): return environ["APPDATA"] + "\\oscr"
     else: return home + "/.config"
 
-def filterArray(array, elements):
+def filterArray(array: List, elements: List) -> List:
     start = array.index(elements[0])
     end = array.index(elements[len(elements)-1])
     del array[start:end]
     return array
 
-def writeToFile(Globals, content, file):
+def writeToFile(Globals: object, content: List, file: TextIO) -> bool:
     for line in content:     
         file.write(line+"\n")
     return True
