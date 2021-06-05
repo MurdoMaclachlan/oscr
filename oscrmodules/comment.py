@@ -46,10 +46,10 @@ def remover(comment, cutoff, deleted, waitingFor, gvars):
     
     # Only delete comments older than the cutoff
     if time() - comment.created_utc > cutoff:
-        doLog(f"Obsolete '{comment.body}' found, deleting.", gvars)
+        doLog([f"Obsolete '{comment.body}' found, deleting."], gvars)
         comment.delete()
         deleted += 1
     else:
-        doLog(f"Waiting for '{comment.body}'.", gvars)
+        doLog([f"Waiting for '{comment.body}'."], gvars)
         waitingFor += 1
     return deleted, waitingFor
