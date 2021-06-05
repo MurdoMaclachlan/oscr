@@ -28,7 +28,7 @@ from .misc import tryDumpConfig
 
 # Main settings menu
 # If-tree the first, but not the last
-def settingsMain(gvars):
+def settingsMain(Globals):
 
     while True:
         # Gets user choice
@@ -44,31 +44,31 @@ def settingsMain(gvars):
 
         # Determines which result happens
         if choice == "1":
-            doLog(["Opening config edit menu."], gvars)
-            editConfig(gvars)
+            doLog(["Opening config edit menu."], Globals)
+            editConfig(Globals)
         elif choice == "2":
             doLog(
                 [
                     "Opening praw.ini edit menu.",
-                    warn("WARNING: edits to praw.ini will require a restart to take effect.", gvars)
-                ], gvars
+                    warn("WARNING: edits to praw.ini will require a restart to take effect.", Globals)
+                ], Globals
             )
-            editPraw(gvars)
+            editPraw(Globals)
         elif choice == "3":
             howToUse()
         elif choice == "4":
-            doLog(["Exiting settings menu, continuing to main program."], gvars)
-            return gvars
+            doLog(["Exiting settings menu, continuing to main program."], Globals)
+            return Globals
         else:
-            updateLog(["Updating log..."], gvars)
-            exitWithLog(["Log updated successfully."], gvars)
+            updateLog(["Updating log..."], Globals)
+            exitWithLog(["Log updated successfully."], Globals)
             sys.exit(0)
 
 # This fucking shite is the bane of my existence
 # You'd think I wouldn't need to turn my r/badcode flair into actual fucking code
 # But apparently I do
 # Does what it says on the fucking tin
-def editConfig(gvars):
+def editConfig(Globals):
 
     # Gets user choice
     print(
@@ -95,7 +95,7 @@ def editConfig(gvars):
         "\n20. Wait amount"
         "\n21. Return to main settings menu"
     )
-    resultNames = list(gvars.config.keys())
+    resultNames = list(Globals.config.keys())
     choice = validateChoice(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"])
 
     # Returns to main settings menu
@@ -134,13 +134,13 @@ def editConfig(gvars):
             value = input(f"\nPlease enter the phrase to add to the {key}\n>> ")
             if value == "-e":
                 return True
-            gvars.config[key].append()
+            Globals.config[key].append()
         else:
             value = input(f"\nPlease enter the phrase to remove from the {key}.\n>> ")
             if value == "-e":
                 return True
-            if value in gvars.config[key]:
-                gvars.config[key].remove(value)
+            if value in Globals.config[key]:
+                Globals.config[key].remove(value)
             else:
                 print(f"{value} is not present in the blacklist.")
                 return True
@@ -154,7 +154,7 @@ def editConfig(gvars):
                 if value == "-e":
                     return True
                 try:
-                    gvars.config[key] = int(value)
+                    Globals.config[key] = int(value)
                     break
                 except TypeError as e:
                     print(f"{e} - Not an integer.")
@@ -166,7 +166,7 @@ def editConfig(gvars):
                 if value == "-e":
                     return True
                 try:
-                    gvars.config[key] = json.loads(value.lower())
+                    Globals.config[key] = json.loads(value.lower())
                     break
                 except TypeError as e:
                     print(f"{e} - Not a boolean.")
@@ -176,7 +176,7 @@ def editConfig(gvars):
             value = input(f"\nEditing {key}\nPlease enter the new value\n>> ")
             if value == "-e":
                 return True
-            gvars.config[key] = value
+            Globals.config[key] = value
             
         # Replaces waitUnit
         elif choice == "15":
@@ -186,15 +186,15 @@ def editConfig(gvars):
                 input("Please enter the plural noun for the new unit. \n>> "),
                 int(input("Please enter the numerical value of the new unit converted into seconds. \n>> "))
             ]
-            gvars.config[key] = newUnit
+            Globals.config[key] = newUnit
 
-    tryDumpConfig(gvars)    
+    tryDumpConfig(Globals)    
 
     return True
 
 # No refresh token support implemented yet, but I'm preparing for it
 # Does what it says on the fucking tin
-def editPraw(gvars):
+def editPraw(Globals):
 
     # Setup results
     results = []
@@ -224,7 +224,7 @@ def editPraw(gvars):
     try:
         
         # Retrieve information from praw.ini
-        with open(gvars.HOME+"/.config/oscr/praw.ini", "r+") as file:
+        with open(Globals.HOME+"/.config/oscr/praw.ini", "r+") as file:
             content = file.read().splitlines()
             success = False
             allowChanges = False
@@ -246,7 +246,7 @@ def editPraw(gvars):
                             content[content.index(oldLine)] = line
                             success = True
                 else:
-                    doLog(["Skipping irrelevant line: " + line], gvars)
+                    doLog(["Skipping irrelevant line: " + line], Globals)
             
             # Writes content back into file
             if success:
@@ -260,19 +260,19 @@ def editPraw(gvars):
             # In case necessary line is not found
             else:
                 if key in resultNames[0:3]:
-                    doLog([f"{key} is not in praw.ini."], gvars)
+                    doLog([f"{key} is not in praw.ini."], Globals)
                 #if key == resultNames[3]:
                 #    print("If you are using refresh tokens to log in, please choose that option instead.")
                 #    return False
                 #elif key == resultNames[4]:
                 #    print("If you are not using refresh tokens to log in, please choose password instead.")
                 #    return False
-                createIni(gvars)
+                createIni(Globals)
     
     # In case praw.ini is not found
     except FileNotFoundError:
-        doLog([warn("praw.ini file not found.", gvars)], gvars)
-        createIni(gvars)
+        doLog([warn("praw.ini file not found.", Globals)], Globals)
+        createIni(Globals)
 
     return True
     
