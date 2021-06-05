@@ -40,8 +40,8 @@ def attemptLog(gvars):
     # Creates log.txt and/or the data directory, if necessary.
     except FileNotFoundError:
         doLog("No log.txt found; attempting to create.", gvars)
-        if not isdir(gvars.home+"/.oscr/data"):
-            mkdir(gvars.home+"/.oscr/data")
+        if not isdir(gvars.HOME+"/.oscr/data"):
+            mkdir(gvars.HOME+"/.oscr/data")
         return writeLog(gvars)
 
 # Updates the log array and prints to console
@@ -94,7 +94,7 @@ def warn(message, gvars):
 def writeLog(gvars):
     
     try:
-        with open(gvars.home+"/.oscr/data/log.txt", "a") as file:
+        with open(gvars.HOME+"/.oscr/data/log.txt", "a") as file:
             for i in gvars.log:
                 file.write(i)
         return True

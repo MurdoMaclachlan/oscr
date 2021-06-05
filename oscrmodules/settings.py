@@ -224,7 +224,7 @@ def editPraw(gvars):
     try:
         
         # Retrieve information from praw.ini
-        with open(gvars.home+"/.config/oscr/praw.ini", "r+") as file:
+        with open(gvars.HOME+"/.config/oscr/praw.ini", "r+") as file:
             content = file.read().splitlines()
             success = False
             allowChanges = False
