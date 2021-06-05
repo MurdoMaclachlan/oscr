@@ -18,26 +18,24 @@ To install OSCR,
 1. Run either ``python -m pip install oscr`` or ``pip install oscr`` in your command line. It should automatically install the program as well as any dependencies.
 2. Before doing anything else, you should now create an app for your Reddit account. You can do this by going to `the apps page in preferences <https://www.reddit.com/prefs/apps/>`_ and creating a new app:
 
-    * Give it a name ("Oscar" or "OSCR" are easy to remember).
-    * Choose "script".
-    * Give it a description (which can really be anything you want).
-    * Set an about url and redirect uri. The about url doesn't matter (I just linked the project's repository), and the redirect uri will not matter either; it is related to refresh tokens, which OSCR does not currently support.
+    - Give it a name ("Oscar" or "OSCR" are easy to remember).
+    - Choose "script".
+    - Give it a description (which can really be anything you want).
+    - Set an about url and redirect uri. The about url doesn't matter (I just linked the project's repository), and the redirect uri will not matter either; it is related to refresh tokens, which OSCR does not currently support.
     
 3. Now, in your console, run the command ``oscr`` and you will be prompted to enter information for both config.json and praw.ini. The praw.ini will ask for your client id and client secret, which you can see on `the apps page <https://www.reddit.com/prefs/apps/>`_.
 
-    Go to the page and scroll down until you find the bot you created. Underneath its name should be "personal use script", and below that a string of random characters. This is your client id. If you can't see a field that labeled "secret" with another, longer string of random characters after it, then click the edit button and it should appear (along with other fields you filled out when you were creating the bot).
+    - Go to the page and scroll down until you find the bot you created. Underneath its name should be "personal use script", and below that a string of random characters. This is your client id. If you can't see a field that labeled "secret" with another, longer string of random characters after it, then click the edit button and it should appear (along with other fields you filled out when you were creating the bot).
     
-    Once praw.ini is created, the program will exit and you will need to rerun it (this is because PRAW currently can't reload praw.ini files once Reddit() has been initialised).
+    - Once praw.ini is created, the program will exit and you will need to rerun it (this is because PRAW currently can't reload praw.ini files once Reddit() has been initialised).
 
-Once it has been created, the contents of your praw.ini file should look something like this:
+Once it has been created, the contents of your praw.ini file should look something like this:::
 
-```
-[oscr]
-client_id=lI3fAkE7x82LiE
-client_secret=4lS0f4Ke1234567894NdN0tR3aL
-username=testuser
-password=yourpasswordhere
-```
+    [oscr]
+    client_id=lI3fAkE7x82LiE
+    client_secret=4lS0f4Ke1234567894NdN0tR3aL
+    username=testuser
+    password=yourpasswordhere
 
 You can check if they are correct by navigating to your config folder, which should be .config on Linux and Mac, and AppData on Windows.
 
