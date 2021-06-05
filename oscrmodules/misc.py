@@ -49,7 +49,7 @@ def getTime(timeToFind):
 # Write to config.json
 def dumpConfig(outConfig, gvars):
     
-    with open(gvars.savePath+"/oscr/config.json", "w") as outFile:
+    with open(gvars.SAVE_PATH+"/oscr/config.json", "w") as outFile:
         outFile.write(json.dumps(outConfig, indent=4, sort_keys=True))
     return True
 
@@ -59,7 +59,7 @@ def getConfig(gvars):
     from .log import doLog    
 
     try:
-        with open(gvars.savePath+"/oscr/config.json") as configFile:
+        with open(gvars.SAVE_PATH+"/oscr/config.json") as configFile:
             try:
                 fromConfig = json.load(configFile)
             
@@ -92,8 +92,8 @@ def tryDumpConfig(gvars):
     # Catch missing config directory for OSCR
     except FileNotFoundError:
         doLog(["home/.config/oscr directory not found; creating."], gvars)
-        if not isdir(gvars.home+"/.config/oscr"):
-            mkdir(gvars.home+"/.config/oscr")
+        if not isdir(gvars.HOME+"/.config/oscr"):
+            mkdir(gvars.HOME+"/.config/oscr")
             return dumpConfig(outConfig, gvars)
         
         # I don't think this will ever be reached, but it's here just in case
