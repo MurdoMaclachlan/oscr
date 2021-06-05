@@ -18,6 +18,7 @@
 """
 
 from time import time
+from typing import Any, List, Union
 from .log import doLog
 
 """
@@ -25,14 +26,14 @@ from .log import doLog
     the comments retrieved from Reddit.
 """
 
-def checkArray(array, value):
+def checkArray(array: List, value: Any) -> bool:
     
     # The value passes either if it is in the array or if the array is empty
     if len(array) < 1: return True
     elif value in array: return True
     else: return False
 
-def removeNonAlpha(comment):
+def removeNonAlpha(comment) -> str:
     
     # Creates new array that includes only the alpha characters
     newArray = []
@@ -42,7 +43,7 @@ def removeNonAlpha(comment):
 
     return ''.join(newArray)
 
-def remover(comment, cutoff, deleted, waitingFor, Globals):
+def remover(comment: object, cutoff: int, deleted: int, waitingFor: int, Globals: object) -> int:
     
     # Only delete comments older than the cutoff
     if time() - comment.created_utc > cutoff:
