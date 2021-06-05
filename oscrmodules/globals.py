@@ -63,7 +63,7 @@ defaultConfig = {
     "wait": 10
 }
 
-VERSION = "2.0.0-dev23-20210605"
+VERSION = "2.0.0-dev24-20210605"
 
 class Globals():
     def __init__(self, VERSION):
@@ -80,5 +80,5 @@ class Colours():
         self.WARNING = fg(warning)
         self.RESET = attr(reset)
 
-def initialiseGlobals(VERSION):
+def initialiseGlobals(VERSION: int) -> object:
     return Globals(VERSION)
