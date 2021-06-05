@@ -72,7 +72,7 @@ def getConfig(Globals):
 
     # Catch missing config file
     except FileNotFoundError:
-        from .gvars import defaultConfig
+        from .globals import defaultConfig
         Globals.config = defaultConfig
         Globals.config["user"] = input("No config file found. Please enter your Reddit username:  /u/")
         tryDumpConfig(Globals)
