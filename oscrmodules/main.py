@@ -43,7 +43,7 @@ def oscr(gvars):
 
     doLog(
         [
-            f"Running OSCR version {gvars.version} with recur set to {gvars.config['recur']}.",
+            f"Running OSCR version {gvars.VERSION} with recur set to {gvars.config['recur']}.",
             warn("WARNING: Log updates are OFF. Console log will not be saved for this instance.", gvars) if not gvars.config["logUpdates"] else None
         ], gvars
     )
@@ -58,11 +58,11 @@ def oscr(gvars):
     # Catch for invalid ini, will create a new one then restart the program;
     # the restart is required due to current PRAW limitations. :'(
     except (configparser.NoSectionError, praw.exceptions.MissingRequiredAttributeException, KeyError):
-        if isfile(gvars.savePath+"/praw.ini"):
+        if isfile(gvars.SAVE_PATH+"/praw.ini"):
             iniDetails = extractIniDetails(gvars)
             if iniDetails is None: pass
             else:
-                writeToFile(gvars, iniDetails, open(gvars.savePath+"/oscr/praw.ini", "w+"))
+                writeToFile(gvars, iniDetails, open(gvars.SAVE_PATH+"/oscr/praw.ini", "w+"))
                 exitWithLog(["praw.ini successfully created, program restart required for this to take effect."], gvars)
 
         exitWithLog(["praw.ini successfully created, program restart required for this to take effect."], gvars) if createIni(gvars) else exitWithLog([warn("WARNING: Failed to create praw.ini file, something went wrong.", gvars)], gvars)
