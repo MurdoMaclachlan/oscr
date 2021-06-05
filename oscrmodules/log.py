@@ -33,69 +33,69 @@ from .misc import getTime
 """
 
 # Attempts to update log.txt, creating any missing files/directories.
-def attemptLog(gvars):
+def attemptLog(Globals):
     
-    try: return writeLog(gvars)
+    try: return writeLog(Globals)
         
     # Creates log.txt and/or the data directory, if necessary.
     except FileNotFoundError:
-        doLog("No log.txt found; attempting to create.", gvars)
-        if not isdir(gvars.HOME+"/.oscr/data"):
-            mkdir(gvars.HOME+"/.oscr/data")
-        return writeLog(gvars)
+        doLog("No log.txt found; attempting to create.", Globals)
+        if not isdir(Globals.HOME+"/.oscr/data"):
+            mkdir(Globals.HOME+"/.oscr/data")
+        return writeLog(Globals)
 
 # Updates the log array and prints to console
-def doLog(messages, gvars):
+def doLog(messages, Globals):
     
     for message in messages:
         currentTime = getTime(time.time())
         
         try:
-            gvars.log.append(f"{currentTime} - {message}\n")
-            print(f"{currentTime} - {message}") if gvars.config["printLogs"] else None
+            Globals.log.append(f"{currentTime} - {message}\n")
+            print(f"{currentTime} - {message}") if Globals.config["printLogs"] else None
         except AttributeError as e:
-            print(warn(f"{currentTime} - Failed to output log; log is {gvars.log}."), gvars)
-            print(warn(f"Error is: {e}"), gvars)
+            print(warn(f"{currentTime} - Failed to output log; log is {Globals.log}."), Globals)
+            print(warn(f"Error is: {e}"), Globals)
             return False
     
     return True
 
 # Exits OSCR while updating the log with some last messages
-def exitWithLog(messages, gvars):
+def exitWithLog(messages, Globals):
     from .log import doLog, updateLog
-    doLog(messages, gvars)
-    if not gvars.config["logUpdates"] or not updateLog(["Exiting..."], gvars):
+    doLog(messages, Globals)
+    if not Globals.config["logUpdates"] or not updateLog(["Exiting..."], Globals):
         print("Exiting...")
     sys.exit(0)
 
 # Updates the log file with the current log.
-def updateLog(messages, gvars):
+def updateLog(messages, Globals):
     
     # This check is necessary to avoid empty lines in log.txt and the console output,
     # as in some places in the program, updateLog() is called with an empty array to
     # prompt the program to update the file without adding any new lines.
-    if messages: doLog(messages, gvars)
+    if messages: doLog(messages, Globals)
         
-    if gvars.config["logUpdates"]:
-        if attemptLog(gvars):
-            del gvars.log[:]
+    if Globals.config["logUpdates"]:
+        if attemptLog(Globals):
+            del Globals.log[:]
             return True
         else:
-            print(warn(f"{getTime(time.time())} - Log error; disabling log updates for this instance."), gvars)
-            gvars.config["logUpdates"] = False
+            print(warn(f"{getTime(time.time())} - Log error; disabling log updates for this instance."), Globals)
+            Globals.config["logUpdates"] = False
     
     return False
 
 # Colours warnings orange so that they stand out
-def warn(message, gvars):
-    return gvars.ConsoleColours.warning + message + gvars.ConsoleColours.reset
+def warn(message, Globals):
+    return Globals.ConsoleColours.warning + message + Globals.ConsoleColours.reset
 
 # Writes the contents of the log array to the log.txt file
-def writeLog(gvars):
+def writeLog(Globals):
     
     try:
-        with open(gvars.HOME+"/.oscr/data/log.txt", "a") as file:
-            for i in gvars.log:
+        with open(Globals.HOME+"/.oscr/data/log.txt", "a") as file:
+            for i in Globals.log:
                 file.write(i)
         return True
     
