@@ -62,22 +62,22 @@ defaultConfig = {
     ],
     "wait": 10
 }
-VERSION = "2.0.0-dev21-20210604"
+VERSION = "2.0.0-dev22-20210605"
 
 class Globals():
     def __init__(self, VERSION):
         self.config = {}
         self.failedStats = []
-        self.home = expanduser("~")
+        self.HOME = expanduser("~")
         self.log = []
-        self.savePath = defineSavePath(self.home)
-        self.version = VERSION
+        self.SAVE_PATH = defineSavePath(self.HOME)
+        self.VERSION = VERSION
         self.ConsoleColours = Colours(130, 0)
 
 class Colours():
     def __init__(self, warning, reset):
-        self.warning = fg(warning)
-        self.reset = attr(reset)
+        self.WARNING = fg(warning)
+        self.RESET = attr(reset)
 
 def initialiseGlobals(VERSION):
     gvars = Globals(VERSION)
