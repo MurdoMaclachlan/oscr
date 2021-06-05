@@ -17,6 +17,6 @@
 
 Nicknamed Oscar, this program removes blacklisted comments after a period of time. It is designed with r/TranscribersOfReddit transcribers in mind; specifically those who are tired of these comments clogging up their profiles, thus the contents of the default blacklist.
 
-### OSCR's documentation is hosted at readthedocs, [see here](https://oscr.readthedocs.io/en/latest/).
+### [OSCR's documentation is hosted at readthedocs.](https://oscr.readthedocs.io/en/latest/).
 
 For emergency contact, I'm reachable through `murdo@maclachlans.org.uk` and `murdomaclachlan@gmail.com` (the first address is preferred). You can also open an issue on GitHub if needed.
