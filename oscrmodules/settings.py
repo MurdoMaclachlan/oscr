@@ -22,13 +22,14 @@
 
 import sys
 import json
+from typing import List
 from .ini import createIni
 from .log import doLog, exitWithLog, updateLog, warn
 from .misc import tryDumpConfig
 
 # Main settings menu
 # If-tree the first, but not the last
-def settingsMain(Globals):
+def settingsMain(Globals: object) -> object:
 
     while True:
         # Gets user choice
@@ -68,7 +69,7 @@ def settingsMain(Globals):
 # You'd think I wouldn't need to turn my r/badcode flair into actual fucking code
 # But apparently I do
 # Does what it says on the fucking tin
-def editConfig(Globals):
+def editConfig(Globals: object) -> bool:
 
     # Gets user choice
     print(
@@ -194,7 +195,7 @@ def editConfig(Globals):
 
 # No refresh token support implemented yet, but I'm preparing for it
 # Does what it says on the fucking tin
-def editPraw(Globals):
+def editPraw(Globals: object) -> bool:
 
     # Setup results
     results = []
@@ -289,7 +290,7 @@ def howToUse():
 
 # Validates the user's choice to make sure it's in the viable results
 # The only function in this module that doesn't look like shrek got acne
-def validateChoice(results):
+def validateChoice(results: List) -> str:
     choice = ""
     while choice not in results:
         choice = input("\n>> ")
