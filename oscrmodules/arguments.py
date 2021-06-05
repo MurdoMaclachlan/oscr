@@ -79,8 +79,6 @@ def checkArgs(Globals):
                 Globals = arguments[argument](Globals)
             elif argument in configChanges and not closing:
                 arguments[argument](*configChanges[argument])
-                if argument in ["--clean-hunt", "-C"] and sys.argv.index(argument) != len(sys.argv):
-                    print(warn("WARNING: --clean-hunt was passed, but so were other arguments. Subsequent arguments will not be processed."), Globals)
             elif (argument in passGlobals or argument in configChanges) and closing:
                 print(warn(f"WARNING: '{argument}' was passed but was accompanied by a closing argument and will not be processed.", Globals))
             else:
