@@ -19,7 +19,7 @@
 
 import sys
 from os import remove, rename
-from .gvars import defaultConfig, VERSION
+from .globals import defaultConfig, VERSION
 from .log import doLog, warn
 from .ini import reformatIni
 from .misc import calculateEssentials
