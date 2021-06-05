@@ -20,10 +20,11 @@
 from os import remove
 from os.path import isfile
 from configparser import ConfigParser
+from typing import Dict, List, Union
 from .log import doLog
 from .misc import filterArray, writeToFile
 
-def createIni(Globals):
+def createIni(Globals: object) -> bool:
     
     doLog(["praw.ini missing, incomplete or incorrect. It will need to be created."], Globals)
     iniVars = {
@@ -37,19 +38,19 @@ def createIni(Globals):
         for i in iniVars: file.write(i+"="+iniVars[i]+"\n")
     return True
 
-def extractIniDetails(Globals):
+def extractIniDetails(Globals: object) -> Union[bool, List]:
     with open(Globals.SAVE_PATH+"/praw.ini", "r+") as file:
         content = file.read().splitlines()
-        return None if content == [] or oscrOnly(content, Globals) == [] else oscrOnly(content, Globals) # return None if praw.ini has no OSCR
+    return False if not content or not oscrOnly(content, Globals) else oscrOnly(content, Globals) # return None if praw.ini has no OSCR
 
-def getCredentials(Globals):
+def getCredentials(Globals: object) -> Dict:
     
     # Use configparser magic to get the credentials from praw.ini
     credentials = ConfigParser()
     credentials.read(Globals.SAVE_PATH + "/oscr/praw.ini")
     return dict(credentials["oscr"])
    
-def oscrOnly(content, Globals):
+def oscrOnly(content: List, Globals: object) -> List:
     oscrContent = []
     append = False
     for line in content:
@@ -63,7 +64,7 @@ def oscrOnly(content, Globals):
         if append: oscrContent.append(line)
     return oscrContent
 
-def reformatIni(Globals):
+def reformatIni(Globals: object) -> bool:
 
     try: getCredentials(Globals)["client_id"]; return True
     except (FileNotFoundError, KeyError): pass
@@ -74,7 +75,7 @@ def reformatIni(Globals):
         oscrContent = oscrOnly(content, Globals)
         
         # If no OSCR content was found
-        if oscrContent is None:
+        if not oscrContent:
             if isfile(Globals.SAVE_PATH+"/oscr/praw.ini"):
                 doLog(["praw.ini already formatted."], Globals)
                 return True
@@ -101,9 +102,10 @@ def reformatIni(Globals):
     except FileNotFoundError:
         if isfile(Globals.SAVE_PATH + "/praw.ini"):
             doLog(["praw.ini already formatted."], Globals)
-        else: createIni(Globals)
+            return False
+        else: return createIni(Globals)
 
-def stripOSCR(content):
+def stripOSCR(content: List) -> List:
     delete = False
     linesToDelete = []
     for line in content:
@@ -111,4 +113,3 @@ def stripOSCR(content):
         elif line.startswith("["): delete = False
         if delete: linesToDelete.append(line)
     return filterArray(content, linesToDelete)
-    

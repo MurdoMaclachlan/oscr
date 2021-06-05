@@ -19,12 +19,13 @@
 
 import sys
 from os import remove, rename
+from typing import NoReturn
 from .globals import defaultConfig, VERSION
 from .log import doLog, warn
 from .ini import reformatIni
 from .misc import calculateEssentials
 
-def checkArgs(Globals):
+def checkArgs(Globals: object) -> object:
     
     # Setting up of essential dicts and lists
     arguments = {
@@ -107,7 +108,7 @@ def checkArgs(Globals):
     'arguments' dictionary in checkArgs(), above.
 """
 
-def formatOld(Globals):
+def formatOld(Globals: object) -> object:
     doLog(["Reformatting CDRemover files to OSCR."], Globals)
     try:
         rename(Globals.HOME+"/.cdremover", Globals.HOME+"/.oscr")
@@ -116,7 +117,7 @@ def formatOld(Globals):
     doLog(["Reformatting complete."], Globals)
     return Globals
 
-def helpMenu():
+def helpMenu() -> NoReturn:
     print(
         "List of Arguments:\n",
         "--credits, -c:       lists everyone who has helped with the creation of the program\n",
@@ -133,7 +134,7 @@ def helpMenu():
     )
 
 
-def printCredits():
+def printCredits() -> NoReturn:
     print(
         "Credits (alphabetical):\n\n"
         "/u/--B_L_A_N_K--\n",
@@ -162,7 +163,7 @@ def printCredits():
         "- Help with default regex list"
     )
 
-def resetConfig(Globals):
+def resetConfig(Globals: object) -> object:
     doLog(["Resetting config file."], Globals)
     try:
         remove(Globals.HOME+"/.config/oscr/config.json")
@@ -171,20 +172,20 @@ def resetConfig(Globals):
     Globals.config = defaultConfig
     return Globals
 
-def settings(Globals):
+def settings(Globals: object) -> object:
     from .settings import settingsMain
     doLog([f"Running OSCR version {VERSION} with --settings parameter, entering settings menu."], Globals)
     Globals = settingsMain(Globals)
     return Globals
 
-def showConfig():
+def showConfig() -> NoReturn:
     print("The config is as follows:\n")
     for i in config:
         print(f"{i}: {config[i]}")
 
-def showVersion():
+def showVersion() -> NoReturn:
     print(f"The installed version of OSCR is: {VERSION}")
 
-def tempChangeConfig(Globals, key, val):
+def tempChangeConfig(Globals: object, key: str, val: bool) -> object:
     Globals.config[key] = val
     return Globals

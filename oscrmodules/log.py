@@ -21,6 +21,7 @@ import time
 import sys
 from os import mkdir
 from os.path import isdir
+from typing import List, NoReturn
 from .misc import getTime
 
 """
@@ -33,7 +34,7 @@ from .misc import getTime
 """
 
 # Attempts to update log.txt, creating any missing files/directories.
-def attemptLog(Globals):
+def attemptLog(Globals: object) -> bool:
     
     try: return writeLog(Globals)
         
@@ -45,23 +46,27 @@ def attemptLog(Globals):
         return writeLog(Globals)
 
 # Updates the log array and prints to console
-def doLog(messages, Globals):
+def doLog(messages: List, Globals: object) -> bool:
     
     for message in messages:
+        
+        # Allows for dynamic passing of lists
+        if not message: continue
+        
         currentTime = getTime(time.time())
         
         try:
             Globals.log.append(f"{currentTime} - {message}\n")
             print(f"{currentTime} - {message}") if Globals.config["printLogs"] else None
         except AttributeError as e:
-            print(warn(f"{currentTime} - Failed to output log; log is {Globals.log}."), Globals)
+            print(warn(f"{currentTime} - Failed to add message to log; message is {messages}."), Globals)
             print(warn(f"Error is: {e}"), Globals)
             return False
     
     return True
 
 # Exits OSCR while updating the log with some last messages
-def exitWithLog(messages, Globals):
+def exitWithLog(messages: List, Globals: object) -> NoReturn:
     from .log import doLog, updateLog
     doLog(messages, Globals)
     if not Globals.config["logUpdates"] or not updateLog(["Exiting..."], Globals):
@@ -69,7 +74,7 @@ def exitWithLog(messages, Globals):
     sys.exit(0)
 
 # Updates the log file with the current log.
-def updateLog(messages, Globals):
+def updateLog(messages: List, Globals: object) -> bool:
     
     # This check is necessary to avoid empty lines in log.txt and the console output,
     # as in some places in the program, updateLog() is called with an empty array to
@@ -87,11 +92,11 @@ def updateLog(messages, Globals):
     return False
 
 # Colours warnings orange so that they stand out
-def warn(message, Globals):
+def warn(message: str, Globals: object) -> str:
     return Globals.ConsoleColours.WARNING + message + Globals.ConsoleColours.RESET
 
 # Writes the contents of the log array to the log.txt file
-def writeLog(Globals):
+def writeLog(Globals: object) -> bool:
     
     try:
         with open(Globals.HOME+"/.oscr/data/log.txt", "a") as file:

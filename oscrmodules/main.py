@@ -22,6 +22,7 @@ import configparser
 from time import sleep
 from alive_progress import alive_bar as aliveBar
 from os.path import isfile
+from typing import NoReturn
 from .log import doLog, exitWithLog, updateLog, warn
 from .comment import checkArray, removeNonAlpha, remover
 from .ini import createIni, extractIniDetails, getCredentials
@@ -39,12 +40,12 @@ from .misc import writeToFile
     ends.
 """
 
-def oscr(Globals):
+def oscr(Globals: object) -> NoReturn: 
 
     doLog(
         [
             f"Running OSCR version {Globals.VERSION} with recur set to {Globals.config['recur']}.",
-            warn("WARNING: Log updates are OFF. Console log will not be saved for this instance.", Globals) if not Globals.config["logUpdates"] else None
+            warn("WARNING: Log updates are OFF. Console log will not be saved for this instance.", Globals) if not Globals.config["logUpdates"] else ""
         ], Globals
     )
     
@@ -60,7 +61,7 @@ def oscr(Globals):
     except (configparser.NoSectionError, praw.exceptions.MissingRequiredAttributeException, KeyError):
         if isfile(Globals.SAVE_PATH+"/praw.ini"):
             iniDetails = extractIniDetails(Globals)
-            if iniDetails is None: pass
+            if not iniDetails: pass
             else:
                 writeToFile(Globals, iniDetails, open(Globals.SAVE_PATH+"/oscr/praw.ini", "w+"))
                 exitWithLog(["praw.ini successfully created, program restart required for this to take effect."], Globals)

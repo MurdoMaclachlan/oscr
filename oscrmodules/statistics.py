@@ -27,12 +27,12 @@ from .log import doLog, warn
 """
 
 # Retrieve statistics from stats.txt
-def fetch(statistic, Globals):
+def fetch(statistic: str, Globals: object) -> int:
     
     def checkIfEmpty(array):
         if array == []:          
             doLog([f"No stats for {statistic} found; returning 0."], Globals)
-            return True
+            return 0
     
     result = []
 
@@ -60,7 +60,7 @@ def fetch(statistic, Globals):
     if checkIfEmpty(result): return 0
 
 # Updates statistics in stats.txt
-def update(statistic, value, Globals):
+def update(statistic: str, value: int, Globals: object) -> bool:
 
     # Necessary check to avoid further errors if stat has previously failed to update
     if statistic in Globals.failedStats:
