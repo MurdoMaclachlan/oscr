@@ -110,7 +110,7 @@ def checkArgs(gvars):
 def formatOld(gvars):
     doLog(["Reformatting CDRemover files to OSCR."], gvars)
     try:
-        rename(gvars.home+"/.cdremover", gvars.home+"/.oscr")
+        rename(gvars.HOME+"/.cdremover", gvars.HOME+"/.oscr")
     except FileNotFoundError: pass
     reformatIni(gvars)
     doLog(["Reformatting complete."], gvars)
@@ -165,7 +165,7 @@ def printCredits():
 def resetConfig(gvars):
     doLog(["Resetting config file."], gvars)
     try:
-        remove(gvars.home+"/.config/oscr/config.json")
+        remove(gvars.HOME+"/.config/oscr/config.json")
     except FileNotFoundError:
         doLog(["Config file already absent."], gvars)
     gvars.config = defaultConfig
