@@ -18,6 +18,7 @@
 """
 
 import time
+import sys
 from os import mkdir
 from os.path import isdir
 from .misc import getTime
@@ -34,8 +35,7 @@ from .misc import getTime
 # Attempts to update log.txt, creating any missing files/directories.
 def attemptLog(gvars):
     
-    try:
-        return writeLog(gvars)
+    try: return writeLog(gvars)
         
     # Creates log.txt and/or the data directory, if necessary.
     except FileNotFoundError:
@@ -45,37 +45,43 @@ def attemptLog(gvars):
         return writeLog(gvars)
 
 # Updates the log array and prints to console
-def doLog(output, gvars):
+def doLog(messages, gvars):
     
-    currentTime = getTime(time.time())
-    
-    try:
-        gvars.log.append(f"{currentTime} - {output}\n")
-        print(f"{currentTime} - {output}") if gvars.config["printLogs"] else None
-        return True
-    except AttributeError as e:
-        print(currentTime+" - "+f"Failed to output log; log is {gvars.log}.")
-        print(f"Error is: {e}")
-        return False
+    for message in messages:
+        currentTime = getTime(time.time())
+        
+        try:
+            gvars.log.append(f"{currentTime} - {message}\n")
+            print(f"{currentTime} - {message}") if gvars.config["printLogs"] else None
+        except AttributeError as e:
+            print(warn(f"{currentTime} - Failed to output log; log is {gvars.log}."), gvars)
+            print(warn(f"Error is: {e}"), gvars)
+            return False
     
     return True
 
+# Exits OSCR while updating the log with some last messages
+def exitWithLog(messages, gvars):
+    from .log import doLog, updateLog
+    doLog(messages, gvars)
+    if not gvars.config["logUpdates"] or not updateLog(["Exiting..."], gvars):
+        print("Exiting...")
+    sys.exit(0)
+
 # Updates the log file with the current log.
-def updateLog(message, gvars):
+def updateLog(messages, gvars):
     
     # This check is necessary to avoid empty lines in log.txt and the console output,
-    # as in some places in the program, updateLog() is called with an empty string to
+    # as in some places in the program, updateLog() is called with an empty array to
     # prompt the program to update the file without adding any new lines.
-    if message:
-        doLog(message, gvars)
+    if messages: doLog(messages, gvars)
         
     if gvars.config["logUpdates"]:
         if attemptLog(gvars):
             del gvars.log[:]
             return True
         else:
-            
-            print(f"{getTime(time.time())} - Log error; disabling log updates for this instance.")
+            print(warn(f"{getTime(time.time())} - Log error; disabling log updates for this instance."), gvars)
             gvars.config["logUpdates"] = False
     
     return False
@@ -91,10 +97,8 @@ def writeLog(gvars):
         with open(gvars.home+"/.oscr/data/log.txt", "a") as file:
             for i in gvars.log:
                 file.write(i)
+        return True
     
     # Catch all exceptions to avoid the program crashing;
     # updateLog will disable further log updates if it receives False.
-    except Exception:
-        return False
-    
-    return True
+    except Exception: return False
