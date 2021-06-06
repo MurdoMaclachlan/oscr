@@ -6,7 +6,7 @@ Installation and Use
 Requirements
 -------------
 
-In order to install OSCR, you will need a version of Python installed. The original framework was written in 3.7, and current development uses 3.9, but anything 3.x onwards should work.
+In order to install OSCR, you will need a version of Python installed. The original framework was written in 3.7, and current development uses 3.9, but anything 3.5 onwards should work. A minimum of 3.5 is required because that is when type-hinting, which OSCR uses extensively, was added.
 
 OSCR also relies on several python packages; configparser, PRAW, and alive_progress. Any version of configparser will do, but for PRAW you will need 7.1.2 or over, and for alive_progress you will need 1.6.1 or over.
 
