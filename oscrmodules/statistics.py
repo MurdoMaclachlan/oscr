@@ -17,6 +17,7 @@
     Contact me at murdo@maclachlans.org.uk
 """
 
+from typing import List, TextIO
 from .log import doLog, warn
 
 """
@@ -28,11 +29,6 @@ from .log import doLog, warn
 
 # Retrieve statistics from stats.txt
 def fetch(statistic: str, Globals: object) -> int:
-    
-    def checkIfEmpty(array):
-        if array == []:          
-            doLog([f"No stats for {statistic} found; returning 0."], Globals)
-            return 0
     
     result = []
 
@@ -46,8 +42,10 @@ def fetch(statistic: str, Globals: object) -> int:
         return 0
 
 
-    # Default stat to 0 if file found, but appropriate statistic not found.
-    if checkIfEmpty(content): return 0
+    # Default stat to 0 if file found, but is empty.
+    if not content:
+        doLog([f"No stats for {statistic} found; returning 0."], Globals)
+        return 0
     
     for line in content:
         
@@ -57,7 +55,8 @@ def fetch(statistic: str, Globals: object) -> int:
             return int(line.split(" ")[1])
 
     # If only stat found is not the one being searched for, return 0.
-    if checkIfEmpty(result): return 0
+    doLog([f"No stats for {statistic} found; returning 0."], Globals)
+    return 0
 
 # Updates statistics in stats.txt
 def update(statistic: str, value: int, Globals: object) -> bool:
@@ -81,11 +80,8 @@ def update(statistic: str, value: int, Globals: object) -> bool:
     with open(Globals.HOME+"/.oscr/data/stats.txt", "w") as file:
         
         # If no stats found, add the stat to be updated and default other to 0.
-        if content == None:
-            if statistic == "counted":
-                file.write(newLine+"\ndeleted: 0")
-            else:
-                file.write("counted: 0\n"+newLine)
+        if content is None:
+            file.write({"counted":newLine+"\ndeleted: 0", "deleted":"counted: 0\n"+newLine}[statistic])
             doLog([f"Updated {statistic} successfully."], Globals)
             return True
 
@@ -94,18 +90,19 @@ def update(statistic: str, value: int, Globals: object) -> bool:
             # If both stats found, update required stat.
             if line.startswith(statistic):
                 content[content.index(line)] = newLine
-                file.write('\n'.join(content))
-                doLog([f"Updated {statistic} successfully."], Globals)
-                return True
+                return writeOutStat(file, content, statistic, Globals)
             
         # If only stat found is not the one being searched for, add the required stat.
         content.append(newLine)
         file.seek(0)
-        file.write('\n'.join(content))
-        doLog([f"Updated {statistic} successfully."], Globals)
-        return True
+        return writeOutStat(file, content, statistic, Globals)
     
     # If something goes very wrong and the stat can't be updated for some reason
     doLog([warn(f"WARNING: failed to update {statistic}, will no longer attempt to update this statistic for this instance.", Globals)], Globals)
     Globals.failedStats.append(statistic)
     return False
+
+def writeOutStat(file: TextIO, content: List, statistic: str, Globals: object) -> bool:
+    file.write('\n'.join(content))
+    doLog([f"Updated {statistic} successfully."], Globals)
+    return True
