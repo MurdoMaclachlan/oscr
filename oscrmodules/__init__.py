@@ -31,10 +31,10 @@ from .misc import calculateEssentials
 from .misc import checkRegex
 from .misc import defineSavePath
 from .misc import dumpConfig
+from .misc import dumpJSON
 from .misc import filterArray
 from .misc import getTime
 from .misc import getConfig
-from .misc import tryDumpConfig
 from .misc import writeToFile
 
 # log handling functions functions
@@ -54,5 +54,5 @@ from .settings import settingsMain
 from .settings import validateChoice
 
 # statistics handling functions
-from .statistics import fetch
-from .statistics import update
+from .statistics import dumpStats
+from .statistics import fetchStats

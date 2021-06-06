@@ -20,8 +20,9 @@
 from os.path import expanduser
 from sys import platform
 from colored import fg, attr
+from typing import NoReturn
 from .misc import defineSavePath
-global defaultConfig, version
+global defaultConfig, VERSION
 
 defaultConfig = {
     "blacklist": [
@@ -63,22 +64,51 @@ defaultConfig = {
     "wait": 10
 }
 
-VERSION = "2.0.0-dev25-20210606"
+VERSION = "2.0.0-dev26-20210606"
+
+class Colours():
+    def __init__(self: object, warning: int, reset: int) -> NoReturn:
+        self.WARNING = fg(warning)
+        self.RESET = attr(reset)
 
 class Globals():
-    def __init__(self, VERSION):
+    def __init__(self: object, VERSION: int) -> NoReturn:
         self.config = {}
-        self.failedStats = []
+        self.ConsoleColours = Colours(130, 0)
         self.HOME = expanduser("~")
         self.log = []
         self.SAVE_PATH = defineSavePath(self.HOME)
+        self.Stats = Statistics()
         self.VERSION = VERSION
-        self.ConsoleColours = Colours(130, 0)
 
-class Colours():
-    def __init__(self, warning, reset):
-        self.WARNING = fg(warning)
-        self.RESET = attr(reset)
+class Statistics():
+    def __init__(self: object) -> NoReturn:
+        self.data = {
+            "current": {
+                "counted": 0,
+                "deleted": 0,
+                "waitingFor": 0
+            },
+            "total": {}
+        }
+        self.failed = False
+    
+    def generateNewTotals(self: object) -> NoReturn:
+        self.data["total"] = {
+                    "counted": 0,
+                    "deleted": 0
+            }
+    
+    def resetCurrent(self: object) -> NoReturn:
+        self.data["current"] = {
+                "counted": 0,
+                "deleted": 0,
+                "waitingFor": 0
+            }
+    
+    def updateTotals(self: object) -> NoReturn:
+        for statistic in ["counted","deleted"]:
+            self.data["total"][statistic] += self.data["current"][statistic]
 
 def initialiseGlobals(VERSION: int) -> object:
     return Globals(VERSION)

@@ -73,8 +73,8 @@ def oscr(Globals: object) -> NoReturn:
     
     # Fetches statistics
     if Globals.config["reportTotals"]:
-        from .statistics import fetch, update
-        totalCounted, totalDeleted = fetch("counted", Globals), fetch("deleted", Globals)
+        from .statistics import dumpStats, fetchStats
+        Globals = fetchStats(Globals)
     
     updateLog(
         [
@@ -84,7 +84,7 @@ def oscr(Globals: object) -> NoReturn:
     ) if Globals.config["logUpdates"] else None
     
     while True:
-        deleted, counted, waitingFor = 0, 0, 0
+        Globals.Stats.resetCurrent()
         
         # Fetches the comment list from Reddit
         doLog(["Retrieving comments..."], Globals)
@@ -102,33 +102,33 @@ def oscr(Globals: object) -> NoReturn:
                     if Globals.config["useRegex"]:
                         if checkRegex(Globals, re, comment):
                             if checkArray(Globals.config["subredditList"], str(comment.subreddit).lower()) and checkArray(Globals.config["userList"], comment.parent().author.name):
-                                deleted, waitingFor = remover(comment, Globals.config["cutoffSec"], deleted, waitingFor, Globals)
+                                Globals = remover(comment, Globals)
                     
                     # Blacklist path
                     else:
                         if removeNonAlpha((comment.body.lower(), comment.body)[Globals.config["caseSensitive"]]) in Globals.config["blacklist"]:
                             if checkArray(Globals.config["subredditList"], str(comment.subreddit).lower()) and checkArray(Globals.config["userList"], comment.parent().author.name):
-                                deleted, waitingFor = remover(comment, Globals.config["cutoffSec"], deleted, waitingFor, Globals)
+                                Globals = remover(comment, Globals)
                 
                 # Result of a comment being in reply to a deleted/removed submission
                 except AttributeError as e:
-                    doLog([warn(f"Handled error on iteration {counted}: {e} | Comment at {comment.permalink}", Globals)], Globals)
-                counted += 1
+                    doLog([warn(f"Handled error on iteration {Globals.Stats.data['current']['counted']}: {e} | Comment at {comment.permalink}", Globals)], Globals)
+                Globals.Stats.data["current"]["counted"] += 1
                 
                 progress()
     
-        doLog([f"Successfully checked all {counted} available comments."], Globals)
+        doLog([f"Successfully checked all {Globals.Stats.data['current']['counted']} available comments."], Globals)
     
         # Notifies if the end of Reddit's listing is reached (i.e. no new comments due to API limitations)
         try:
-            if counted < Globals.config["limit"]:
+            if Globals.Stats.data['current']['counted'] < Globals.config["limit"]:
                 doLog([warn(
                     f"WARNING: OSCR counted less comments than your limit of {Globals.config['limit']}. You may have deleted all available elligible comments,",
                     "or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.",
                     Globals
                 )], Globals)
         except TypeError:
-            if counted < 1000:
+            if Globals.Stats.data['current']['counted'] < 1000:
                 doLog([warn(
                     "WARNING: OSCR counted less comments than your limit of 1000. You may have deleted all available elligible comments,",
                     "or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.",
@@ -137,24 +137,22 @@ def oscr(Globals: object) -> NoReturn:
     
         # Updates statistics
         if Globals.config["reportTotals"]:
-            totalCounted += counted
-            update("counted", totalCounted, Globals)
-            totalDeleted += deleted
-            update("deleted", totalDeleted, Globals)
+            Globals.Stats.updateTotals()
+            dumpStats(Globals)
         
         # Gives info about this iteration; how many comments were counted, deleted, still waiting for.
         doLog(
             [
-                f"Counted this cycle: {str(counted)}",
-                f"Deleted this cycle: {str(deleted)}",
-                f"Waiting for: {str(waitingFor)}"
+                f"Counted this cycle: {str(Globals.Stats.data['current']['counted'])}",
+                f"Deleted this cycle: {str(Globals.Stats.data['current']['deleted'])}",
+                f"Waiting for: {str(Globals.Stats.data['current']['waitingFor'])}"
             ], Globals
         )
         if Globals.config["reportTotals"]:
             doLog(
                 [
-                    f"Total Counted: {str(totalCounted)}",
-                    f"Total Deleted: {str(totalDeleted)}"
+                    f"Total Counted: {str(Globals.Stats.data['total']['counted'])}",
+                    f"Total Deleted: {str(Globals.Stats.data['total']['deleted'])}"
                 ], Globals
             )
     

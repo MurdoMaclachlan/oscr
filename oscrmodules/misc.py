@@ -22,7 +22,7 @@ import sys
 from datetime import datetime
 from os import environ, mkdir
 from os.path import isdir
-from typing import Dict, List, TextIO
+from typing import Dict, List, NoReturn, TextIO
 
 """
     This module is divided into several categories,
@@ -46,49 +46,17 @@ def getTime(timeToFind: int) -> str:
     the creation, retrieval and management of these files.
 """
 
-# Write to config.json
-def dumpConfig(outConfig: Dict, Globals: object) -> bool:
-    
-    with open(Globals.SAVE_PATH+"/oscr/config.json", "w") as outFile:
-        outFile.write(json.dumps(outConfig, indent=4, sort_keys=True))
-    return True
-
-# Retrieves the user configurations from a .json file, or creates a config file from default values if one can't be found.
-def getConfig(Globals: object) -> object:
-
-    from .log import doLog    
-
-    try:
-        with open(Globals.SAVE_PATH+"/oscr/config.json") as configFile:
-            try: fromConfig = json.load(configFile)
-            
-            # Catch invalid JSON in the config file (usually a result of manual editing)
-            except json.decoder.JSONDecodeError as e:
-                doLog([warn("Failed to get config; could not decode JSON file. Exiting.", Globals), f"Error was: {e}"], Globals)
-                sys.exit(0)
-            
-            Globals.config = fromConfig["config"][0]
-
-    # Catch missing config file
-    except FileNotFoundError:
-        from .globals import defaultConfig
-        Globals.config = defaultConfig
-        Globals.config["user"] = input("No config file found. Please enter your Reddit username:  /u/")
-        tryDumpConfig(Globals)
-
-    return Globals
-
 # Attempts to update the config file
-def tryDumpConfig(Globals: object) -> bool:
+def dumpConfig(Globals: object) -> bool:
     
     from .log import doLog
     
-    outConfig = {"config": [Globals.config]}
-    
-    try: return dumpConfig(outConfig, Globals)
-    
-    # Catch missing config directory for OSCR
-    except FileNotFoundError:
+    if dumpJSON(
+            Globals.SAVE_PATH+"/oscr/config.json",
+            {"config": [Globals.config]}
+        ): return True
+    else:
+        # Catch missing config directory for OSCR
         doLog(["home/.config/oscr directory not found; creating."], Globals)
         if not isdir(Globals.HOME+"/.config/oscr"):
             mkdir(Globals.HOME+"/.config/oscr")
@@ -98,6 +66,31 @@ def tryDumpConfig(Globals: object) -> bool:
         else:
             doLog(["What the hell happened here?"], Globals)
             return False
+
+# Retrieves the user configurations from a .json file, or creates a config file from default values if one can't be found.
+def getConfig(Globals: object) -> object:
+
+    from .log import doLog    
+
+    try:
+        with open(Globals.SAVE_PATH+"/oscr/config.json") as configFile:
+            try: data = json.load(configFile)
+            
+            # Catch invalid JSON in the config file (usually a result of manual editing)
+            except json.decoder.JSONDecodeError as e:
+                doLog([warn("Failed to get config; could not decode JSON file. Exiting.", Globals), f"Error was: {e}"], Globals)
+                sys.exit(0)
+            
+            Globals.config = data["config"][0]
+
+    # Catch missing config file
+    except FileNotFoundError:
+        from .globals import defaultConfig
+        Globals.config = defaultConfig
+        Globals.config["user"] = input("No config file found. Please enter your Reddit username:  /u/")
+        tryDumpConfig(Globals)
+
+    return Globals
 
 """
     TRUE MISCELLANEOUS
@@ -134,6 +127,14 @@ def checkRegex(Globals: object, re, comment: object) -> bool:
 def defineSavePath(home: str) -> str:
     if sys.platform.startswith("win"): return environ["APPDATA"] + "\\oscr"
     else: return home + "/.config"
+
+def dumpJSON(path: str, data: Dict) -> bool:
+    
+    try:
+        with open(path, "w") as outFile:
+            outFile.write(json.dumps(data, indent=4, sort_keys=True))
+        return True
+    except FileNotFoundError: return False
 
 def filterArray(array: List, elements: List) -> List:
     del array[array.index(elements[0]):array.index(elements[len(elements)-1])]

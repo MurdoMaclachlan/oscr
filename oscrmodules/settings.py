@@ -25,7 +25,7 @@ import json
 from typing import List
 from .ini import createIni
 from .log import doLog, exitWithLog, updateLog, warn
-from .misc import tryDumpConfig
+from .misc import dumpConfig
 
 # Main settings menu
 # If-tree the first, but not the last
@@ -189,7 +189,7 @@ def editConfig(Globals: object) -> bool:
             ]
             Globals.config[key] = newUnit
 
-    tryDumpConfig(Globals)    
+    dumpConfig(Globals)    
 
     return True
 
