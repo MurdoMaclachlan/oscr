@@ -21,8 +21,8 @@ import sys
 from os import remove, rename
 from typing import NoReturn
 from .globals import defaultConfig, VERSION
-from .log import doLog, warn
 from .ini import reformatIni
+from .log import doLog, warn
 from .misc import calculateEssentials
 
 def checkArgs(Globals: object) -> object:
@@ -76,10 +76,11 @@ def checkArgs(Globals: object) -> object:
     # Checks through all the lists to work out what to do with each arg
     for argument in arguments:
         if argument in sys.argv[1:]:
-            if argument in passGlobals and not closing:
-                Globals = arguments[argument](Globals)
-            elif argument in configChanges and not closing:
-                arguments[argument](*configChanges[argument])
+            if not closing:
+                if argument in passGlobals:
+                    Globals = arguments[argument](Globals)
+                elif argument in configChanges:
+                    arguments[argument](*configChanges[argument])
             elif (argument in passGlobals or argument in configChanges) and closing:
                 print(warn(f"WARNING: '{argument}' was passed but was accompanied by a closing argument and will not be processed.", Globals))
             else:
@@ -91,8 +92,7 @@ def checkArgs(Globals: object) -> object:
         if argument not in arguments:
             print(warn(f"WARNING: Unknown argument '{argument}' passed - ignoring.", Globals))
     
-    if closing:
-        sys.exit(0)   
+    if closing: sys.exit(0)   
     
     return calculateEssentials(Globals)
 
