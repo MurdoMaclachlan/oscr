@@ -59,15 +59,14 @@ def doLog(messages: List, Globals: object) -> bool:
             Globals.log.append(f"{currentTime} - {message}\n")
             print(f"{currentTime} - {message}") if Globals.config["printLogs"] else None
         except AttributeError as e:
-            print(warn(f"{currentTime} - Failed to add message to log; message is {messages}."), Globals)
-            print(warn(f"Error is: {e}"), Globals)
+            print(warn(f"{currentTime} - Failed to add message to log; message is {messages}.", Globals))
+            print(warn(f"Error is: {e}", Globals))
             return False
     
     return True
 
 # Exits OSCR while updating the log with some last messages
 def exitWithLog(messages: List, Globals: object) -> NoReturn:
-    from .log import doLog, updateLog
     doLog(messages, Globals)
     if not Globals.config["logUpdates"] or not updateLog(["Exiting..."], Globals):
         print("Exiting...")
@@ -100,8 +99,7 @@ def writeLog(Globals: object) -> bool:
     
     try:
         with open(Globals.HOME+"/.oscr/data/log.txt", "a") as file:
-            for i in Globals.log:
-                file.write(i)
+            for i in Globals.log: file.write(i)
         return True
     
     # Catch all exceptions to avoid the program crashing;
