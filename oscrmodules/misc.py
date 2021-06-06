@@ -17,9 +17,9 @@
     Contact me at murdo@maclachlans.org.uk
 """
 
-import datetime
 import json
 import sys
+from datetime import datetime
 from os import environ, mkdir
 from os.path import isdir
 from typing import Dict, List, TextIO
@@ -37,8 +37,7 @@ from typing import Dict, List, TextIO
    
 # Finds the current time and returns it in a human readable format.
 def getTime(timeToFind: int) -> str:
-    currentTime = datetime.datetime.fromtimestamp(timeToFind)
-    return currentTime.strftime("%Y-%m-%d %H:%M:%S")
+    return datetime.fromtimestamp(timeToFind).strftime("%Y-%m-%d %H:%M:%S")
 
 """
     CONFIGURATION FUNCTIONS
@@ -61,8 +60,7 @@ def getConfig(Globals: object) -> object:
 
     try:
         with open(Globals.SAVE_PATH+"/oscr/config.json") as configFile:
-            try:
-                fromConfig = json.load(configFile)
+            try: fromConfig = json.load(configFile)
             
             # Catch invalid JSON in the config file (usually a result of manual editing)
             except json.decoder.JSONDecodeError as e:
@@ -87,8 +85,7 @@ def tryDumpConfig(Globals: object) -> bool:
     
     outConfig = {"config": [Globals.config]}
     
-    try:
-        return dumpConfig(outConfig, Globals)
+    try: return dumpConfig(outConfig, Globals)
     
     # Catch missing config directory for OSCR
     except FileNotFoundError:
@@ -139,12 +136,9 @@ def defineSavePath(home: str) -> str:
     else: return home + "/.config"
 
 def filterArray(array: List, elements: List) -> List:
-    start = array.index(elements[0])
-    end = array.index(elements[len(elements)-1])
-    del array[start:end]
+    del array[array.index(elements[0]):array.index(elements[len(elements)-1])]
     return array
 
 def writeToFile(Globals: object, content: List, file: TextIO) -> bool:
-    for line in content:     
-        file.write(line+"\n")
+    for line in content: file.write(line+"\n")
     return True
