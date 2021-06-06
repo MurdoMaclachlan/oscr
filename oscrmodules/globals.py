@@ -63,7 +63,7 @@ defaultConfig = {
     "wait": 10
 }
 
-VERSION = "2.0.0-dev24-20210605"
+VERSION = "2.0.0-dev25-20210606"
 
 class Globals():
     def __init__(self, VERSION):
