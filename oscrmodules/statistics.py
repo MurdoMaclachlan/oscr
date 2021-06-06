@@ -17,8 +17,10 @@
     Contact me at murdo@maclachlans.org.uk
 """
 
-from typing import List, TextIO
+import json
+from typing import List, NoReturn, TextIO
 from .log import doLog, warn
+from .misc import dumpJSON
 
 """
     This module contains file handling for the statistics,
@@ -27,82 +29,39 @@ from .log import doLog, warn
     to update them after each iteration.
 """
 
-# Retrieve statistics from stats.txt
-def fetch(statistic: str, Globals: object) -> int:
+# Updates statistics in stats.json
+def dumpStats(Globals: object) -> bool:
     
-    result = []
-
-    try:    
-        with open(Globals.HOME+"/.oscr/data/stats.txt", "r") as file:
-            content = file.read().splitlines()
-        
-    # Default stat to 0 if file not found.
-    except FileNotFoundError:
-        doLog([f"No stats for {statistic} found; returning 0."], Globals)
-        return 0
-
-
-    # Default stat to 0 if file found, but is empty.
-    if not content:
-        doLog([f"No stats for {statistic} found; returning 0."], Globals)
-        return 0
-    
-    for line in content:
-        
-        # If the value for the statistic being fetched can be found, return it.
-        if line.startswith(statistic):
-            doLog([f"Fetched {statistic} successfully."], Globals)
-            return int(line.split(" ")[1])
-
-    # If only stat found is not the one being searched for, return 0.
-    doLog([f"No stats for {statistic} found; returning 0."], Globals)
-    return 0
-
-# Updates statistics in stats.txt
-def update(statistic: str, value: int, Globals: object) -> bool:
-
-    # Necessary check to avoid further errors if stat has previously failed to update
-    if statistic in Globals.failedStats:
-        doLog([f"Skipping update of following statistic: {statistic}"], Globals)
+    if dumpJSON(
+            Globals.HOME+"/.oscr/data/stats.json",
+            {"statistics": [Globals.Stats.data["total"]]}
+        ):
+        doLog([f"Updated statistics successfully."], Globals)
         return False
- 
-    newLine = f"{statistic}: {str(value)}"
+    else:
+        doLog([warn(f"WARNING: Failed to update statistics, will no longer attempt to update for this instance.", Globals)], Globals)
+        return True
 
+# Retrieve statistics from stats.json
+def fetchStats(Globals: object) -> object:
+    
     try:
-        with open(Globals.HOME+"/.oscr/data/stats.txt", "r") as file:
-            content = file.read().splitlines()
-    
-    # If stats.txt doesn't exist, create in.
-    except FileNotFoundError:
-        doLog(["No stats.txt found; creating."], Globals)
-        content = None
-
-    with open(Globals.HOME+"/.oscr/data/stats.txt", "w") as file:
+        with open(Globals.HOME+"/.oscr/data/stats.json", "r") as file:
+            try: data = json.load(file)
+            
+            # Catch invalid JSON in the config file (usually a result of manual editing)
+            except json.decoder.JSONDecodeError as e:
+                doLog([warn(f"WARNING: Failed to fetch statistics; could not decode JSON file. Returning 0.", Globals), warn(f"Error was: {e}", Globals)], Globals)
+                Globals.Stats.generateNewTotals()
+                return Globals
+            
+            Globals.Stats.data["total"] = data["statistics"][0]
+            doLog([f"Fetched statistics successfully."], Globals)
         
-        # If no stats found, add the stat to be updated and default other to 0.
-        if content is None:
-            file.write({"counted":newLine+"\ndeleted: 0", "deleted":"counted: 0\n"+newLine}[statistic])
-            doLog([f"Updated {statistic} successfully."], Globals)
-            return True
-
-        for line in content:
-            
-            # If both stats found, update required stat.
-            if line.startswith(statistic):
-                content[content.index(line)] = newLine
-                return writeOutStat(file, content, statistic, Globals)
-            
-        # If only stat found is not the one being searched for, add the required stat.
-        content.append(newLine)
-        file.seek(0)
-        return writeOutStat(file, content, statistic, Globals)
+    # Catch missing stats file
+    except FileNotFoundError:
+        doLog([warn(f"WARNING: Could not find stats file. It will be created.", Globals)], Globals)
+        Globals.Stats.generateNewTotals()
+        Globals.Stats.failed = dumpStats(Globals)
     
-    # If something goes very wrong and the stat can't be updated for some reason
-    doLog([warn(f"WARNING: failed to update {statistic}, will no longer attempt to update this statistic for this instance.", Globals)], Globals)
-    Globals.failedStats.append(statistic)
-    return False
-
-def writeOutStat(file: TextIO, content: List, statistic: str, Globals: object) -> bool:
-    file.write('\n'.join(content))
-    doLog([f"Updated {statistic} successfully."], Globals)
-    return True
+    return Globals
