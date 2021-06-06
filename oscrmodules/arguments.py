@@ -175,8 +175,7 @@ def resetConfig(Globals: object) -> object:
 def settings(Globals: object) -> object:
     from .settings import settingsMain
     doLog([f"Running OSCR version {VERSION} with --settings parameter, entering settings menu."], Globals)
-    Globals = settingsMain(Globals)
-    return Globals
+    return settingsMain(Globals)
 
 def showConfig() -> NoReturn:
     print("The config is as follows:\n")
