@@ -28,12 +28,10 @@ from .log import doLog
 
 def checkArray(array: List, value: Any) -> bool:
     
-    # The value passes either if it is in the array or if the array is empty
-    if len(array) < 1: return True
-    elif value in array: return True
-    else: return False
+    # The value passes the check either if it is in the array or if the array is empty
+    return True if len(array) < 1 or value in array else False
 
-def removeNonAlpha(comment) -> str:
+def removeNonAlpha(comment: str) -> str:
     
     # Creates new array that includes only the alpha characters
     newArray = []
@@ -49,8 +47,7 @@ def remover(comment: object, cutoff: int, deleted: int, waitingFor: int, Globals
     if time() - comment.created_utc > cutoff:
         doLog([f"Obsolete '{comment.body}' found, deleting."], Globals)
         comment.delete()
-        deleted += 1
+        return deleted + 1, waitingFor
     else:
         doLog([f"Waiting for '{comment.body}'."], Globals)
-        waitingFor += 1
-    return deleted, waitingFor
+        return deleted, waitingFor + 1
