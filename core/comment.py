@@ -18,19 +18,22 @@
 """
 
 from time import time
-from typing import Any, List, Union
-from .log import doLog
+from typing import Any, List, NoReturn, Union
+from .globals import Globals, Log, Stats
+global Globals, Log, Stats
 
 """
     This module handles methods related to working with
     the comments retrieved from Reddit.
 """
 
+# Checks a given value against an array; the value passes the
+# check either if it is in the array or if the array is empty
 def checkArray(array: List, value: Any) -> bool:
     
-    # The value passes the check either if it is in the array or if the array is empty
     return True if len(array) < 1 or value in array else False
 
+# Removes all non-alpha characters from a given string
 def removeNonAlpha(comment: str) -> str:
     
     # Creates new array that includes only the alpha characters
@@ -41,14 +44,15 @@ def removeNonAlpha(comment: str) -> str:
 
     return ''.join(newArray)
 
-def remover(comment: object, Globals: object) -> int:
+# The main comment deletion algorithm
+def remover(comment: object) -> NoReturn:
     
     # Only delete comments older than the cutoff
     if time() - comment.created_utc > Globals.config["cutoffSec"]:
-        doLog([f"Obsolete '{comment.body}' found, deleting."], Globals)
-        comment.delete()
-        Globals.Stats.data["current"]["deleted"] += 1
+        Log.new([f"Obsolete '{comment.body}' found, deleting."])
+        if not Globals.config["debug"]:
+            comment.delete()
+            Stats.increment("deleted")
     else:
-        doLog([f"Waiting for '{comment.body}'."], Globals)
-        Globals.Stats.data["current"]["waitingFor"] += 1
-    return Globals
+        Log.new([f"Waiting for '{comment.body}'."])
+        Stats.increment("waitingFor")

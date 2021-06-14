@@ -15,7 +15,6 @@ from .comment import removeNonAlpha
 from .comment import remover
 
 # global variables
-from .globals import initialiseGlobals
 from .globals import VERSION
 
 # ini handling
@@ -29,17 +28,13 @@ from .ini import stripOSCR
 # miscellaneous functions
 from .misc import calculateEssentials
 from .misc import checkRegex
-from .misc import defineSavePath
 from .misc import dumpConfig
 from .misc import dumpJSON
 from .misc import filterArray
-from .misc import getTime
 from .misc import getConfig
 from .misc import writeToFile
 
-# log handling functions functions
-from .log import attemptLog
-from .log import doLog
+# file-handling log-related functions
 from .log import exitWithLog
 from .log import updateLog
 from .log import writeLog

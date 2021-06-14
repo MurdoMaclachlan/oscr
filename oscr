@@ -18,9 +18,9 @@
     Contact me at murdo@maclachlans.org.uk
 """
 
-from oscrmodules.globals import initialiseGlobals, VERSION
-from oscrmodules.misc import getConfig
-from oscrmodules.arguments import checkArgs
+from core.globals import Globals
+from core.misc import getConfig
+from core.arguments import checkArgs
 
 print(
       "Copyright (C) 2020-present, Murdo B. Maclachlan\n"
@@ -29,8 +29,9 @@ print(
       "under certain conditions; see LICENCE in dist-info for conditions."
 )
 
-Globals = checkArgs(getConfig(initialiseGlobals(VERSION)))
+getConfig()
+checkArgs()
 
-from oscrmodules.main import oscr
+from core.main import oscr
 
-oscr(Globals)
+oscr()
