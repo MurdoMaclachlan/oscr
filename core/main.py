@@ -23,10 +23,12 @@ from time import sleep
 from alive_progress import alive_bar as aliveBar
 from os.path import isfile
 from typing import NoReturn
-from .log import doLog, exitWithLog, updateLog, warn
+from .globals import Globals, Log, Stats, System
 from .comment import checkArray, removeNonAlpha, remover
+from .log import exitWithLog, updateLog
 from .ini import createIni, extractIniDetails, getCredentials
 from .misc import writeToFile
+global Globals, Log, Stats, System
 
 """
     Beneath is the main program. From here, all run-time flow
@@ -40,33 +42,33 @@ from .misc import writeToFile
     ends.
 """
 
-def oscr(Globals: object) -> NoReturn: 
+def oscr() -> NoReturn: 
 
-    doLog(
+    Log.new(
         [
             f"Running OSCR version {Globals.VERSION} with recur set to {Globals.config['recur']}.",
-            warn("WARNING: Log updates are OFF. Console log will not be saved for this instance.", Globals) if not Globals.config["logUpdates"] else ""
-        ], Globals
+            Log.warning("Log.warningING: Log updates are OFF. Console log will not be saved for this instance.") if not Globals.config["logUpdates"] else ""
+        ]
     )
     
     # Initialises Reddit() instance
     try:
         reddit = praw.Reddit(
-            user_agent = Globals.config["os"] + ":oscr:v" + Globals.VERSION + " (by /u/MurdoMaclachlan)",
-            **getCredentials(Globals)
+            user_agent = f"{System.OS}:oscr:v{Globals.VERSION}(by /u/MurdoMaclachlan)",
+            **getCredentials()
         )
     
     # Catch for invalid ini, will create a new one then restart the program;
     # the restart is required due to current PRAW limitations. :'(
     except (configparser.NoSectionError, praw.exceptions.MissingRequiredAttributeException, KeyError):
-        if isfile(Globals.SAVE_PATH+"/praw.ini"):
-            iniDetails = extractIniDetails(Globals)
+        if isfile(f"{System.PATHS['config']}/../praw.ini"):
+            iniDetails = extractIniDetails()
             if not iniDetails: pass
             else:
-                writeToFile(Globals, iniDetails, open(Globals.SAVE_PATH+"/oscr/praw.ini", "w+"))
-                exitWithLog(["praw.ini successfully created, program restart required for this to take effect."], Globals)
+                writeToFile(iniDetails, open(f"{System.PATHS['config']}/praw.ini", "w+"))
+                exitWithLog(["praw.ini successfully created, program restart required for this to take effect."])
 
-        exitWithLog(["praw.ini successfully created, program restart required for this to take effect."], Globals) if createIni(Globals) else exitWithLog([warn("WARNING: Failed to create praw.ini file, something went wrong.", Globals)], Globals)
+        exitWithLog(["praw.ini successfully created, program restart required for this to take effect."]) if createIni() else exitWithLog([Log.warning("Log.warningING: Failed to create praw.ini file, something went wrong.")])
     
     # Only import regex functions if regexes are being used
     if Globals.config["useRegex"]: import re; from .misc import checkRegex
@@ -74,22 +76,23 @@ def oscr(Globals: object) -> NoReturn:
     # Fetches statistics
     if Globals.config["reportTotals"]:
         from .statistics import dumpStats, fetchStats
-        Globals = fetchStats(Globals)
+        fetchStats()
     
     updateLog(
         [
             "Updating log...",
             "Log updated successfully."
-        ], Globals
+        ]
     ) if Globals.config["logUpdates"] else None
     
     while True:
-        Globals.Stats.resetCurrent()
+        
+        Stats.reset()
         
         # Fetches the comment list from Reddit
-        doLog(["Retrieving comments..."], Globals)
+        Log.new(["Retrieving comments..."])
         commentList = reddit.redditor(Globals.config["user"]).comments.new(limit=Globals.config["limit"])
-        doLog(["Comments retrieved; checking..."], Globals)
+        Log.new(["Comments retrieved; checking..."])
         
         # Initialises the progress bar
         with aliveBar(Globals.config["limit"], spinner='classic', bar='classic', enrich_print=False) as progress:
@@ -100,60 +103,58 @@ def oscr(Globals: object) -> NoReturn:
                     
                     # Regex path
                     if Globals.config["useRegex"]:
-                        if checkRegex(Globals, re, comment):
+                        if checkRegex(re, comment):
                             if checkArray(Globals.config["subredditList"], str(comment.subreddit).lower()) and checkArray(Globals.config["userList"], comment.parent().author.name):
-                                Globals = remover(comment, Globals)
+                                remover(comment)
                     
                     # Blacklist path
                     else:
                         if removeNonAlpha((comment.body.lower(), comment.body)[Globals.config["caseSensitive"]]) in Globals.config["blacklist"]:
                             if checkArray(Globals.config["subredditList"], str(comment.subreddit).lower()) and checkArray(Globals.config["userList"], comment.parent().author.name):
-                                Globals = remover(comment, Globals)
+                                remover(comment)
                 
                 # Result of a comment being in reply to a deleted/removed submission
                 except AttributeError as e:
-                    doLog([warn(f"Handled error on iteration {Globals.Stats.data['current']['counted']}: {e} | Comment at {comment.permalink}", Globals)], Globals)
-                Globals.Stats.data["current"]["counted"] += 1
+                    Log.new([Log.warning(f"Handled error on iteration {Globals.Stats.get('counted')}: {e} | Comment at {comment.permalink}")])
+                Stats.increment("counted")
                 
                 progress()
     
-        doLog([f"Successfully checked all {Globals.Stats.data['current']['counted']} available comments."], Globals)
+        Log.new([f"Successfully checked all {Stats.get('current', stat='counted')} available comments."])
     
         # Notifies if the end of Reddit's listing is reached (i.e. no new comments due to API limitations)
         try:
-            if Globals.Stats.data['current']['counted'] < Globals.config["limit"]:
-                doLog([warn(
-                    f"WARNING: OSCR counted less comments than your limit of {Globals.config['limit']}. You may have deleted all available elligible comments,",
-                    "or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.",
-                    Globals
-                )], Globals)
+            if Stats.get("current", stat="counted") < Globals.config["limit"]:
+                Log.new([Log.warning(
+                    f"WARNING: OSCR counted less comments than your limit of {Globals.config['limit']}. You may have deleted all available elligible comments," +
+                    " or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more."
+                )])
         except TypeError:
-            if Globals.Stats.data['current']['counted'] < 1000:
-                doLog([warn(
-                    "WARNING: OSCR counted less comments than your limit of 1000. You may have deleted all available elligible comments,",
-                    "or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more.",
-                    Globals
-                )], Globals)
+            if Stats.get("current", stat="counted") < 1000:
+                Log.new([Log.warning(
+                    "WARNING: OSCR counted less comments than your limit of 1000. You may have deleted all available elligible comments," +
+                    " or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more."
+                )])
     
         # Updates statistics
         if Globals.config["reportTotals"]:
-            Globals.Stats.updateTotals()
-            dumpStats(Globals)
+            Stats.updateTotals()
+            dumpStats()
         
         # Gives info about this iteration; how many comments were counted, deleted, still waiting for.
-        doLog(
+        Log.new(
             [
-                f"Counted this cycle: {str(Globals.Stats.data['current']['counted'])}",
-                f"Deleted this cycle: {str(Globals.Stats.data['current']['deleted'])}",
-                f"Waiting for: {str(Globals.Stats.data['current']['waitingFor'])}"
-            ], Globals
+                f"Counted this cycle: {str(Stats.get('current', stat='counted'))}",
+                f"Deleted this cycle: {str(Stats.get('current', stat='deleted'))}",
+                f"Waiting for: {str(Stats.get('current', stat='waitingFor'))}"
+            ]
         )
         if Globals.config["reportTotals"]:
-            doLog(
+            Log.new(
                 [
-                    f"Total Counted: {str(Globals.Stats.data['total']['counted'])}",
-                    f"Total Deleted: {str(Globals.Stats.data['total']['deleted'])}"
-                ], Globals
+                    f"Total Counted: {str(Stats.get('total', stat='counted'))}",
+                    f"Total Deleted: {str(Stats.get('total', stat='deleted'))}"
+                ]
             )
     
         # If recur is set to false, updates log and kills the program.
@@ -162,7 +163,7 @@ def oscr(Globals: object) -> NoReturn:
                 [
                     "Updating log...",
                     "Log updated successfully."
-                ], Globals
+                ]
             )
     
         # Updates log, prepares for next cycle.
@@ -171,7 +172,7 @@ def oscr(Globals: object) -> NoReturn:
                 "Updating log...",
                 "Log updated successfully.",
                 f"Waiting {str(Globals.config['wait'])} {Globals.config['unit'][0] if Globals.config['wait'] == 1 else Globals.config['unit'][1]} before checking again..."
-            ], Globals
+            ]
         )
 
         sleep(Globals.config["waitTime"])
