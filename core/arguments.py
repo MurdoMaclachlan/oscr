@@ -20,12 +20,12 @@
 import sys
 from os import remove, rename
 from typing import NoReturn
-from .globals import defaultConfig, VERSION
+from .globals import defaultConfig, Globals, Log, System, VERSION
 from .ini import reformatIni
-from .log import doLog, warn
 from .misc import calculateEssentials
+global Globals, Log, System
 
-def checkArgs(Globals: object) -> object:
+def checkArgs() -> NoReturn:
     
     # Setting up of essential dicts and lists
     arguments = {
@@ -52,16 +52,15 @@ def checkArgs(Globals: object) -> object:
         "--report-totals": tempChangeConfig,
         "-r": tempChangeConfig
     }
-    passGlobals = list(arguments.keys())[8:14]
     configChanges = {
-        "--force-regex": [Globals, "useRegex", True],
-        "-f": [Globals, "useRegex", True],
-        "--no-recur": [Globals, "recur", False],
-        "-n": [Globals, "recur", False],
-        "--print-logs": [Globals, "printLogs", True],
-        "-p": [Globals, "printLogs", True],
-        "--report-totals": [Globals, "reportTotals", True],
-        "-r": [Globals, "reportTotals", True]
+        "--force-regex": ["useRegex", True],
+        "-f": ["useRegex", True],
+        "--no-recur": ["recur", False],
+        "-n": ["recur", False],
+        "--print-logs": ["printLogs", True],
+        "-p": ["printLogs", True],
+        "--report-totals": ["reportTotals", True],
+        "-r": ["reportTotals", True]
     }
     
     # If any of the closing args, i.e. args like "help" or "version"
@@ -76,25 +75,22 @@ def checkArgs(Globals: object) -> object:
     # Checks through all the lists to work out what to do with each arg
     for argument in arguments:
         if argument in sys.argv[1:]:
-            if not closing:
-                if argument in passGlobals:
-                    Globals = arguments[argument](Globals)
-                elif argument in configChanges:
-                    arguments[argument](*configChanges[argument])
-            elif (argument in passGlobals or argument in configChanges) and closing:
-                print(warn(f"WARNING: '{argument}' was passed but was accompanied by a closing argument and will not be processed.", Globals))
+            if not closing and argument in configChanges:
+                arguments[argument](*configChanges[argument])
+                if argument in ["--clean-hunt", "-C"] and sys.argv.index(argument) != len(sys.argv):
+                    print(Log.warning("WARNING: --clean-hunt was passed, but so were other arguments. Subsequent arguments will not be processed."))
+            elif (argument in list(arguments.keys())[8:14] or argument in configChanges) and closing:
+                print(Log.warning(f"WARNING: '{argument}' was passed but was accompanied by a closing argument and will not be processed."))
             else:
-                global config
-                config = Globals.config
                 arguments[argument]()
     
     for argument in sys.argv[1:]:
         if argument not in arguments:
             print(warn(f"WARNING: Unknown argument '{argument}' passed - ignoring.", Globals))
     
-    if closing: sys.exit(0)   
+    if closing: sys.exit(0)
     
-    return calculateEssentials(Globals)
+    calculateEssentials()
 
 """
     Below are listed the function definitions for
@@ -108,14 +104,13 @@ def checkArgs(Globals: object) -> object:
     'arguments' dictionary in checkArgs(), above.
 """
 
-def formatOld(Globals: object) -> object:
-    doLog(["Reformatting CDRemover files to OSCR."], Globals)
+def formatOld() -> NoReturn:
+    Log.new(["Reformatting CDRemover files to OSCR."], Globals)
     try:
-        rename(Globals.HOME+"/.cdremover", Globals.HOME+"/.oscr")
+        rename(System.HOME+"/.cdremover", System.HOME+"/.oscr")
     except FileNotFoundError: pass
     reformatIni(Globals)
-    doLog(["Reformatting complete."], Globals)
-    return Globals
+    Log.new(["Reformatting complete."])
 
 def helpMenu() -> NoReturn:
     print(
@@ -163,28 +158,26 @@ def printCredits() -> NoReturn:
         "- Help with default regex list"
     )
 
-def resetConfig(Globals: object) -> object:
-    doLog(["Resetting config file."], Globals)
+def resetConfig() -> NoReturn:
+    Log.new(["Resetting config file."])
     try:
-        remove(Globals.HOME+"/.config/oscr/config.json")
+        remove(f"{System.PATHS['config']/config.json}")
     except FileNotFoundError:
-        doLog(["Config file already absent."], Globals)
+        Log.new(["Config file already absent."])
     Globals.config = defaultConfig
-    return Globals
 
-def settings(Globals: object) -> object:
+def settings() -> NoReturn:
     from .settings import settingsMain
-    doLog([f"Running OSCR version {VERSION} with --settings parameter, entering settings menu."], Globals)
-    return settingsMain(Globals)
+    Log.new([f"Running OSCR with --settings parameter, entering settings menu."])
+    settingsMain()
 
 def showConfig() -> NoReturn:
     print("The config is as follows:\n")
-    for i in config:
-        print(f"{i}: {config[i]}")
+    for i in Globals.config:
+        print(f"{i}: {Globals.config[i]}")
 
 def showVersion() -> NoReturn:
     print(f"The installed version of OSCR is: {VERSION}")
 
-def tempChangeConfig(Globals: object, key: str, val: bool) -> object:
-    Globals.config[key] = val
-    return Globals
+def tempChangeConfig(key: str, val: bool) -> NoReturn:
+    Globals.editConfig(key, val)
