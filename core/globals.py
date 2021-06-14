@@ -64,7 +64,7 @@ defaultConfig = {
     "wait": 10
 }
 
-VERSION = "2.0.0-dev26-20210606"
+VERSION = "2.0.0-dev27-20210614"
 
 class Colours():
     def __init__(self: object, warning: int, reset: int) -> NoReturn:
