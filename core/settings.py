@@ -22,14 +22,16 @@
 
 import sys
 import json
-from typing import List
+from typing import List, NoReturn
+from .globals import Globals, Log, System
 from .ini import createIni
-from .log import doLog, exitWithLog, updateLog, warn
+from .log import exitWithLog, updateLog
 from .misc import dumpConfig
+global Globals, Log, System
 
 # Main settings menu
 # If-tree the first, but not the last
-def settingsMain(Globals: object) -> object:
+def settingsMain() -> NoReturn:
 
     while True:
         # Gets user choice
@@ -45,31 +47,31 @@ def settingsMain(Globals: object) -> object:
 
         # Determines which result happens
         if choice == "1":
-            doLog(["Opening config edit menu."], Globals)
-            editConfig(Globals)
+            Log.new(["Opening config edit menu."])
+            editConfig()
         elif choice == "2":
-            doLog(
+            Log.new(
                 [
                     "Opening praw.ini edit menu.",
-                    warn("WARNING: edits to praw.ini will require a restart to take effect.", Globals)
-                ], Globals
+                    warn("WARNING: edits to praw.ini will require a restart to take effect.")
+                ]
             )
-            editPraw(Globals)
+            editPraw()
         elif choice == "3":
             howToUse()
         elif choice == "4":
-            doLog(["Exiting settings menu, continuing to main program."], Globals)
-            return Globals
+            Log.new(["Exiting settings menu, continuing to main program."])
+            break
         else:
-            updateLog(["Updating log..."], Globals)
-            exitWithLog(["Log updated successfully."], Globals)
+            updateLog(["Updating log..."])
+            exitWithLog(["Log updated successfully."])
             sys.exit(0)
 
 # This fucking shite is the bane of my existence
 # You'd think I wouldn't need to turn my r/badcode flair into actual fucking code
 # But apparently I do
 # Does what it says on the fucking tin
-def editConfig(Globals: object) -> bool:
+def editConfig() -> bool:
 
     # Gets user choice
     print(
@@ -189,13 +191,11 @@ def editConfig(Globals: object) -> bool:
             ]
             Globals.config[key] = newUnit
 
-    dumpConfig(Globals)    
-
-    return True
+    return dumpConfig()
 
 # No refresh token support implemented yet, but I'm preparing for it
 # Does what it says on the fucking tin
-def editPraw(Globals: object) -> bool:
+def editPraw() -> bool:
 
     # Setup results
     results = []
@@ -225,7 +225,7 @@ def editPraw(Globals: object) -> bool:
     try:
         
         # Retrieve information from praw.ini
-        with open(Globals.HOME+"/.config/oscr/praw.ini", "r+") as file:
+        with open(f"{System.PATHS['config']}/praw.ini", "r+") as file:
             content = file.read().splitlines()
             success = False
             allowChanges = False
@@ -247,7 +247,7 @@ def editPraw(Globals: object) -> bool:
                             content[content.index(oldLine)] = line
                             success = True
                 else:
-                    doLog(["Skipping irrelevant line: " + line], Globals)
+                    Log.new([f"Skipping irrelevant line: {line}"])
             
             # Writes content back into file
             if success:
@@ -261,19 +261,19 @@ def editPraw(Globals: object) -> bool:
             # In case necessary line is not found
             else:
                 if key in resultNames[0:3]:
-                    doLog([f"{key} is not in praw.ini."], Globals)
+                    Log.new([f"{key} is not in praw.ini."])
                 #if key == resultNames[3]:
                 #    print("If you are using refresh tokens to log in, please choose that option instead.")
                 #    return False
                 #elif key == resultNames[4]:
                 #    print("If you are not using refresh tokens to log in, please choose password instead.")
                 #    return False
-                createIni(Globals)
+                createIni()
     
     # In case praw.ini is not found
     except FileNotFoundError:
-        doLog([warn("praw.ini file not found.", Globals)], Globals)
-        createIni(Globals)
+        Log.new([Log.warning("praw.ini file not found.")])
+        createIni()
 
     return True
     
