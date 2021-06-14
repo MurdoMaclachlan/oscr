@@ -19,8 +19,9 @@
 
 import json
 from typing import List, NoReturn, TextIO
-from .log import doLog, warn
+from .globals import Log, Stats, System
 from .misc import dumpJSON
+global Log, Stats, System
 
 """
     This module contains file handling for the statistics,
@@ -30,38 +31,35 @@ from .misc import dumpJSON
 """
 
 # Updates statistics in stats.json
-def dumpStats(Globals: object) -> bool:
+def dumpStats() -> bool:
     
     if dumpJSON(
-            Globals.HOME+"/.oscr/data/stats.json",
-            {"statistics": [Globals.Stats.data["total"]]}
+            f"{System.PATHS['data']}/stats.json",
+            {"statistics": [Stats.get("total")]}
         ):
-        doLog([f"Updated statistics successfully."], Globals)
+        Log.new([f"Updated statistics successfully."])
         return False
     else:
-        doLog([warn(f"WARNING: Failed to update statistics, will no longer attempt to update for this instance.", Globals)], Globals)
+        Log.new([Log.warning(f"WARNING: Failed to update statistics, will no longer attempt to update for this instance.")])
         return True
 
 # Retrieve statistics from stats.json
-def fetchStats(Globals: object) -> object:
+def fetchStats() -> object:
     
     try:
-        with open(Globals.HOME+"/.oscr/data/stats.json", "r") as file:
+        with open(f"{System.PATHS['data']}/stats.json", "r") as file:
             try: data = json.load(file)
             
             # Catch invalid JSON in the config file (usually a result of manual editing)
             except json.decoder.JSONDecodeError as e:
-                doLog([warn(f"WARNING: Failed to fetch statistics; could not decode JSON file. Returning 0.", Globals), warn(f"Error was: {e}", Globals)], Globals)
-                Globals.Stats.generateNewTotals()
-                return Globals
+                Log.new([Log.warning(f"WARNING: Failed to fetch statistics; could not decode JSON file. Returning 0."), Log.warning(f"Error was: {e}")])
+                Stats.generateNew()
             
-            Globals.Stats.data["total"] = data["statistics"][0]
-            doLog([f"Fetched statistics successfully."], Globals)
+            Stats.setTotals(data["statistics"][0])
+            Log.new([f"Fetched statistics successfully."])
         
     # Catch missing stats file
     except FileNotFoundError:
-        doLog([warn(f"WARNING: Could not find stats file. It will be created.", Globals)], Globals)
-        Globals.Stats.generateNewTotals()
-        Globals.Stats.failed = dumpStats(Globals)
-    
-    return Globals
+        Log.new([Log.warning(f"WARNING: Could not find stats file. It will be created.")])
+        Stats.generateNew()
+        Stats.failed = dumpStats()
