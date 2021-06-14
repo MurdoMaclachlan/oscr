@@ -19,25 +19,19 @@
 
 import json
 import sys
-from datetime import datetime
 from os import environ, mkdir
 from os.path import isdir
 from typing import Dict, List, NoReturn, TextIO
+from .globals import Globals, Log, System
+global Globals, Log, System
 
 """
     This module is divided into several categories,
     which to be fair ruins the 'misc'-ness of it, but
     you just shush there, meta. This is my module
     and I'll modulate it how I want to.
-    
-    getTime needs to be here to avoid a circular
-    import and now my nicely organised module is shite.
-    I hate everything.
 """
    
-# Finds the current time and returns it in a human readable format.
-def getTime(timeToFind: int) -> str:
-    return datetime.fromtimestamp(timeToFind).strftime("%Y-%m-%d %H:%M:%S")
 
 """
     CONFIGURATION FUNCTIONS
@@ -47,38 +41,28 @@ def getTime(timeToFind: int) -> str:
 """
 
 # Attempts to update the config file
-def dumpConfig(Globals: object) -> bool:
+def dumpConfig() -> bool:
     
-    from .log import doLog
-    
-    if dumpJSON(
-            Globals.SAVE_PATH+"/oscr/config.json",
+    return dumpJSON(
+            f"{System.PATHS['config']}/config.json",
             {"config": [Globals.config]}
-        ): return True
-    else:
-        # Catch missing config directory for OSCR
-        doLog(["home/.config/oscr directory not found; creating."], Globals)
-        if not isdir(Globals.HOME+"/.config/oscr"):
-            mkdir(Globals.HOME+"/.config/oscr")
-            return dumpConfig(outConfig, Globals)
-        
-        # I don't think this will ever be reached, but it's here just in case
-        else:
-            doLog(["What the hell happened here?"], Globals)
-            return False
+        )
 
 # Retrieves the user configurations from a .json file, or creates a config file from default values if one can't be found.
-def getConfig(Globals: object) -> object:
-
-    from .log import doLog    
+def getConfig():  
 
     try:
-        with open(Globals.SAVE_PATH+"/oscr/config.json") as configFile:
+        with open(f"{System.PATHS['config']}/config.json") as configFile:
             try: data = json.load(configFile)
             
             # Catch invalid JSON in the config file (usually a result of manual editing)
             except json.decoder.JSONDecodeError as e:
-                doLog([warn("Failed to get config; could not decode JSON file. Exiting.", Globals), f"Error was: {e}"], Globals)
+                Log.new(
+                    [
+                        Log.warning("Failed to get config; could not decode JSON file. Exiting."),
+                        f"Error was: {e}"
+                    ]
+                )
                 sys.exit(0)
             
             Globals.config = data["config"][0]
@@ -88,9 +72,7 @@ def getConfig(Globals: object) -> object:
         from .globals import defaultConfig
         Globals.config = defaultConfig
         Globals.config["user"] = input("No config file found. Please enter your Reddit username:  /u/")
-        tryDumpConfig(Globals)
-
-    return Globals
+        dumpConfig()
 
 """
     TRUE MISCELLANEOUS
@@ -100,7 +82,7 @@ def getConfig(Globals: object) -> object:
 """
 
 # Performs any necessary one-time calculations and changes relating to the config
-def calculateEssentials(Globals: object) -> object:
+def calculateEssentials() -> NoReturn:
     
     # Will default any non-numeric limits, or a limit of 1000, to None.
     if not str(Globals.config["limit"]).isnumeric() or Globals.config["limit"] >= 1000:
@@ -117,16 +99,10 @@ def calculateEssentials(Globals: object) -> object:
         # Defaults to one hour / half an hour if any of the related variables is missing or corrupted
         except (KeyError, TypeError):
             Globals.config[keyList[0]] = keyList[3]
-    
-    return Globals
 
-def checkRegex(Globals: object, re, comment: object) -> bool:
+# Checks a comment against the regex
+def checkRegex(re, comment: object) -> bool:
     return True if sum([True for pattern in Globals.config["regexBlacklist"] if re.match(pattern, (comment.body.lower(), comment.body)[Globals.config["caseSensitive"]])]) > 0 else False
-
-# Finds the correct save path for config files, based on OS
-def defineSavePath(home: str) -> str:
-    if sys.platform.startswith("win"): return environ["APPDATA"] + "\\oscr"
-    else: return home + "/.config"
 
 def dumpJSON(path: str, data: Dict) -> bool:
     
@@ -140,6 +116,6 @@ def filterArray(array: List, elements: List) -> List:
     del array[array.index(elements[0]):array.index(elements[len(elements)-1])]
     return array
 
-def writeToFile(Globals: object, content: List, file: TextIO) -> bool:
+def writeToFile(content: List, file: TextIO) -> bool:
     for line in content: file.write(line+"\n")
     return True
