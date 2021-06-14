@@ -21,36 +21,42 @@ from os import remove
 from os.path import isfile
 from configparser import ConfigParser
 from typing import Dict, List, Union
-from .log import doLog
+from .globals import Globals, Log, System
 from .misc import filterArray, writeToFile
+global Globals, Log, System
 
-def createIni(Globals: object) -> bool:
+"""
+    I'm going to be so happy when I get to
+    delete half of this module next version.
+"""
+
+def createIni() -> bool:
     
-    doLog(["praw.ini missing, incomplete or incorrect. It will need to be created."], Globals)
+    Log.new(["praw.ini missing, incomplete or incorrect. It will need to be created."])
     iniVars = {
         "client_id": input("Please input your client id:  "),
         "client_secret": input("Please input your client secret:  "),
         "username": Globals.config["user"], # Since createIni is never called before the config is initialised, this is safe to draw from
         "password": input("Please input your Reddit password:  ")
     }
-    with open(Globals.SAVE_PATH+"/oscr/praw.ini", "a+") as file:
+    with open(f"{System.PATHS['config']}/praw.ini", "a+") as file:
         file.write("[oscr]\n")
         for i in iniVars: file.write(i+"="+iniVars[i]+"\n")
     return True
 
-def extractIniDetails(Globals: object) -> Union[bool, List]:
-    with open(Globals.SAVE_PATH+"/praw.ini", "r+") as file:
+def extractIniDetails() -> Union[bool, List]:
+    with open(f"{System.PATHS['config']}/../praw.ini", "r+") as file:
         content = file.read().splitlines()
-    return False if not content or not oscrOnly(content, Globals) else oscrOnly(content, Globals) # return None if praw.ini has no OSCR
+    return False if not content or not oscrOnly(content) else oscrOnly(content) # return None if praw.ini has no OSCR
 
-def getCredentials(Globals: object) -> Dict:
+def getCredentials() -> Dict:
     
     # Use configparser magic to get the credentials from praw.ini
     credentials = ConfigParser()
-    credentials.read(Globals.SAVE_PATH + "/oscr/praw.ini")
+    credentials.read(f"{System.PATHS['config']}/praw.ini")
     return dict(credentials["oscr"])
    
-def oscrOnly(content: List, Globals: object) -> List:
+def oscrOnly(content: List) -> List:
     oscrContent = []
     append = False
     for line in content:
@@ -59,7 +65,7 @@ def oscrOnly(content: List, Globals: object) -> List:
         elif line in ["[cdrcredentials]", "[oscr]", "[oscr]          "]:
             append = True
         if line == "[cdrcredentials]":
-            doLog([f"Replacing line '{line}' with '[oscr]'."], Globals)
+            Log.new([f"Replacing line '{line}' with '[oscr]'."])
             line = "[oscr]"
         if append: oscrContent.append(line)
     return oscrContent
@@ -70,40 +76,40 @@ def reformatIni(Globals: object) -> bool:
     except (FileNotFoundError, KeyError): pass
     
     try:
-        with open(Globals.SAVE_PATH+"/praw.ini", "r+") as file:
+        with open(f"{System.PATHS['config']}/../praw.ini", "r+") as file:
             content = file.read().splitlines()
-        oscrContent = oscrOnly(content, Globals)
+        oscrContent = oscrOnly(content)
         
         # If no OSCR content was found
         if not oscrContent:
-            if isfile(Globals.SAVE_PATH+"/oscr/praw.ini"):
-                doLog(["praw.ini already formatted."], Globals)
+            if isfile(f"{System.PATHS['config']}/praw.ini"):
+                Log.new(["praw.ini already formatted."])
                 return True
             else: createIni(Globals)
         
         # Else, write all OSCR content to new file
         else:
-            with open(Globals.SAVE_PATH+"/praw.ini", "w+") as file:
-                success = writeToFile(Globals, oscrContent, open(Globals.SAVE_PATH+"/oscr/praw.ini", "w+"))
+            with open(f"{System.PATHS['config']}/../praw.ini", "w+") as file:
+                success = writeToFile(oscrContent, open(f"{System.PATHS['config']}/praw.ini", "w+"))
                     
         # Remove OSCR section from old praw.ini, and remove file if no other sections are present
         try:
             strippedContent = stripOSCR(content)
-            remove(Globals.SAVE_PATH+"/praw.ini")
-            writeToFile(Globals, strippedContent, open(Globals.SAVE_PATH+"/praw.ini", "w+"))
-            with open(Globals.SAVE_PATH+"/praw.ini", "r") as file:
-                delete = True if file.readlines() == [] else False
-            if delete: remove(Globals.SAVE_PATH+"/praw.ini")
+            remove(f"{System.PATHS['config']}/../praw.ini")
+            writeToFile(strippedContent, open(f"{System.PATHS['config']}/../praw.ini", "w+"))
+            with open(f"{System.PATHS['config']}/../praw.ini", "r") as file:
+                delete = True if not file.readlines() else False
+            if delete: remove(f"{System.PATHS['config']}/../praw.ini")
         except IndexError: pass
         
-        return True if success else createIni(Globals)
+        return True if success else createIni()
 
     # Catch missing praw.ini                
     except FileNotFoundError:
-        if isfile(Globals.SAVE_PATH + "/praw.ini"):
-            doLog(["praw.ini already formatted."], Globals)
+        if isfile(f"{System.PATHS['config']}/praw.ini"):
+            Log.new(["praw.ini already formatted."])
             return False
-        else: return createIni(Globals)
+        else: return createIni()
 
 def stripOSCR(content: List) -> List:
     delete = False
