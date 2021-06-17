@@ -11,7 +11,6 @@ from .arguments import tempChangeConfig
 
 # comments handling
 from .comment import checkArray
-from .comment import removeNonAlpha
 from .comment import remover
 
 # global variables
