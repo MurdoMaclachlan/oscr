@@ -33,17 +33,6 @@ def checkArray(array: List, value: Any) -> bool:
     
     return True if len(array) < 1 or value in array else False
 
-# Removes all non-alpha characters from a given string
-def removeNonAlpha(comment: str) -> str:
-    
-    # Creates new array that includes only the alpha characters
-    newArray = []
-    for i in list(comment):
-        if i.isalpha():
-            newArray.append(i)
-
-    return ''.join(newArray)
-
 # The main comment deletion algorithm
 def remover(comment: object) -> NoReturn:
     
