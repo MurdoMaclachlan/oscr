@@ -24,7 +24,7 @@ from alive_progress import alive_bar as aliveBar
 from os.path import isfile
 from typing import NoReturn
 from .globals import Globals, Log, Stats, System
-from .comment import checkArray, removeNonAlpha, remover
+from .comment import checkArray, remover
 from .log import exitWithLog, updateLog
 from .ini import createIni, extractIniDetails, getCredentials
 from .misc import writeToFile
@@ -102,16 +102,14 @@ def oscr() -> NoReturn:
                 try:
                     
                     # Regex path
-                    if Globals.config["useRegex"]:
-                        if checkRegex(re, comment):
-                            if checkArray(Globals.config["subredditList"], str(comment.subreddit).lower()) and checkArray(Globals.config["userList"], comment.parent().author.name):
-                                remover(comment)
+                    if Globals.config["useRegex"] and checkRegex(re, comment):
+                        if checkArray(Globals.config["subredditList"], str(comment.subreddit).lower()) and checkArray(Globals.config["userList"], comment.parent().author.name):
+                            remover(comment)
                     
                     # Blacklist path
-                    else:
-                        if removeNonAlpha((comment.body.lower(), comment.body)[Globals.config["caseSensitive"]]) in Globals.config["blacklist"]:
-                            if checkArray(Globals.config["subredditList"], str(comment.subreddit).lower()) and checkArray(Globals.config["userList"], comment.parent().author.name):
-                                remover(comment)
+                    elif (comment.body.lower(), comment.body)[Globals.config["caseSensitive"]] in Globals.config["blacklist"]:
+                        if checkArray(Globals.config["subredditList"], str(comment.subreddit).lower()) and checkArray(Globals.config["userList"], comment.parent().author.name):
+                            remover(comment)
                 
                 # Result of a comment being in reply to a deleted/removed submission
                 except AttributeError as e:
