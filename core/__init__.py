@@ -10,7 +10,9 @@ from .arguments import showVersion
 from .arguments import tempChangeConfig
 
 # comments handling
+from .comment import blacklist
 from .comment import checkArray
+from .comment import regex
 from .comment import remover
 
 # global variables
