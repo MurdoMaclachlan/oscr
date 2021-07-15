@@ -45,6 +45,8 @@ def checkArgs() -> NoReturn:
         "-S": settings,
         "--force-regex": tempChangeConfig, # lowest priority; alphabetical
         "-f": tempChangeConfig,
+        "--clean-hunt": cleanHunt,
+        "-C": cleanHunt,
         "--no-recur": tempChangeConfig,
         "-n": tempChangeConfig,
         "--print-logs": tempChangeConfig,
@@ -77,6 +79,8 @@ def checkArgs() -> NoReturn:
         if argument in sys.argv[1:]:
             if not closing and argument in configChanges:
                 arguments[argument](configChanges[argument])
+                if argument in ["--clean-hunt", "-C"] and sys.argv.index(argument) != len(sys.argv):
+                    print(Log.warning("WARNING: --clean-hunt was passed, but so were other arguments. Subsequent arguments will not be processed."))
             elif (argument in list(arguments.keys())[8:14] or argument in configChanges) and closing:
                 print(Log.warning(f"WARNING: '{argument}' was passed but was accompanied by a closing argument and will not be processed."))
             else:
@@ -101,6 +105,17 @@ def checkArgs() -> NoReturn:
     For run-time priority, see their order in the 
     'arguments' dictionary in checkArgs(), above.
 """
+
+def cleanHunt() -> NoReturn:
+    
+    # I'm going to clean this shit up in 2.1.0
+    tempChangeConfig(
+        [
+            ["blacklist", ["claim -- treasure hunt", "done -- treasure hunt"]] if not Globals.config["useRegex"] else ["regexBlacklist", ["^(claim|claiming|done).*treasure *hunt.*"]],
+            ["recur", False],
+            ["userList", ["transcribersofreddit"]] if not Globals.config["userList"] == ["transcribersofreddit"] else ["",""]
+        ]
+    )
 
 def formatOld() -> NoReturn:
     Log.new(["Reformatting CDRemover files to OSCR."], Globals)
@@ -179,4 +194,5 @@ def showVersion() -> NoReturn:
 
 def tempChangeConfig(keys: List[List[Any]]) -> NoReturn:
     for key in keys:
-        Globals.editConfig(key[0], key[1])
+        if key == ["",""]: continue
+        else: Globals.editConfig(key[0], key[1])

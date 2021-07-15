@@ -97,7 +97,7 @@ def oscr() -> NoReturn:
             # Checks all the user's comments, deleting them if they're past the cutoff.
             for comment in commentList:
                 try:
-                    if blacklist(comment) or regex(comment):
+                    if (blacklist(comment), regex(comment))[Globals.config["useRegex"]]:
                         remover(comment)
                 
                 # Result of a comment being in reply to a deleted/removed submission

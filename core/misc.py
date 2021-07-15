@@ -57,11 +57,9 @@ def getConfig():
             
             # Catch invalid JSON in the config file (usually a result of manual editing)
             except json.decoder.JSONDecodeError as e:
-                Log.new(
-                    [
-                        Log.warning("Failed to get config; could not decode JSON file. Exiting."),
-                        f"Error was: {e}"
-                    ]
+                print(
+                    Log.warning("Failed to get config; could not decode JSON file. Exiting."),
+                    f"Error was: {e}"
                 )
                 sys.exit(0)
             
@@ -102,7 +100,10 @@ def calculateEssentials() -> NoReturn:
 
 # Checks a comment against the regex
 def checkRegex(re, comment: object) -> bool:
-    return True if sum([True for pattern in Globals.config["regexBlacklist"] if re.match(pattern, (comment.body.lower(), comment.body)[Globals.config["caseSensitive"]])]) > 0 else False
+    for pattern in Globals.config["regexBlacklist"]:
+        if re.match(pattern, (comment.body.lower(), comment.body)[Globals.config["caseSensitive"]]):
+            return True   
+    return False
 
 def dumpJSON(path: str, data: Dict) -> bool:
     

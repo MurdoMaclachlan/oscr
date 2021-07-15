@@ -40,6 +40,7 @@ defaultConfig = {
     "caseSensitive": False,
     "cutoff": 1,
     "cutoffUnit": 3600,
+    "debug": False,
     "limit": 100,
     "logUpdates": True,
     "os": platform,
@@ -66,7 +67,7 @@ defaultConfig = {
     "wait": 10
 }
 
-VERSION = "2.0.0-dev30-20210714"
+VERSION = "2.0.0-dev31-20210715"
 
 """
     Globals is the miscellaneous global class, containing
@@ -76,7 +77,7 @@ VERSION = "2.0.0-dev30-20210714"
 """
 class Globals:
     
-    def __init__(self: object, VERSION: int) -> NoReturn:
+    def __init__(self: object) -> NoReturn:
         self.config = {}
         self.VERSION = VERSION
     
@@ -235,7 +236,7 @@ class System:
       
 
 # Declare global classes
-Globals = Globals(VERSION)
+Globals = Globals()
 Log = Log()
 Stats = Statistics()
 System = System()
