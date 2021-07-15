@@ -19,7 +19,7 @@
 
 import sys
 from os import remove, rename
-from typing import NoReturn
+from typing import Any, List, NoReturn
 from .globals import defaultConfig, Globals, Log, System, VERSION
 from .ini import reformatIni
 from .misc import calculateEssentials
@@ -53,14 +53,14 @@ def checkArgs() -> NoReturn:
         "-r": tempChangeConfig
     }
     configChanges = {
-        "--force-regex": ["useRegex", True],
-        "-f": ["useRegex", True],
-        "--no-recur": ["recur", False],
-        "-n": ["recur", False],
-        "--print-logs": ["printLogs", True],
-        "-p": ["printLogs", True],
-        "--report-totals": ["reportTotals", True],
-        "-r": ["reportTotals", True]
+        "--force-regex": [["useRegex", True]],
+        "-f": [["useRegex", True]],
+        "--no-recur": [["recur", False]],
+        "-n": [["recur", False]],
+        "--print-logs": [["printLogs", True]],
+        "-p": [["printLogs", True]],
+        "--report-totals": [["reportTotals", True]],
+        "-r": [["reportTotals", True]]
     }
     
     # If any of the closing args, i.e. args like "help" or "version"
@@ -76,9 +76,7 @@ def checkArgs() -> NoReturn:
     for argument in arguments:
         if argument in sys.argv[1:]:
             if not closing and argument in configChanges:
-                arguments[argument](*configChanges[argument])
-                if argument in ["--clean-hunt", "-C"] and sys.argv.index(argument) != len(sys.argv):
-                    print(Log.warning("WARNING: --clean-hunt was passed, but so were other arguments. Subsequent arguments will not be processed."))
+                arguments[argument](configChanges[argument])
             elif (argument in list(arguments.keys())[8:14] or argument in configChanges) and closing:
                 print(Log.warning(f"WARNING: '{argument}' was passed but was accompanied by a closing argument and will not be processed."))
             else:
@@ -177,7 +175,9 @@ def showConfig() -> NoReturn:
         print(f"{i}: {Globals.config[i]}")
 
 def showVersion() -> NoReturn:
-    print(f"The installed version of OSCR is: {VERSION}")
+    print(f"The installed version of OSCR is: {Globals.VERSION}")
 
-def tempChangeConfig(key: str, val: bool) -> NoReturn:
-    Globals.editConfig(key, val)
+def tempChangeConfig(keys: List[List[Any]]) -> NoReturn:
+    print(keys)
+    for key in keys:
+        Globals.editConfig(key[0], key[1])
