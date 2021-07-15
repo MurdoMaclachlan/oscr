@@ -178,6 +178,5 @@ def showVersion() -> NoReturn:
     print(f"The installed version of OSCR is: {Globals.VERSION}")
 
 def tempChangeConfig(keys: List[List[Any]]) -> NoReturn:
-    print(keys)
     for key in keys:
         Globals.editConfig(key[0], key[1])
