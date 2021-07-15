@@ -40,6 +40,7 @@ defaultConfig = {
     "caseSensitive": False,
     "cutoff": 1,
     "cutoffUnit": 3600,
+    "debug": False,
     "limit": 100,
     "logUpdates": True,
     "os": platform,
