@@ -53,7 +53,7 @@ def settingsMain() -> NoReturn:
             Log.new(
                 [
                     "Opening praw.ini edit menu.",
-                    warn("WARNING: edits to praw.ini will require a restart to take effect.")
+                    Log.warning("WARNING: edits to praw.ini will require a restart to take effect.")
                 ]
             )
             editPraw()
@@ -81,22 +81,23 @@ def editConfig() -> bool:
         "\n3. Case sensitive"
         "\n4. Cutoff"
         "\n5. Cutoff unit"
-        "\n6. Limit"
-        "\n7. Log updates"
-        "\n8. Operating system"
-        "\n9. Print logs"
-        "\n10. Recur"
-        "\n11. Add to regexBlacklist"
-        "\n12. Remove from regexBlacklist"
-        "\n13. Add to subredditList"
-        "\n14. Remove from subredditList"
-        "\n15. Wait unit"
-        "\n16. User"
-        "\n17. Use regex"
-        "\n18. Add to userList"
-        "\n19. Remove from userList"
-        "\n20. Wait amount"
-        "\n21. Return to main settings menu"
+        "\n6. Debug"
+        "\n7. Limit"
+        "\n8. Log updates"
+        "\n9. Operating system"
+        "\n10. Print logs"
+        "\n11. Recur"
+        "\n12. Add to regexBlacklist"
+        "\n13. Remove from regexBlacklist"
+        "\n14. Add to subredditList"
+        "\n15. Remove from subredditList"
+        "\n16. Wait unit"
+        "\n17. User"
+        "\n18. Use regex"
+        "\n19. Add to userList"
+        "\n20. Remove from userList"
+        "\n21. Wait amount"
+        "\n22. Return to main settings menu"
     )
     resultNames = list(Globals.config.keys())
     choice = validateChoice(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"])
@@ -117,23 +118,24 @@ def editConfig() -> bool:
             "9":"7",
             "10":"8",
             "11":"9",
-            "12":"9",
+            "12":"10",
             "13":"10",
-            "14":"10",
+            "14":"11",
             "15":"11",
             "16":"12",
             "17":"13",
             "18":"14",
-            "19":"14",
+            "19":"15",
             "20":"15",
+            "21":"16"
         }
     
     key = resultNames[int(keys[choice])]
     
     # Adds/removes from blacklist
-    if choice in ["1", "2", "11", "12", "13", "14", "18", "19"]:  
+    if choice in ["1", "2", "12", "13", "14", "15", "19", "20"]:  
   
-        if choice in ["1", "11", "13", "18"]:
+        if choice in ["1", "12", "14", "19"]:
             value = input(f"\nPlease enter the phrase to add to the {key}\n>> ")
             if value == "-e":
                 return True
@@ -151,7 +153,7 @@ def editConfig() -> bool:
     else:
 
         # All edits that require one integer value.        
-        if choice in ["4", "5", "6", "20"]:
+        if choice in ["4", "5", "7", "21"]:
             while True:
                 value = input(f"\nEditing {key}\nPlease enter an integer value\n>> ")
                 if value == "-e":
@@ -163,7 +165,7 @@ def editConfig() -> bool:
                     print(f"{e} - Not an integer.")
 
         # All edits that require boolean values.
-        elif choice in ["3", "7", "9", "17"]:
+        elif choice in ["3", "6", "8", "10", "18"]:
             while True:
                 value = input(f"\nEditing {key}\nPlease enter a boolean value\n>> ")
                 if value == "-e":
@@ -175,14 +177,14 @@ def editConfig() -> bool:
                     print(f"{e} - Not a boolean.")
 
         # All edits that require one string value.
-        elif choice in ["8", "16"]:
+        elif choice in ["9", "17"]:
             value = input(f"\nEditing {key}\nPlease enter the new value\n>> ")
             if value == "-e":
                 return True
             Globals.config[key] = value
             
         # Replaces waitUnit
-        elif choice == "15":
+        elif choice == "16":
             print(f"Editing {key}")
             newUnit = [
                 input("Please enter the singular noun for the new unit. \n>> "),
