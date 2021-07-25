@@ -20,7 +20,7 @@
 import sys
 from os import remove, rename
 from typing import Any, List, NoReturn
-from .globals import defaultConfig, Globals, Log, System, VERSION
+from .globals import DEFAULT_CONFIG, Globals, Log, System, VERSION
 from .ini import reformatIni
 from .misc import calculateEssentials
 global Globals, Log, System
@@ -177,7 +177,7 @@ def resetConfig() -> NoReturn:
         remove(f"{System.PATHS['config']/config.json}")
     except FileNotFoundError:
         Log.new(["Config file already absent."])
-    Globals.config = defaultConfig
+    Globals.config = DEFAULT_CONFIG
 
 def settings() -> NoReturn:
     from .settings import settingsMain

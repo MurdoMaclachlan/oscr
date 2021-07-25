@@ -95,6 +95,9 @@ The following is an explanation of what each configuration option does:
    * - unit
      - Array
      - A list containing all the variations on the unit of time used for the wait variable; singular word, plural word, and integer equivalent converted into seconds. The default unit is minutes.
+   * - user
+     - String
+     - Your Reddit username. Obtained upon running the program for the first time.
    * - useRegex
      - Boolean
      - Determines whether the program should use the blacklist key, only deleting comments that exactly match it, or the regexBlacklist key, which allows for more flexible and powerful control over what the programs delete. It is set to False by default, and users not familiar with regexes should leave it this way, as getting your regex wrong can result in OSCR deleting a lot more than you intend.

@@ -24,9 +24,9 @@ from sys import platform
 from colored import fg, attr
 from time import time
 from typing import Any, Dict, List, NoReturn, Union
-global defaultConfig, Globals, Log, Stats, System, VERSION
+global DEFAULT_CONFIG, Globals, Log, Stats, System, VERSION
 
-defaultConfig = {
+DEFAULT_CONFIG = {
     "blacklist": [
         "claim",
         "claiming",
@@ -65,7 +65,7 @@ defaultConfig = {
     "wait": 10
 }
 
-VERSION = "2.0.0-dev33-20210725"
+VERSION = "2.0.0-dev34-20210725"
 
 """
     Globals is the miscellaneous global class, containing
@@ -209,6 +209,7 @@ class System:
         if os in ["dar", "lin", "win"]:
             
             # Windows is fucking stupid why would you use backslashes
+            # what the fuck is AppData why can't you just be normal
             paths = {
                 "config": environ["APPDATA"] + "\\oscr",
                 "data": environ["APPDATA"] + "\\oscr\data"
