@@ -28,6 +28,11 @@ from .ini import oscrOnly
 from .ini import reformatIni
 from .ini import stripOSCR
 
+# file-handling log-related functions
+from .log import exitWithLog
+from .log import updateLog
+from .log import writeLog
+
 # miscellaneous functions
 from .misc import calculateEssentials
 from .misc import checkRegex
@@ -36,11 +41,6 @@ from .misc import dumpJSON
 from .misc import filterArray
 from .misc import getConfig
 from .misc import writeToFile
-
-# file-handling log-related functions
-from .log import exitWithLog
-from .log import updateLog
-from .log import writeLog
 
 # main program
 from .main import oscr
