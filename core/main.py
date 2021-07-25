@@ -47,7 +47,7 @@ def oscr() -> NoReturn:
     Log.new(
         [
             f"Running OSCR version {Globals.VERSION} with recur set to {Globals.config['recur']}.",
-            Log.warning("Log.warningING: Log updates are OFF. Console log will not be saved for this instance.") if not Globals.config["logUpdates"] else ""
+            Log.warning("WARNING: Log updates are OFF. Console log will not be saved for this instance.") if not Globals.config["logUpdates"] else ""
         ]
     )
     
