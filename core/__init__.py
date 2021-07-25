@@ -1,5 +1,6 @@
 # arguments handling
 from .arguments import checkArgs
+from .arguments import cleanHunt
 from .arguments import formatOld
 from .arguments import helpMenu
 from .arguments import printCredits
@@ -16,6 +17,7 @@ from .comment import regex
 from .comment import remover
 
 # global variables
+from .globals import DEFAULT_CONFIG
 from .globals import VERSION
 
 # ini handling
@@ -46,6 +48,7 @@ from .main import oscr
 # settings
 from .settings import editConfig
 from .settings import editPraw
+from .settings import howToUse
 from .settings import settingsMain
 from .settings import validateChoice
 
