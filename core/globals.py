@@ -47,9 +47,7 @@ defaultConfig = {
     "printLogs": True,
     "recur": True,
     "regexBlacklist": [
-        "^claim(?!(.|\n)*treasure[\s-]*hunt)",
-        "^done(?!(.|\n)*treasure[\s-]*hunt)",
-        "^unclaim(?!(.|\n)*treasure[\s-]*hunt)"
+        "^(claim|done|unclaim)(?!(.|\n)*treasure[\s-]*hunt)"
     ],
     "reportTotals": True,
     "subredditList": [
@@ -67,7 +65,7 @@ defaultConfig = {
     "wait": 10
 }
 
-VERSION = "2.0.0-dev31-20210715"
+VERSION = "2.0.0-dev32-20210725"
 
 """
     Globals is the miscellaneous global class, containing
