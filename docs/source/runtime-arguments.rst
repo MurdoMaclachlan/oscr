@@ -9,6 +9,9 @@ OSCR presents a number of runtime arguments that can be passed in order to give 
    * - Name
      - Description
      - Priority
+   * - ``--clean-hunt, -C``
+     - Runs an isolated instance of OSCR that only deletes comments that contain the phrase "treasure hunt" preceded by "claim" or "done".
+     - 8
    * - ``--credits, -c``
      - Lists everyone who has helped with the creation of the program.
      - 3
