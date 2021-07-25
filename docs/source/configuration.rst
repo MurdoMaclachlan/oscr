@@ -15,27 +15,31 @@ Once properly intialised, there should be a ``config.json`` file in the followin
                    "unclaim -- this was a automated action. please contact me with any questions.",
                    "claiming"
                ],
+               "caseSensitive": false,
                "cutoff": 1,
                "cutoffUnit": 3600,
+               "debug": false,
                "limit": 100,
                "logUpdates": true,
                "os": "[Your OS here]",
+               "printLogs": true,
                "recur": true,
                "regexBlacklist": [
-                   "^claim(?!(.|\n)*treasure[\s-]*hunt)",
-                   "^done(?!(.|\n)*treasure[\s-]*hunt)",
-                   "^unclaim(?!(.|\n)*treasure[\s-]*hunt)"
+                   "^(claim|done|unclaim)(?!(.|\n)*treasure[\s-]*hunt)"
+               ],
+               "reportTotals": true,
+               "subredditList": [
+                   "transcribersofreddit"
                ],
                "unit": [
                    "minute",
                    "minutes",
                    60
                ],
-               "user": "[Your username here]",
                "useRegex": False,
-               "subredditList": [
+               "userList": [
                    "transcribersofreddit"
-               ],
+               ]
                "wait": 10
            }
        ]
@@ -60,7 +64,10 @@ The following is an explanation of what each configuration option does:
      - The number of units of time old a comment must be before it will be deleted. This is set to 1 by default. I would recommend a minimum cutoff of 15 minutes, in case the u/transcribersofreddit bot has lag and doesn't register your comment in time.
    * - cutoffUnit
      - Integer
-     - The unit of time used for the cutoff, converted into seconds. This is set to 3600 (1 hour) by default.
+     - The unit of time used for the cutoff, converted into seconds. Set to 3600 (1 hour) by default.
+   * - debug
+     - Boolean
+     - If set to True, OSCR will log obsolete comments, but not actually delete them. Set to False by default.
    * - limit
      - Integer
      - The number of comments the program will check through on your profile; i.e. how far back it will go. This is set to 100 by default and can go to a maximum of 1000 (converted to None by the program), due to Reddit's API limits.
@@ -79,15 +86,15 @@ The following is an explanation of what each configuration option does:
    * - regexBlacklist
      - Array
      - An alternative blacklist intended for use with regexes. Users not familiar with regexes are advised to ignore this list, as regexes are turned off by default and can cause harm to your profile if used without care.
+   * - reportTotals
+     - Boolean
+     - Determines whether or not OSCR will print total statistics to the log and console output. Set to True by default.
    * - subredditList
      - Array
      - The list of subreddits that OSCR cares about. Comments that are in the blacklist or match your set regexes but are not on one of these subreddits will be ignored. If the list is empty, OSCR will check comments on all subreddits.
    * - unit
      - Array
      - A list containing all the variations on the unit of time used for the wait variable; singular word, plural word, and integer equivalent converted into seconds. The default unit is minutes.
-   * - user
-     - String
-     - Your Reddit username.
    * - useRegex
      - Boolean
      - Determines whether the program should use the blacklist key, only deleting comments that exactly match it, or the regexBlacklist key, which allows for more flexible and powerful control over what the programs delete. It is set to False by default, and users not familiar with regexes should leave it this way, as getting your regex wrong can result in OSCR deleting a lot more than you intend.
