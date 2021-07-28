@@ -278,7 +278,8 @@ def editPraw() -> bool:
         createIni()
 
     return True
-    
+
+# Prints explanation of how to use the settings menu
 def howToUse():
     print(
         "\nHOW TO USE\n",
