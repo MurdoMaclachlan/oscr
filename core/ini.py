@@ -30,6 +30,7 @@ global Globals, Log, System
     delete half of this module next version.
 """
 
+# Creates new ini file based on user input
 def createIni() -> bool:
     
     Log.new(["praw.ini missing, incomplete or incorrect. It will need to be created."])
@@ -39,24 +40,32 @@ def createIni() -> bool:
         "username": Globals.config["user"], # Since createIni is never called before the config is initialised, this is safe to draw from
         "password": input("Please input your Reddit password:  ")
     }
+    
+    # Writes contents to appropriate ini location
     with open(f"{System.PATHS['config']}/praw.ini", "a+") as file:
         file.write("[oscr]\n")
         for i in iniVars: file.write(i+"="+iniVars[i]+"\n")
+    
     return True
 
+# Extracts OSCR content from an ini file, returning False if none found
 def extractIniDetails() -> Union[bool, List]:
+    
     with open(f"{System.PATHS['config']}/../praw.ini", "r+") as file:
         content = file.read().splitlines()
     return False if not content or not oscrOnly(content) else oscrOnly(content) # return None if praw.ini has no OSCR
 
+# Use configparser magic to get the credentials from praw.ini
 def getCredentials() -> Dict:
-    
-    # Use configparser magic to get the credentials from praw.ini
+   
     credentials = ConfigParser()
     credentials.read(f"{System.PATHS['config']}/praw.ini")
     return dict(credentials["oscr"])
-   
+
+# Given a list of strings, finds OSCR content as per .ini syntax
+# Replaces any CDRemover content with OSCR content
 def oscrOnly(content: List) -> List:
+
     oscrContent = []
     append = False
     for line in content:
@@ -70,6 +79,8 @@ def oscrOnly(content: List) -> List:
         if append: oscrContent.append(line)
     return oscrContent
 
+# Reformats the ini file to a new location, changing any CDRemover content to OSCR
+# Set to be deprecated in 2.1.0
 def reformatIni(Globals: object) -> bool:
 
     try: getCredentials(Globals)["client_id"]; return True
@@ -111,6 +122,7 @@ def reformatIni(Globals: object) -> bool:
             return False
         else: return createIni()
 
+# Strips .ini content of any OSCR content
 def stripOSCR(content: List) -> List:
     delete = False
     linesToDelete = []
