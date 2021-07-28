@@ -105,6 +105,7 @@ def checkRegex(re, comment: object) -> bool:
             return True   
     return False
 
+# Dumps JSON content to a given path
 def dumpJSON(path: str, data: Dict) -> bool:
     
     try:
@@ -113,10 +114,12 @@ def dumpJSON(path: str, data: Dict) -> bool:
         return True
     except FileNotFoundError: return False
 
+# Deletes a portion of a given array, based on passed elements
 def filterArray(array: List, elements: List) -> List:
     del array[array.index(elements[0]):array.index(elements[len(elements)-1])]
     return array
 
+# Writes contents of a list to a file
 def writeToFile(content: List, file: TextIO) -> bool:
     for line in content: file.write(line+"\n")
     return True
