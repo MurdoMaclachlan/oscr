@@ -35,6 +35,7 @@ from .log import writeLog
 
 # miscellaneous functions
 from .misc import calculateEssentials
+from .misc import checkConfig
 from .misc import checkRegex
 from .misc import dumpConfig
 from .misc import dumpJSON

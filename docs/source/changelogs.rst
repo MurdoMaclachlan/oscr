@@ -3,8 +3,66 @@ Changelogs
 
 A list of changelogs for OSCR, with the most recent version first. These are also available `here <https://github.com/MurdoMaclachlan/oscr/releases>`_.
 
-1.2.1 - Current Release
+2.0.0 - Current Release
 -----------------------
+
+**Functionality**
+
+- Added ``--clean-hunt`` runtime argument to remove comments containing "treasure hunt". (#48, #87, #115)
+- Added caseSensitive config key. Determines whether or not OSCR is case sensitive when matching regexes or blacklisted comments. Set to False by default. (#57, #69)
+- Added printLogs config key and ``--print-logs`` runtime argument to override the config. Determines whether or not OSCR prints the log to the console. (#70, #71)
+- Added reportTotals config key and ``--report-totals`` runtime argument to override the config. Determines whether or not OSCR prints total statistics to the console. (#65, #72)
+- Added "unclaiming" to the default blacklist. (#69, nice)
+- OSCR now ignores punctuation when matching comments to blacklist entries. (#80, #83)
+- Added userList config key. If any users are specified in the list, OSCR will only check comments that are in reply to those users. (#85, #87)
+- Added ability to leave subredditList (and new userList key) empty, which will disable them, letting OSCR check comments on any subreddit or in reply to any user.
+- OSCR now collects global variables at program initialisation (in the ``oscr`` script) and not ``main.py``. (#49, #75)
+- Contained all code in ``main.py`` within an ``oscr()`` function for the purpose of the above change. (#50, #75)
+
+**Cleanup/Optimisation**
+
+- Refactored entire program with a much stronger object-oriented focus. This opens the door for a lot of backend improvements and optimisation. (#108, #109)
+- Re-wrote stats handling to use JSON and classes, making ``statistics.py`` a much neater module. (#106, #109)
+- Moved arguments checking to its own module, ``arguments.py``. (#52, #75)
+- Moved comment handling to its own module, ``comment.py``. (#81, #82)
+- Added type hinting. (#101, #103)
+- Staticised constant variables. (#97, #96, #98)
+- Optimised generation of ``config.json`` and ``praw.ini``. (#51, #66, #67)
+- Optimised handling of ``praw.ini``, including updating & formatting from CDRemover to OSCR. (#76, #84)
+- ``calculateEssentials()`` is no longer called unnecessarily. (#53, #59)
+- Combined default regexBlacklist items into one regex. (#117, #118)
+- Moved the default config variable to ``globals.py``. (#56, #66)
+- Made many miscellaneous optimisation and readability improvements. (#77, #78, #79, #84, #96, #104, #109, #112, #114, #118, #120, #121)
+
+**Dependencies**
+
+- Added colored for coloured console output. (#94)
+- Updated Python requirement to >= 3.5 for type hinting. (#107)
+
+**Documentation/Logs**
+
+- Moved documentation to readthedocs. (#93, #99)
+- Renamed ``oscrmodules`` to ``core``. (#110, #111)
+- Moved ``config.json`` to ``~/.config/oscr`` on Linux and Mac, and ``AppData\\Roaming\\oscr`` on Windows. (#54, #64)
+- Changed how ``praw.ini`` is read and moved file to ``~/.config/oscr`` on Linux and Mac, and ``AppData\\Roaming\\oscr`` on Windows. (#55, #84)
+- Improved log output surrounding comment retrieval & checking. (#60, #68)
+- Added license specification to ``setup.py``. (#73, #74)
+- Changed config guide from bullet point list to table. (#83)
+- Added colouring to logs, currently only on warnings. (#91, #94)
+- Generally improved log handling. (#95, #96)
+- Renamed ``gvars`` to ``Globals``. (#100, #102)
+
+**Bug Fixes**
+
+- #45: Crash on attempting to use ``--show-config`` due to accidentally assigning ``Globals()`` instance to ``gvars.config``. (fixed in #58)
+- #61: Attempting to update integer or boolean keys in the settings menu causes an infinite loop. (fixed in #63)
+- #86: Regexes may delete comments that are not bot interactions. (fixed in #87)
+- #88: Runtime arguments are not processed in the correct priority order. (fixed in #90)
+- #89: Crash on passing conflicting arguments. (fixed in #90)
+- #92: Potential crash on failing to update a statistic. (fixed in #94)
+
+1.2.1
+-----
 
 **Functionality**
 

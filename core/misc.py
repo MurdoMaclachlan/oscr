@@ -40,6 +40,19 @@ global Globals, Log, System
     the creation, retrieval and management of these files.
 """
 
+# Checks if all necessary config options are there
+def checkConfig() -> NoReturn:
+    
+    from .globals import DEFAULT_CONFIG
+    
+    # Check to see if each key in the default config is also in the config file
+    for key in DEFAULT_CONFIG:
+        if not key in Globals.config:
+            Log.new([Log.warning(f"Detected missing config key: {key}. Adding with default value.")])
+            Globals.config[key] = DEFAULT_CONFIG[key]
+
+    dumpConfig()
+
 # Attempts to update the config file
 def dumpConfig() -> bool:
     
@@ -49,7 +62,7 @@ def dumpConfig() -> bool:
         )
 
 # Retrieves the user configurations from a .json file, or creates a config file from default values if one can't be found.
-def getConfig():  
+def getConfig() -> NoReturn:  
 
     try:
         with open(f"{System.PATHS['config']}/config.json") as configFile:
@@ -64,6 +77,8 @@ def getConfig():
                 sys.exit(0)
             
             Globals.config = data["config"][0]
+            
+            checkConfig()
 
     # Catch missing config file
     except FileNotFoundError:
