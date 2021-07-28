@@ -14,7 +14,7 @@ A list of changelogs for OSCR, with the most recent version first. These are als
 - Added reportTotals config key and ``--report-totals`` runtime argument to override the config. Determines whether or not OSCR prints total statistics to the console. (#65, #72)
 - Added "unclaiming" to the default blacklist. (#69, nice)
 - OSCR now ignores punctuation when matching comments to blacklist entries. (#80, #83)
-- Added userList config key. If any users are specified in the list, OSCR will only check comments that are in reply to those users.(#85, #87)
+- Added userList config key. If any users are specified in the list, OSCR will only check comments that are in reply to those users. (#85, #87)
 - Added ability to leave subredditList (and new userList key) empty, which will disable them, letting OSCR check comments on any subreddit or in reply to any user.
 - OSCR now collects global variables at program initialisation (in the ``oscr`` script) and not ``main.py``. (#49, #75)
 - Contained all code in ``main.py`` within an ``oscr()`` function for the purpose of the above change. (#50, #75)
