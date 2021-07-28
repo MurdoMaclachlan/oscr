@@ -65,7 +65,7 @@ DEFAULT_CONFIG = {
     "wait": 10
 }
 
-VERSION = "2.0.0-dev34-20210725"
+VERSION = "2.0.0-dev35-20210728"
 
 """
     Globals is the miscellaneous global class, containing
@@ -79,6 +79,8 @@ class Globals:
         self.config = {}
         self.VERSION = VERSION
     
+    # Read/write access to the base config may be replaced with a function call soon
+    # All edits should go through this function to prevent a breaking change
     def editConfig(self: object, key: str, value: Any) -> NoReturn:
         self.config[key] = value
    
@@ -95,12 +97,14 @@ class Log:
         self.ConsoleColours = self.Colours(130, 0)
         self.__log = []
     
+    # Colour attributes for log highlighting
     class Colours:
         
         def __init__(self: object, warning: int, reset: int) -> NoReturn:
             self.RESET = attr(reset)
             self.WARNING = fg(warning)
-        
+    
+    # Clears items in the log; either all or the most recent
     def clear(self: object, mode="all") -> NoReturn:
         if mode == "all":
             del self.__log[:]
@@ -109,6 +113,7 @@ class Log:
         else:
             print(self.warning("WARNING: Log.clear() received unknown mode '{mode}'."))
     
+    # Returns items in the log; either all or the most recent
     def get(self: object, mode="all") -> Union[List, str, None]:
         if mode == "all":
             return self.__log
@@ -137,6 +142,7 @@ class Log:
         
         return True
     
+    # Colours a single string orange
     def warning(self: object, message: str) -> str:
         return self.ConsoleColours.WARNING + message + self.ConsoleColours.RESET
 
@@ -158,21 +164,25 @@ class Statistics:
         }
         self.failed = False
     
+    # Returns either a single statistic or an entire dataset (current/total)
     def get(self: object, dataset: str, stat="") -> int:
         if not stat:
             return self.__data[dataset]
         else:
             return self.__data[dataset][stat]
     
+    # Resets total dataset to 0; only use if stats file can't be found
     def generateNew(self) -> NoReturn:
         self.__data["total"] = {
                 "counted": 0,
                 "deleted": 0
             }
     
+    # Increments a single current statistic
     def increment(self: object, stat: str) -> NoReturn:
         self.__data["current"][stat] += 1
     
+    # Resets current dataset
     def reset(self: object) -> NoReturn:
         self.__data["current"] = {
                 "counted": 0,
@@ -180,9 +190,11 @@ class Statistics:
                 "waitingFor": 0
             }
     
+    # Sets dataset to passed value
     def setTotals(self: object, totals: Dict) -> NoReturn:
         self.__data["total"] = totals
     
+    # Updates total dataset using current dataset
     def updateTotals(self: object) -> NoReturn:
         for statistic in ["counted","deleted"]:
             self.__data["total"][statistic] += self.__data["current"][statistic]

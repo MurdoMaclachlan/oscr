@@ -54,6 +54,8 @@ def checkArgs() -> NoReturn:
         "--report-totals": tempChangeConfig,
         "-r": tempChangeConfig
     }
+    
+    # List of argumets that require a change to the config
     configChanges = {
         "--force-regex": [["useRegex", True]],
         "-f": [["useRegex", True]],
@@ -77,22 +79,26 @@ def checkArgs() -> NoReturn:
     # Checks through all the lists to work out what to do with each arg
     for argument in arguments:
         if argument in sys.argv[1:]:
+            
+            # If argument changes config and is not closing, will call its appropriate function
             if not closing and argument in configChanges:
                 arguments[argument](configChanges[argument])
                 if argument in ["--clean-hunt", "-C"] and sys.argv.index(argument) != len(sys.argv):
                     print(Log.warning("WARNING: --clean-hunt was passed, but so were other arguments. Subsequent arguments will not be processed."))
-            elif (argument in list(arguments.keys())[8:14] or argument in configChanges) and closing:
+            
+            # If a closing argument and an argument that will be overwritten by it were both passed, warns user
+            elif (argument in list(arguments.keys())[8:] or argument in configChanges) and closing:
                 print(Log.warning(f"WARNING: '{argument}' was passed but was accompanied by a closing argument and will not be processed."))
+            
             else:
                 arguments[argument]()
     
+    # Handles passing of unknown arguments
     for argument in sys.argv[1:]:
         if argument not in arguments:
             print(warn(f"WARNING: Unknown argument '{argument}' passed - ignoring.", Globals))
     
-    if closing: sys.exit(0)
-    
-    calculateEssentials()
+    sys.exit(0) if closing else calculateEssentials()
 
 """
     Below are listed the function definitions for
@@ -106,6 +112,7 @@ def checkArgs() -> NoReturn:
     'arguments' dictionary in checkArgs(), above.
 """
 
+# Performs necessary configuration changes for --clean-hunt runtime arg
 def cleanHunt() -> NoReturn:
     
     # I'm going to clean this shit up in 2.1.0
@@ -117,6 +124,7 @@ def cleanHunt() -> NoReturn:
         ]
     )
 
+# Changes ./cdremover folders to ./oscr and calls reformat ini
 def formatOld() -> NoReturn:
     Log.new(["Reformatting CDRemover files to OSCR."], Globals)
     try:
@@ -125,9 +133,11 @@ def formatOld() -> NoReturn:
     reformatIni(Globals)
     Log.new(["Reformatting complete."])
 
+# Prints a list of arguments and their functions
 def helpMenu() -> NoReturn:
     print(
         "List of Arguments:\n",
+        "--clean-hunt, -C:    runs an isolated instance of OSCR that deletes ToR bot interactions containing the phrase 'treasure hunt'\n",
         "--credits, -c:       lists everyone who has helped with the creation of the program\n",
         "--force-regex, -f:   forces the program to enable regex for one instance regardless of configuration\n",
         "--format-old, -F:    rename old .cdremover directories, etc. to fit OSCR's new name, and move old praw.ini to new location\n",
@@ -141,7 +151,7 @@ def helpMenu() -> NoReturn:
         "--version, -v:       displays the currently installed version"
     )
 
-
+# Prints a list of contributors and their contributions
 def printCredits() -> NoReturn:
     print(
         "Credits (alphabetical):\n\n"
@@ -171,6 +181,8 @@ def printCredits() -> NoReturn:
         "- Help with default regex list"
     )
 
+# Deletes the config file and replaces it with the default config
+# Prompts for username, then saves default config
 def resetConfig() -> NoReturn:
     Log.new(["Resetting config file."])
     try:
@@ -178,20 +190,26 @@ def resetConfig() -> NoReturn:
     except FileNotFoundError:
         Log.new(["Config file already absent."])
     Globals.config = DEFAULT_CONFIG
+    Globals.config["user"] = input("Please enter your Reddit username:  /u/")
+    dumpConfig()
 
+# Enters the settings menu
 def settings() -> NoReturn:
     from .settings import settingsMain
     Log.new([f"Running OSCR with --settings parameter, entering settings menu."])
     settingsMain()
 
+# Prints the contents of the config file
 def showConfig() -> NoReturn:
     print("The config is as follows:\n")
     for i in Globals.config:
         print(f"{i}: {Globals.config[i]}")
 
+# Prints the current version number
 def showVersion() -> NoReturn:
     print(f"The installed version of OSCR is: {Globals.VERSION}")
 
+# Executes a list of passed config changes
 def tempChangeConfig(keys: List[List[Any]]) -> NoReturn:
     for key in keys:
         if key == ["",""]: continue
