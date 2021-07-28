@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
-from oscrmodules.gvars import version
+from core.globals import VERSION
 
 def readme():
     return open('README.md', 'r').read()
 
 setup(
     name="oscr",
-    version=version,
+    version=VERSION,
     scripts=["oscr"],
     author="Murdo Maclachlan",
     author_email="murdo@maclachlans.org.uk",
@@ -16,13 +16,15 @@ setup(
     url="https://github.com/MurdoMaclachlan/oscr",
     packages=find_packages(),
     install_requires=[
+        "alive_progress>=1.6.1",
+        "colored",
         "configparser",
-        "praw>=7.1.2",
-        "alive_progress>=1.6.1"
+        "praw>=7.1.2"
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
         "Operating System :: OS Independent",
-    ]
+    ],
+    license='GPLv3+'
 )

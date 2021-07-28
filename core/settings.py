@@ -22,14 +22,16 @@
 
 import sys
 import json
-from .log import doLog, updateLog
-from .misc import calculateEssentials, createIni
+from typing import List, NoReturn
+from .globals import Globals, Log, System
+from .ini import createIni
+from .log import exitWithLog, updateLog
+from .misc import dumpConfig
+global Globals, Log, System
 
 # Main settings menu
 # If-tree the first, but not the last
-def settingsMain(gvars):
-
-    doLog("Success: reached settings menu.", gvars)
+def settingsMain() -> NoReturn:
 
     while True:
         # Gets user choice
@@ -41,61 +43,68 @@ def settingsMain(gvars):
             "\n4. Continue to program"
             "\n5. Exit"
         )
-        results = ["1", "2", "3", "4", "5"]
-        choice = validateChoice(results)
+        choice = validateChoice(["1", "2", "3", "4", "5"])
 
         # Determines which result happens
         if choice == "1":
-            doLog("Opening config edit menu.", gvars)
-            editConfig(gvars)
+            Log.new(["Opening config edit menu."])
+            editConfig()
         elif choice == "2":
-            doLog("Opening praw.ini edit menu.", gvars)
-            doLog("WARNING: edits to praw.ini will require a restart to take effect.", gvars)
-            editPraw(gvars)
+            Log.new(
+                [
+                    "Opening praw.ini edit menu.",
+                    Log.warning("WARNING: edits to praw.ini will require a restart to take effect.")
+                ]
+            )
+            editPraw()
         elif choice == "3":
             howToUse()
         elif choice == "4":
-            return doLog("Exiting settings menu, continuing to main program.", gvars)
+            Log.new(["Exiting settings menu, continuing to main program."])
+            break
         else:
-            updateLog("Updating log...", gvars)
-            doLog("Log updated successfully.", gvars)
-            updateLog("Exiting OSCR...", gvars)
+            updateLog(["Updating log..."])
+            exitWithLog(["Log updated successfully."])
             sys.exit(0)
 
 # This fucking shite is the bane of my existence
 # You'd think I wouldn't need to turn my r/badcode flair into actual fucking code
 # But apparently I do
 # Does what it says on the fucking tin
-def editConfig(gvars):
+def editConfig() -> bool:
 
     # Gets user choice
     print(
         "\nWhich option would you like?"
         "\n1. Add to blacklist"
         "\n2. Remove from blacklist"
-        "\n3. Cutoff"
-        "\n4. Cutoff unit"
-        "\n5. Limit"
-        "\n6. Log updates"
-        "\n7. Operating system"
-        "\n8. Recur"
-        "\n9. Add to regexBlacklist"
-        "\n10. Remove from regexBlacklist"
-        "\n11. Add to subredditList"
-        "\n12. Remove from subredditList"
-        "\n13. Wait unit"
-        "\n14. Use regex"
-        "\n15. User"
-        "\n16. Wait amount"
-        "\n17. Return to main settings menu"
+        "\n3. Case sensitive"
+        "\n4. Cutoff"
+        "\n5. Cutoff unit"
+        "\n6. Debug"
+        "\n7. Limit"
+        "\n8. Log updates"
+        "\n9. Operating system"
+        "\n10. Print logs"
+        "\n11. Recur"
+        "\n12. Add to regexBlacklist"
+        "\n13. Remove from regexBlacklist"
+        "\n14. Add to subredditList"
+        "\n15. Remove from subredditList"
+        "\n16. Wait unit"
+        "\n17. User"
+        "\n18. Use regex"
+        "\n19. Add to userList"
+        "\n20. Remove from userList"
+        "\n21. Wait amount"
+        "\n22. Return to main settings menu"
     )
-    results = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"]
-    resultNames = list(gvars.config.keys())
-    choice = validateChoice(results)
+    resultNames = list(Globals.config.keys())
+    choice = validateChoice(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"])
 
     # Returns to main settings menu
-    if choice == "17":
-        return True
+    if choice == "21":
+        return True      
     else:
         keys = {
             "1":"0",
@@ -107,31 +116,36 @@ def editConfig(gvars):
             "7":"5",
             "8":"6",
             "9":"7",
-            "10":"7",
-            "11":"8",
-            "12":"8",
-            "13":"9",
-            "14":"10",
+            "10":"8",
+            "11":"9",
+            "12":"10",
+            "13":"10",
+            "14":"11",
             "15":"11",
             "16":"12",
+            "17":"13",
+            "18":"14",
+            "19":"15",
+            "20":"15",
+            "21":"16"
         }
     
     key = resultNames[int(keys[choice])]
     
     # Adds/removes from blacklist
-    if choice in ["1", "2", "9", "10", "11", "12"]:  
+    if choice in ["1", "2", "12", "13", "14", "15", "19", "20"]:  
   
-        if choice in ["1", "9", "11"]:
+        if choice in ["1", "12", "14", "19"]:
             value = input(f"\nPlease enter the phrase to add to the {key}\n>> ")
             if value == "-e":
                 return True
-            gvars.config[key].append()
+            Globals.config[key].append()
         else:
             value = input(f"\nPlease enter the phrase to remove from the {key}.\n>> ")
             if value == "-e":
                 return True
-            if value in gvars.config[key]:
-                gvars.config[key].remove(value)
+            if value in Globals.config[key]:
+                Globals.config[key].remove(value)
             else:
                 print(f"{value} is not present in the blacklist.")
                 return True
@@ -139,60 +153,51 @@ def editConfig(gvars):
     else:
 
         # All edits that require one integer value.        
-        if choice in ["3", "4", "5", "16"]:
+        if choice in ["4", "5", "7", "21"]:
             while True:
                 value = input(f"\nEditing {key}\nPlease enter an integer value\n>> ")
                 if value == "-e":
                     return True
                 try:
-                    gvars.config[key] = int(value)
+                    Globals.config[key] = int(value)
+                    break
                 except TypeError as e:
                     print(f"{e} - Not an integer.")
 
         # All edits that require boolean values.
-        elif choice in ["6", "8", "14"]:
+        elif choice in ["3", "6", "8", "10", "18"]:
             while True:
                 value = input(f"\nEditing {key}\nPlease enter a boolean value\n>> ")
                 if value == "-e":
                     return True
                 try:
-                    gvars.config[key] = json.loads(value.lower())
+                    Globals.config[key] = json.loads(value.lower())
+                    break
                 except TypeError as e:
                     print(f"{e} - Not a boolean.")
 
         # All edits that require one string value.
-        elif choice in ["7", "15"]:
+        elif choice in ["9", "17"]:
             value = input(f"\nEditing {key}\nPlease enter the new value\n>> ")
             if value == "-e":
                 return True
-            gvars.config[key] = value
+            Globals.config[key] = value
             
-
         # Replaces waitUnit
-        elif choice == "13":
+        elif choice == "16":
             print(f"Editing {key}")
             newUnit = [
                 input("Please enter the singular noun for the new unit. \n>> "),
                 input("Please enter the plural noun for the new unit. \n>> "),
                 int(input("Please enter the numerical value of the new unit converted into seconds. \n>> "))
             ]
-            gvars.config[key] = newUnit
+            Globals.config[key] = newUnit
 
-    gvars.config.pop("cutoffSec")
-    gvars.config.pop("waitTime")
-    outConfig = {}
-    outConfig["config"] = []
-    outConfig["config"].append(gvars.config)
-    with open(gvars.home+"/.oscr/config.json", "w") as outFile:
-        outFile.write(json.dumps(outConfig, indent=4, sort_keys=True))
-
-    gvars = calculateEssentials(gvars)
-
-    return True
+    return dumpConfig()
 
 # No refresh token support implemented yet, but I'm preparing for it
 # Does what it says on the fucking tin
-def editPraw(gvars):
+def editPraw() -> bool:
 
     # Setup results
     results = []
@@ -222,7 +227,7 @@ def editPraw(gvars):
     try:
         
         # Retrieve information from praw.ini
-        with open(gvars.home+"/.config/praw.ini", "r+") as file:
+        with open(f"{System.PATHS['config']}/praw.ini", "r+") as file:
             content = file.read().splitlines()
             success = False
             allowChanges = False
@@ -244,7 +249,7 @@ def editPraw(gvars):
                             content[content.index(oldLine)] = line
                             success = True
                 else:
-                    doLog("Skipping irrelevant line: " + line, gvars)
+                    Log.new([f"Skipping irrelevant line: {line}"])
             
             # Writes content back into file
             if success:
@@ -258,22 +263,23 @@ def editPraw(gvars):
             # In case necessary line is not found
             else:
                 if key in resultNames[0:3]:
-                    doLog(f"{key} is not in praw.ini.", gvars)
+                    Log.new([f"{key} is not in praw.ini."])
                 #if key == resultNames[3]:
                 #    print("If you are using refresh tokens to log in, please choose that option instead.")
                 #    return False
                 #elif key == resultNames[4]:
                 #    print("If you are not using refresh tokens to log in, please choose password instead.")
                 #    return False
-                createIni(gvars)
+                createIni()
     
     # In case praw.ini is not found
     except FileNotFoundError:
-        doLog("praw.ini file not found.", gvars)
-        createIni(gvars)
+        Log.new([Log.warning("praw.ini file not found.")])
+        createIni()
 
     return True
-    
+
+# Prints explanation of how to use the settings menu
 def howToUse():
     print(
         "\nHOW TO USE\n",
@@ -287,7 +293,7 @@ def howToUse():
 
 # Validates the user's choice to make sure it's in the viable results
 # The only function in this module that doesn't look like shrek got acne
-def validateChoice(results):
+def validateChoice(results: List) -> str:
     choice = ""
     while choice not in results:
         choice = input("\n>> ")
