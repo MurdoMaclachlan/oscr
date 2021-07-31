@@ -65,7 +65,7 @@ DEFAULT_CONFIG = {
     "wait": 10
 }
 
-VERSION = "2.1.0-dev20210731"
+VERSION = "2.1.0-dev2-20210731"
 
 """
     Globals is the miscellaneous global class, containing
