@@ -17,17 +17,15 @@
     Contact me at murdo@maclachlans.org.uk
 """
 
-from os import remove
-from os.path import isfile
 from configparser import ConfigParser
 from typing import Dict, List, Union
 from .globals import Globals, Log, System
-from .misc import filterArray, writeToFile
+from .misc import writeToFile
 global Globals, Log, System
 
 """
-    I'm going to be so happy when I get to
-    delete half of this module next version.
+    This module contains functions relating to the handling
+    the praw.ini file.
 """
 
 # Creates new ini file based on user input
@@ -48,86 +46,9 @@ def createIni() -> bool:
     
     return True
 
-# Extracts OSCR content from an ini file, returning False if none found
-def extractIniDetails() -> Union[bool, List]:
-    
-    with open(f"{System.PATHS['config']}/../praw.ini", "r+") as file:
-        content = file.read().splitlines()
-    return False if not content or not oscrOnly(content) else oscrOnly(content) # return None if praw.ini has no OSCR
-
 # Use configparser magic to get the credentials from praw.ini
 def getCredentials() -> Dict:
    
     credentials = ConfigParser()
     credentials.read(f"{System.PATHS['config']}/praw.ini")
     return dict(credentials["oscr"])
-
-# Given a list of strings, finds OSCR content as per .ini syntax
-# Replaces any CDRemover content with OSCR content
-def oscrOnly(content: List) -> List:
-
-    oscrContent = []
-    append = False
-    for line in content:
-        if line.startswith("[") and not line in ["[oscr]", "[oscr]          "]:
-            append = False
-        elif line in ["[cdrcredentials]", "[oscr]", "[oscr]          "]:
-            append = True
-        if line == "[cdrcredentials]":
-            Log.new([f"Replacing line '{line}' with '[oscr]'."])
-            line = "[oscr]"
-        if append: oscrContent.append(line)
-    return oscrContent
-
-# Reformats the ini file to a new location, changing any CDRemover content to OSCR
-# Set to be deprecated in 2.1.0
-def reformatIni(Globals: object) -> bool:
-
-    try: getCredentials(Globals)["client_id"]; return True
-    except (FileNotFoundError, KeyError): pass
-    
-    try:
-        with open(f"{System.PATHS['config']}/../praw.ini", "r+") as file:
-            content = file.read().splitlines()
-        oscrContent = oscrOnly(content)
-        
-        # If no OSCR content was found
-        if not oscrContent:
-            if isfile(f"{System.PATHS['config']}/praw.ini"):
-                Log.new(["praw.ini already formatted."])
-                return True
-            else: createIni(Globals)
-        
-        # Else, write all OSCR content to new file
-        else:
-            with open(f"{System.PATHS['config']}/../praw.ini", "w+") as file:
-                success = writeToFile(oscrContent, open(f"{System.PATHS['config']}/praw.ini", "w+"))
-                    
-        # Remove OSCR section from old praw.ini, and remove file if no other sections are present
-        try:
-            strippedContent = stripOSCR(content)
-            remove(f"{System.PATHS['config']}/../praw.ini")
-            writeToFile(strippedContent, open(f"{System.PATHS['config']}/../praw.ini", "w+"))
-            with open(f"{System.PATHS['config']}/../praw.ini", "r") as file:
-                delete = True if not file.readlines() else False
-            if delete: remove(f"{System.PATHS['config']}/../praw.ini")
-        except IndexError: pass
-        
-        return True if success else createIni()
-
-    # Catch missing praw.ini                
-    except FileNotFoundError:
-        if isfile(f"{System.PATHS['config']}/praw.ini"):
-            Log.new(["praw.ini already formatted."])
-            return False
-        else: return createIni()
-
-# Strips .ini content of any OSCR content
-def stripOSCR(content: List) -> List:
-    delete = False
-    linesToDelete = []
-    for line in content:
-        if line in ["[oscr]", "[oscr]          "]: delete = True
-        elif line.startswith("["): delete = False
-        if delete: linesToDelete.append(line)
-    return filterArray(content, linesToDelete)
