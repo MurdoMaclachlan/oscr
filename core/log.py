@@ -51,14 +51,14 @@ def updateLog(messages: List) -> bool:
     if Globals.config["logUpdates"]:
         
         if writeLog():
-            Log.clear()
+            Log.request(["clear", "all"])
             return True
         
         else:
             print(
                 Log.warning(f"WARNING: Error updating log; disabling log updates for this instance."),
                 Log.warning(f"Most recent log was:\n"),
-                Log.get(mode="recent")
+                Log.request(["get", "recent"])
             )
             Globals.config["logUpdates"] = False
     
@@ -69,7 +69,7 @@ def writeLog() -> bool:
     
     try:
         with open(f"{System.PATHS['data']}/log.txt", "a") as file:
-            for i in Log.get("all"): file.write(i)
+            for i in Log.request(["get", "all"]): file.write(i)
         return True
     
     # Catch all exceptions to avoid the program crashing;
