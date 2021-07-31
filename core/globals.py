@@ -65,7 +65,7 @@ DEFAULT_CONFIG = {
     "wait": 10
 }
 
-VERSION = "2.0.0"
+VERSION = "2.1.0-dev20210731"
 
 """
     Globals is the miscellaneous global class, containing
@@ -104,31 +104,12 @@ class Log:
             self.RESET = attr(reset)
             self.WARNING = fg(warning)
     
-    # Clears items in the log; either all or the most recent
-    def clear(self: object, mode="all") -> NoReturn:
-        if mode == "all":
-            del self.__log[:]
-        elif mode == "recent":
-            del self.__log[len(self.__log)-1]
-        else:
-            print(self.warning("WARNING: Log.clear() received unknown mode '{mode}'."))
-    
-    # Returns items in the log; either all or the most recent
-    def get(self: object, mode="all") -> Union[List, str, None]:
-        if mode == "all":
-            return self.__log
-        elif mode == "recent":
-            return self.__log[len(self.__log)-1]
-        else:
-            print(self.warning("WARNING: Log.get() received unknown mode '{mode}'."))
-            return None
-    
     # Finds the current time and returns it in a human readable format.
     def getTime(self: object, timeToFind: int) -> str:
         return datetime.fromtimestamp(timeToFind).strftime("%Y-%m-%d %H:%M:%S")
     
     # Updates the log array and prints to console
-    def new(self: object, messages: List) -> bool:
+    def new(self: object, messages: Union[List[str], str]) -> bool:
         
         for message in messages:
             
@@ -138,9 +119,25 @@ class Log:
             currentTime = self.getTime(time())
             
             self.__log.append(f"{currentTime} - {message}\n")
-            print(f"{currentTime} - {message}") if Globals.config["printLogs"] else None
+            print(f"{currentTime} - {message}") if Globals.config["printLogs"] else None  
         
         return True
+    
+    # Returns or deletes item(s) in the log; either all or the most recent.
+    def request(self: object, mode: List) -> NoReturn:
+        
+        requests = {
+            "all": (self.__log, self.__log[:])[1 if mode[0] == "clear" else 0], 
+            "recent": self.__log[len(self.__log)-1]
+        }        
+        
+        try:
+            if mode[0] == "clear":
+                del requests[mode[1]]
+            elif mode[0] == "get":
+                return requests[mode[1]]
+        except KeyError:
+            print(self.warning("WARNING: Log.request() received unknown mode '{i}'."))
     
     # Colours a single string orange
     def warning(self: object, message: str) -> str:
