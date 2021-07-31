@@ -21,7 +21,6 @@ import sys
 from os import remove, rename
 from typing import Any, List, NoReturn
 from .globals import DEFAULT_CONFIG, Globals, Log, System, VERSION
-from .ini import reformatIni
 from .misc import calculateEssentials
 global Globals, Log, System
 
@@ -37,11 +36,9 @@ def checkArgs() -> NoReturn:
         "-c": printCredits,
         "--show-config": showConfig, # priority 4
         "-s": showConfig,
-        "--format-old": formatOld, # priority 5
-        "-F": formatOld,
-        "--reset-config": resetConfig, # priority 6
+        "--reset-config": resetConfig, # priority 5
         "-R": resetConfig,
-        "--settings": settings, # priority 7
+        "--settings": settings, # priority 6
         "-S": settings,
         "--force-regex": tempChangeConfig, # lowest priority; alphabetical
         "-f": tempChangeConfig,
@@ -124,15 +121,6 @@ def cleanHunt() -> NoReturn:
         ]
     )
 
-# Changes ./cdremover folders to ./oscr and calls reformat ini
-def formatOld() -> NoReturn:
-    Log.new(["Reformatting CDRemover files to OSCR."], Globals)
-    try:
-        rename(System.HOME+"/.cdremover", System.HOME+"/.oscr")
-    except FileNotFoundError: pass
-    reformatIni(Globals)
-    Log.new(["Reformatting complete."])
-
 # Prints a list of arguments and their functions
 def helpMenu() -> NoReturn:
     print(
@@ -140,7 +128,6 @@ def helpMenu() -> NoReturn:
         "--clean-hunt, -C:    runs an isolated instance of OSCR that deletes ToR bot interactions containing the phrase 'treasure hunt'\n",
         "--credits, -c:       lists everyone who has helped with the creation of the program\n",
         "--force-regex, -f:   forces the program to enable regex for one instance regardless of configuration\n",
-        "--format-old, -F:    rename old .cdremover directories, etc. to fit OSCR's new name, and move old praw.ini to new location\n",
         "--help, -h:          displays this list\n",
         "--no-recur, -n:      forces program to run only one cycle regardless of 'recur' configuration\n",
         "--print-logs, -p:    forces program to print logs for one instance regardless of 'printLogs' configuration\n",
