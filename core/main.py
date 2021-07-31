@@ -21,12 +21,11 @@ import praw
 import configparser
 from time import sleep
 from alive_progress import alive_bar as aliveBar
-from os.path import isfile
 from typing import NoReturn
 from .globals import Globals, Log, Stats, System
 from .comment import blacklist, regex, remover
 from .log import exitWithLog, updateLog
-from .ini import createIni, extractIniDetails, getCredentials
+from .ini import createIni, getCredentials
 from .misc import writeToFile
 global Globals, Log, Stats, System
 
@@ -61,26 +60,19 @@ def oscr() -> NoReturn:
     # Catch for invalid ini, will create a new one then restart the program;
     # the restart is required due to current PRAW limitations. :'(
     except (configparser.NoSectionError, praw.exceptions.MissingRequiredAttributeException, KeyError):
-        if isfile(f"{System.PATHS['config']}/../praw.ini"):
-            iniDetails = extractIniDetails()
-            if not iniDetails: pass
-            else:
-                writeToFile(iniDetails, open(f"{System.PATHS['config']}/praw.ini", "w+"))
-                exitWithLog(["praw.ini successfully created, program restart required for this to take effect."])
 
-        exitWithLog(["praw.ini successfully created, program restart required for this to take effect."]) if createIni() else exitWithLog([Log.warning("Log.warningING: Failed to create praw.ini file, something went wrong.")])
+        exitWithLog(
+            ["praw.ini successfully created, program restart required for this to take effect."]
+        ) if createIni() else exitWithLog(
+            [Log.warning("WARNING: Failed to create praw.ini file, something went wrong.")]
+        )
     
     # Fetches statistics
     if Globals.config["reportTotals"]:
         from .statistics import dumpStats, fetchStats
         fetchStats()
     
-    updateLog(
-        [
-            "Updating log...",
-            "Log updated successfully."
-        ]
-    ) if Globals.config["logUpdates"] else None
+    updateLog(["Updating log...", "Log updated successfully."]) if Globals.config["logUpdates"] else None
     
     while True:
         
@@ -146,12 +138,7 @@ def oscr() -> NoReturn:
     
         # If recur is set to false, updates log and kills the program.
         if not Globals.config["recur"]:
-            exitWithLog(
-                [
-                    "Updating log...",
-                    "Log updated successfully."
-                ]
-            )
+            exitWithLog(["Updating log...", "Log updated successfully."])
     
         # Updates log, prepares for next cycle.
         updateLog(
