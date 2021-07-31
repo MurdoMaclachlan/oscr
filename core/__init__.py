@@ -1,7 +1,6 @@
 # arguments handling
 from .arguments import checkArgs
 from .arguments import cleanHunt
-from .arguments import formatOld
 from .arguments import helpMenu
 from .arguments import printCredits
 from .arguments import resetConfig
@@ -22,11 +21,7 @@ from .globals import VERSION
 
 # ini handling
 from .ini import createIni
-from .ini import extractIniDetails
 from .ini import getCredentials
-from .ini import oscrOnly
-from .ini import reformatIni
-from .ini import stripOSCR
 
 # file-handling log-related functions
 from .log import exitWithLog
