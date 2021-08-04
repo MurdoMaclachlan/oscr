@@ -18,7 +18,6 @@
 """
 
 import json
-from typing import List, NoReturn, TextIO
 from .globals import Log, Stats, System
 from .misc import dumpJSON
 global Log, Stats, System
@@ -30,18 +29,20 @@ global Log, Stats, System
     to update them after each iteration.
 """
 
+
 # Updates statistics in stats.json
 def dumpStats() -> bool:
     
     if dumpJSON(
             f"{System.PATHS['data']}/stats.json",
             {"statistics": [Stats.get("total")]}
-        ):
-        Log.new([f"Updated statistics successfully."])
+    ):
+        Log.new(["Updated statistics successfully."])
         return False
     else:
-        Log.new([Log.warning(f"WARNING: Failed to update statistics, will no longer attempt to update for this instance.")])
+        Log.new([Log.warning("WARNING: Failed to update statistics, will no longer attempt to update for this instance.")])
         return True
+
 
 # Retrieve statistics from stats.json
 def fetchStats() -> object:
@@ -52,14 +53,14 @@ def fetchStats() -> object:
             
             # Catch invalid JSON in the config file (usually a result of manual editing)
             except json.decoder.JSONDecodeError as e:
-                Log.new([Log.warning(f"WARNING: Failed to fetch statistics; could not decode JSON file. Returning 0."), Log.warning(f"Error was: {e}")])
+                Log.new([Log.warning("WARNING: Failed to fetch statistics; could not decode JSON file. Returning 0."), Log.warning(f"Error was: {e}")])
                 Stats.generateNew()
             
             Stats.setTotals(data["statistics"][0])
-            Log.new([f"Fetched statistics successfully."])
+            Log.new(["Fetched statistics successfully."])
         
     # Catch missing stats file
     except FileNotFoundError:
-        Log.new([Log.warning(f"WARNING: Could not find stats file. It will be created.")])
+        Log.new([Log.warning("WARNING: Could not find stats file. It will be created.")])
         Stats.generateNew()
         Stats.failed = dumpStats()
