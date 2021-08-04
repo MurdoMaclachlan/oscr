@@ -18,15 +18,15 @@
 """
 
 from configparser import ConfigParser
-from typing import Dict, List, Union
+from typing import Dict
 from .globals import Globals, Log, System
-from .misc import writeToFile
 global Globals, Log, System
 
 """
     This module contains functions relating to the handling
     the praw.ini file.
 """
+
 
 # Creates new ini file based on user input
 def createIni() -> bool:
@@ -35,7 +35,7 @@ def createIni() -> bool:
     iniVars = {
         "client_id": input("Please input your client id:  "),
         "client_secret": input("Please input your client secret:  "),
-        "username": Globals.config["user"], # Since createIni is never called before the config is initialised, this is safe to draw from
+        "username": Globals.config["user"],  # Since createIni is never called before the config is initialised, this is safe to draw from
         "password": input("Please input your Reddit password:  ")
     }
     
@@ -45,6 +45,7 @@ def createIni() -> bool:
         for i in iniVars: file.write(i+"="+iniVars[i]+"\n")
     
     return True
+
 
 # Use configparser magic to get the credentials from praw.ini
 def getCredentials() -> Dict:
