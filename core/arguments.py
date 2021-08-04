@@ -93,7 +93,7 @@ def checkArgs() -> NoReturn:
     # Handles passing of unknown arguments
     for argument in sys.argv[1:]:
         if argument not in arguments:
-            print(warn(f"WARNING: Unknown argument '{argument}' passed - ignoring.", Globals))
+            print(Log.warning(f"WARNING: Unknown argument '{argument}' passed - ignoring.", Globals))
     
     sys.exit(0) if closing else calculateEssentials()
 
