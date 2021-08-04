@@ -65,7 +65,7 @@ DEFAULT_CONFIG = {
     "wait": 10
 }
 
-VERSION = "2.1.0-dev4-202100804"
+VERSION = "2.1.0-dev5-202100804"
 
 """
     Globals is the miscellaneous global class, containing
@@ -73,6 +73,8 @@ VERSION = "2.1.0-dev4-202100804"
     other 3. Currently, that means the config settings and
     the version number.
 """
+
+
 class Globals:
     
     def __init__(self: object) -> NoReturn:
@@ -83,7 +85,8 @@ class Globals:
     # All edits should go through this function to prevent a breaking change
     def editConfig(self: object, key: str, value: Any) -> NoReturn:
         self.config[key] = value
-   
+
+
 """
     Log handles the logging system, surprise surprise. In
     addition to containing the main log array, Log contains
@@ -91,6 +94,8 @@ class Globals:
     defines a simple API for access and modification to/of
     the data contained therein.
 """
+
+
 class Log:
     
     def __init__(self: object) -> NoReturn:
@@ -119,7 +124,7 @@ class Log:
             currentTime = self.getTime(time())
             
             self.__log.append(f"{currentTime} - {message}\n")
-            print(f"{currentTime} - {message}") if Globals.config["printLogs"] else None  
+            print(f"{currentTime} - {message}") if Globals.config["printLogs"] else None
         
         return True
     
@@ -127,9 +132,9 @@ class Log:
     def request(self: object, mode: List) -> NoReturn:
         
         requests = {
-            "all": (self.__log, self.__log[:])[1 if mode[0] == "clear" else 0], 
+            "all": (self.__log, self.__log[:])[1 if mode[0] == "clear" else 0],
             "recent": self.__log[len(self.__log)-1]
-        }        
+        }
         
         try:
             if mode[0] == "clear":
@@ -143,11 +148,14 @@ class Log:
     def warning(self: object, message: str) -> str:
         return self.ConsoleColours.WARNING + message + self.ConsoleColours.RESET
 
+
 """
     Statistics stores the current and total statistics
     and provides a simple API for accessing and modifying
     the data contained therein.
 """
+
+
 class Statistics:
     
     def __init__(self: object) -> NoReturn:
@@ -173,7 +181,7 @@ class Statistics:
         self.__data["total"] = {
                 "counted": 0,
                 "deleted": 0
-            }
+        }
     
     # Increments a single current statistic
     def increment(self: object, stat: str) -> NoReturn:
@@ -185,7 +193,7 @@ class Statistics:
                 "counted": 0,
                 "deleted": 0,
                 "waitingFor": 0
-            }
+        }
     
     # Sets dataset to passed value
     def setTotals(self: object, totals: Dict) -> NoReturn:
@@ -193,8 +201,9 @@ class Statistics:
     
     # Updates total dataset using current dataset
     def updateTotals(self: object) -> NoReturn:
-        for statistic in ["counted","deleted"]:
+        for statistic in ["counted", "deleted"]:
             self.__data["total"][statistic] += self.__data["current"][statistic]
+
 
 """
     System class handles the most important variables to
@@ -202,6 +211,8 @@ class Statistics:
     directories are contained here, as well as the location
     of the home directory and the auto-detected OS.
 """
+
+
 class System:
     
     def __init__(self: object) -> NoReturn:
@@ -209,7 +220,7 @@ class System:
         self.OS = platform
         self.PATHS = self.definePaths(self.HOME, self.OS)
     
-    # Defines save paths for config and data based on the user's OS    
+    # Defines save paths for config and data based on the user's OS
     def definePaths(self: object, home: str, os: str) -> List:
         
         # Gets first 3 characters of OS
@@ -227,14 +238,14 @@ class System:
                 "data": home + "/.oscr/data"
             }
                 
-            #Create any missing paths/directories
+            # Create any missing paths/directories
             for path in paths:
                 if not isdir(paths[path]):
                     Log.new(f"Making path: {paths[path]}")
                     for directory in paths[path].split("/")[1:]:
-                       if not isdir(paths[path].split(directory)[0] + directory):
-                           Log.new(f"Making directory: {paths[path].split(directory)[0]}{directory}")
-                           mkdir(paths[path].split(directory)[0] + directory)
+                        if not isdir(paths[path].split(directory)[0] + directory):
+                            Log.new(f"Making directory: {paths[path].split(directory)[0]}{directory}")
+                            mkdir(paths[path].split(directory)[0] + directory)
             return paths
         
         # Exit is OS is unsupported
