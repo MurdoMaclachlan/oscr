@@ -13,7 +13,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <https://www.gnu.org/licenses/>.
-    
+
     Contact me at murdo@maclachlans.org.uk
 """
 
@@ -28,6 +28,7 @@ from .ini import createIni
 from .log import exitWithLog, updateLog
 from .misc import dumpConfig
 global Globals, Log, System
+
 
 # Main settings menu
 # If-tree the first, but not the last
@@ -67,6 +68,7 @@ def settingsMain() -> NoReturn:
             exitWithLog(["Log updated successfully."])
             sys.exit(0)
 
+
 # This fucking shite is the bane of my existence
 # You'd think I wouldn't need to turn my r/badcode flair into actual fucking code
 # But apparently I do
@@ -104,36 +106,36 @@ def editConfig() -> bool:
 
     # Returns to main settings menu
     if choice == "21":
-        return True      
+        return True
     else:
         keys = {
-            "1":"0",
-            "2":"0",
-            "3":"1",
-            "4":"2",
-            "5":"3",
-            "6":"4",
-            "7":"5",
-            "8":"6",
-            "9":"7",
-            "10":"8",
-            "11":"9",
-            "12":"10",
-            "13":"10",
-            "14":"11",
-            "15":"11",
-            "16":"12",
-            "17":"13",
-            "18":"14",
-            "19":"15",
-            "20":"15",
-            "21":"16"
+            "1": "0",
+            "2": "0",
+            "3": "1",
+            "4": "2",
+            "5": "3",
+            "6": "4",
+            "7": "5",
+            "8": "6",
+            "9": "7",
+            "10": "8",
+            "11": "9",
+            "12": "10",
+            "13": "10",
+            "14": "11",
+            "15": "11",
+            "16": "12",
+            "17": "13",
+            "18": "14",
+            "19": "15",
+            "20": "15",
+            "21": "16"
         }
     
     key = resultNames[int(keys[choice])]
     
     # Adds/removes from blacklist
-    if choice in ["1", "2", "12", "13", "14", "15", "19", "20"]:  
+    if choice in ["1", "2", "12", "13", "14", "15", "19", "20"]:
   
         if choice in ["1", "12", "14", "19"]:
             value = input(f"\nPlease enter the phrase to add to the {key}\n>> ")
@@ -152,7 +154,7 @@ def editConfig() -> bool:
 
     else:
 
-        # All edits that require one integer value.        
+        # All edits that require one integer value.
         if choice in ["4", "5", "7", "21"]:
             while True:
                 value = input(f"\nEditing {key}\nPlease enter an integer value\n>> ")
@@ -195,6 +197,7 @@ def editConfig() -> bool:
 
     return dumpConfig()
 
+
 # No refresh token support implemented yet, but I'm preparing for it
 # Does what it says on the fucking tin
 def editPraw() -> bool:
@@ -206,7 +209,7 @@ def editPraw() -> bool:
         "client_secret",
         "username",
         "password",
-        #"refresh_token",
+        # "refresh_token",
         "Return to main settings menu"
     ]
     
@@ -264,12 +267,14 @@ def editPraw() -> bool:
             else:
                 if key in resultNames[0:3]:
                     Log.new([f"{key} is not in praw.ini."])
-                #if key == resultNames[3]:
-                #    print("If you are using refresh tokens to log in, please choose that option instead.")
-                #    return False
-                #elif key == resultNames[4]:
-                #    print("If you are not using refresh tokens to log in, please choose password instead.")
-                #    return False
+                """
+                if key == resultNames[3]:
+                    print("If you are using refresh tokens to log in, please choose that option instead.")
+                    return False
+                elif key == resultNames[4]:
+                    print("If you are not using refresh tokens to log in, please choose password instead.")
+                    return False
+                """
                 createIni()
     
     # In case praw.ini is not found
@@ -278,6 +283,7 @@ def editPraw() -> bool:
         createIni()
 
     return True
+
 
 # Prints explanation of how to use the settings menu
 def howToUse():
@@ -290,6 +296,7 @@ def howToUse():
         "simply entering '-e' will return you to the main settings menu."
     )
     input("\nPress enter to return to the main settings menu.")
+
 
 # Validates the user's choice to make sure it's in the viable results
 # The only function in this module that doesn't look like shrek got acne

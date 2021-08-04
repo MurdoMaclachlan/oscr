@@ -1,8 +1,10 @@
 from setuptools import setup, find_packages
 from core.globals import VERSION
 
+
 def readme():
     return open('README.md', 'r').read()
+
 
 setup(
     name="oscr",

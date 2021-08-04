@@ -19,7 +19,7 @@
 
 import re
 from time import time
-from typing import Any, List, NoReturn, Union
+from typing import Any, List, NoReturn
 from .globals import Globals, Log, Stats
 from .misc import checkRegex
 global Globals, Log, Stats
@@ -29,10 +29,12 @@ global Globals, Log, Stats
     the comments retrieved from Reddit.
 """
 
+
 # Blacklist check; placed here for ease of readability in main.py.
 def blacklist(comment):
     
     return True if (comment.body.lower(), comment.body)[Globals.config["caseSensitive"]] in Globals.config["blacklist"] else False
+
 
 # Checks a given value against an array; the value passes the
 # check either if it is in the array or if the array is empty
@@ -40,10 +42,12 @@ def checkArray(array: List, value: Any) -> bool:
     
     return True if len(array) < 1 or value in array else False
 
+
 # Regex check; placed here for easy of readability in main.py.
-def regex(comment): 
+def regex(comment):
     
     return True if Globals.config["useRegex"] and checkRegex(re, comment) else False
+
 
 # The main comment deletion algorithm
 def remover(comment: object) -> NoReturn:
