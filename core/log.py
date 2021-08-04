@@ -18,7 +18,6 @@
 """
 
 import sys
-from time import time
 from typing import List, NoReturn
 from .globals import Globals, Log, System
 global Globals, Log, System
@@ -31,6 +30,7 @@ global Globals, Log, System
     alphabetical order.
 """
 
+
 # Exits OSCR while updating the log with some last messages
 def exitWithLog(messages: List) -> NoReturn:
     
@@ -39,6 +39,7 @@ def exitWithLog(messages: List) -> NoReturn:
     updateLog(["Exiting..."]) if Globals.config["logUpdates"] else print("Exiting...")
         
     sys.exit(0)
+
 
 # Updates the log file with the current log.
 def updateLog(messages: List) -> bool:
@@ -56,13 +57,14 @@ def updateLog(messages: List) -> bool:
         
         else:
             print(
-                Log.warning(f"WARNING: Error updating log; disabling log updates for this instance."),
-                Log.warning(f"Most recent log was:\n"),
+                Log.warning("WARNING: Error updating log; disabling log updates for this instance."),
+                Log.warning("Most recent log was:\n"),
                 Log.request(["get", "recent"])
             )
             Globals.config["logUpdates"] = False
     
     return False
+
 
 # Writes the contents of the log array to the log.txt file
 def writeLog() -> bool:
