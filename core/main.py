@@ -26,7 +26,6 @@ from .globals import Globals, Log, Stats, System
 from .comment import blacklist, regex, remover
 from .log import exitWithLog, updateLog
 from .ini import createIni, getCredentials
-from .misc import writeToFile
 global Globals, Log, Stats, System
 
 """
@@ -34,14 +33,15 @@ global Globals, Log, Stats, System
     of OSCR is controlled through the oscr() function, passed
     Globals by the oscr top-level script run through the console
     command.
-    
+
     This function initiates after all arguments have been
     checked and global variables have been collected and
     processed as needed, and continues to loop until run-time
     ends.
 """
 
-def oscr() -> NoReturn: 
+
+def oscr() -> NoReturn:
 
     Log.new(
         [
@@ -91,16 +91,16 @@ def oscr() -> NoReturn:
                 try:
                     if (blacklist(comment), regex(comment))[Globals.config["useRegex"]]:
                         remover(comment)
-                
+
                 # Result of a comment being in reply to a deleted/removed submission
                 except AttributeError as e:
                     Log.new([Log.warning(f"Handled error on iteration {Globals.Stats.get('counted')}: {e} | Comment at {comment.permalink}")])
                 Stats.increment("counted")
-                
+
                 progress()
-    
+
         Log.new([f"Successfully checked all {Stats.get('current', stat='counted')} available comments."])
-    
+
         # Notifies if the end of Reddit's listing is reached (i.e. no new comments due to API limitations)
         try:
             if Stats.get("current", stat="counted") < Globals.config["limit"]:
@@ -114,12 +114,7 @@ def oscr() -> NoReturn:
                     "WARNING: OSCR counted less comments than your limit of 1000. You may have deleted all available elligible comments," +
                     " or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more."
                 )])
-    
-        # Updates statistics
-        if Globals.config["reportTotals"]:
-            Stats.updateTotals()
-            dumpStats()
-        
+
         # Gives info about this iteration; how many comments were counted, deleted, still waiting for.
         Log.new(
             [
@@ -128,23 +123,26 @@ def oscr() -> NoReturn:
                 f"Waiting for: {str(Stats.get('current', stat='waitingFor'))}"
             ]
         )
+
+        # Updates total statistics
         if Globals.config["reportTotals"]:
+            Stats.updateTotals()
+            dumpStats()
             Log.new(
                 [
                     f"Total Counted: {str(Stats.get('total', stat='counted'))}",
                     f"Total Deleted: {str(Stats.get('total', stat='deleted'))}"
                 ]
             )
-    
+
         # If recur is set to false, updates log and kills the program.
         if not Globals.config["recur"]:
             exitWithLog(["Updating log...", "Log updated successfully."])
-    
+
         # Updates log, prepares for next cycle.
         updateLog(
             [
-                "Updating log...",
-                "Log updated successfully.",
+                "Updating log...", "Log updated successfully.",
                 f"Waiting {str(Globals.config['wait'])} {Globals.config['unit'][0] if Globals.config['wait'] == 1 else Globals.config['unit'][1]} before checking again..."
             ]
         )
