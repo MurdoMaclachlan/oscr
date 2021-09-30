@@ -1,4 +1,8 @@
-# OSCR (Open Source Caretaker for Reddit)
+<h1 align="center">
+  OSCR
+  <br>
+  (Open Source Caretaker for Reddit)
+</h1>
 
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/MurdoMaclachlan/oscr/graphs/commit-activity)
 ![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability-percentage/MurdoMaclachlan/oscr)
