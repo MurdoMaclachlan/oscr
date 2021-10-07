@@ -18,9 +18,9 @@
     Contact me at murdo@maclachlans.org.uk
 """
 
-from core.arguments import checkArgs
-from core.main import oscr
-from core.misc import getConfig
+from oscrcore.arguments import checkArgs
+from oscrcore.main import oscr
+from oscrcore.misc import getConfig
 
 print(
       "Copyright (C) 2020-present, Murdo B. Maclachlan\n"
