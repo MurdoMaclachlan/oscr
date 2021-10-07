@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-    Contact me at murdo@maclachlans.org.uk
+    Contact me at murdomaclachlan@duck.com
 """
 
 # This whole module is an ugly bastard, but it works
@@ -91,21 +91,23 @@ def editConfig() -> bool:
         "\n11. Recur"
         "\n12. Add to regexBlacklist"
         "\n13. Remove from regexBlacklist"
-        "\n14. Add to subredditList"
-        "\n15. Remove from subredditList"
-        "\n16. Wait unit"
-        "\n17. User"
-        "\n18. Use regex"
-        "\n19. Add to userList"
-        "\n20. Remove from userList"
-        "\n21. Wait amount"
-        "\n22. Return to main settings menu"
+        "\n14. Report totals"
+        "\n15. Add to subredditList"
+        "\n16. Remove from subredditList"
+        "\n17. Wait unit"
+        "\n18. User"
+        "\n19. Use refresh tokens"
+        "\n20. Use regex"
+        "\n21. Add to userList"
+        "\n22. Remove from userList"
+        "\n23. Wait amount"
+        "\n24. Return to main settings menu"
     )
     resultNames = list(Globals.config.keys())
-    choice = validateChoice(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"])
+    choice = validateChoice(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"])
 
     # Returns to main settings menu
-    if choice == "21":
+    if choice == "24":
         return True
     else:
         keys = {
@@ -123,21 +125,23 @@ def editConfig() -> bool:
             "12": "10",
             "13": "10",
             "14": "11",
-            "15": "11",
+            "15": "12",
             "16": "12",
             "17": "13",
             "18": "14",
             "19": "15",
-            "20": "15",
-            "21": "16"
+            "20": "16",
+            "21": "17",
+            "22": "17",
+            "23": "18"
         }
     
     key = resultNames[int(keys[choice])]
     
     # Adds/removes from blacklist
-    if choice in ["1", "2", "12", "13", "14", "15", "19", "20"]:
+    if choice in ["1", "2", "12", "13", "15", "16", "21", "22"]:
   
-        if choice in ["1", "12", "14", "19"]:
+        if choice in ["1", "12", "15", "21"]:
             value = input(f"\nPlease enter the phrase to add to the {key}\n>> ")
             if value == "-e":
                 return True
@@ -155,7 +159,7 @@ def editConfig() -> bool:
     else:
 
         # All edits that require one integer value.
-        if choice in ["4", "5", "7", "21"]:
+        if choice in ["4", "5", "7", "23"]:
             while True:
                 value = input(f"\nEditing {key}\nPlease enter an integer value\n>> ")
                 if value == "-e":
@@ -167,7 +171,7 @@ def editConfig() -> bool:
                     print(f"{e} - Not an integer.")
 
         # All edits that require boolean values.
-        elif choice in ["3", "6", "8", "10", "18"]:
+        elif choice in ["3", "6", "8", "10", "14", "19", "20"]:
             while True:
                 value = input(f"\nEditing {key}\nPlease enter a boolean value\n>> ")
                 if value == "-e":
@@ -179,14 +183,14 @@ def editConfig() -> bool:
                     print(f"{e} - Not a boolean.")
 
         # All edits that require one string value.
-        elif choice in ["9", "17"]:
+        elif choice in ["9", "18"]:
             value = input(f"\nEditing {key}\nPlease enter the new value\n>> ")
             if value == "-e":
                 return True
             Globals.config[key] = value
             
         # Replaces waitUnit
-        elif choice == "16":
+        elif choice == "17":
             print(f"Editing {key}")
             newUnit = [
                 input("Please enter the singular noun for the new unit. \n>> "),
