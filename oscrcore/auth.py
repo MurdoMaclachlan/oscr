@@ -36,64 +36,91 @@ global Globals, Log, System
 def login() -> object:
     
     credentials = getCredentials()
-    if "refresh_token" not in credentials.keys():
+    
+    if Globals.config["useRefreshTokens"]:
         
-        reddit = praw.Reddit(
-            user_agent = f"{System.OS}:oscr:v{Globals.VERSION}(by /u/MurdoMaclachlan)",
-            client_id = credentials["client_id"],
-            client_secret = credentials["client_secret"],
-            username = credentials["username"],
-            password = credentials["password"],
-            redirect_uri = credentials["redirect_uri"]
-        )
-    
-        try:
-            reddit.user.me()
-            return reddit
+        # Indicates user will not have authorised OSCR yet
+        if "refresh_token" not in credentials.keys():
+            
+            reddit = praw.Reddit(
+                user_agent = f"{System.OS}:oscr:v{Globals.VERSION}(by /u/MurdoMaclachlan)",
+                client_id = credentials["client_id"],
+                client_secret = credentials["client_secret"],
+                username = credentials["username"],
+                password = credentials["password"],
+                redirect_uri = credentials["redirect_uri"]
+            )
         
-        except Exception as err:
-            if (str(err) != 'invalid_grant error processing request'):
-                print('LOGIN FAILURE')
-            else:
-                state = str(random.randint(0, 65000))
-                scopes = ['history', 'read', 'edit']
-                url = reddit.auth.url(scopes, state, 'permanent')
-                Log.new(["2FA detected. OSCR will now open a window in your browser to complete the login process."])
-                webbrowser.open(url)
-    
-                client = receiveConnection()
-                data = client.recv(1024).decode('utf-8')
-                paramTokens = data.split(' ', 2)[1].split('?', 1)[1].split('&')
-                params = {key: value for (key, value) in [token.split('=') for token in paramTokens]}
-    
-                if state != params['state']:
-                    sendMessage(client, f'State mismatch. Expected: {state} Received: {params["state"]}')
-                    Log.new([f'State mismatch. Expected: {state} Received: {params["state"]}'])
-                    sys.exit()
-                elif 'error' in params:
-                    sendMessage(client, params['error'])
-                    Log.new([params['error']])
-                    sys.exit()
-    
-                refreshToken = reddit.auth.authorize(params["code"])
-                
-                addRefreshToken(refreshToken)
-                sendMessage(
-                    client,
-                    f"Refresh token: {refreshToken}. Feel free to close this page. This message is simply for success confirmation; " +
-                    "it is not necessary to save your refresh_token, as OSCR has automatically done this."
-                )
-                
-                return reddit
+            try:
+                reddit.user.me()
+            
+            # If user has 2FA enabled but has not authorised OSCR
+            except Exception as e:
+                if (str(e) != 'invalid_grant error processing request'):
+                    Log.new(Log.warning([f"LOGIN FAILURE, ERROR IS: {e}"]))
+                    sys.exit(0)
+                else:
+                    state = str(random.randint(0, 65000))
+                    scopes = ['history', 'read', 'edit']
+                    url = reddit.auth.url(scopes, state, 'permanent')
+                    Log.new(["2FA enabled, but not authorised. OSCR will now open a window in your browser to complete the login process."])
+                    webbrowser.open(url)
+        
+                    client = receiveConnection()
+                    data = client.recv(1024).decode('utf-8')
+                    paramTokens = data.split(' ', 2)[1].split('?', 1)[1].split('&')
+                    params = {key: value for (key, value) in [token.split('=') for token in paramTokens]}
+        
+                    if state != params['state']:
+                        sendMessage(client, f'State mismatch. Expected: {state} Received: {params["state"]}')
+                        Log.new([f'State mismatch. Expected: {state} Received: {params["state"]}'])
+                        sys.exit()
+                    elif 'error' in params:
+                        sendMessage(client, params['error'])
+                        Log.new([params['error']])
+                        sys.exit()
+        
+                    refreshToken = reddit.auth.authorize(params["code"])
+                    
+                    addRefreshToken(refreshToken)
+                    sendMessage(
+                        client,
+                        f"Refresh token: {refreshToken}. Feel free to close this page. This message is simply for success confirmation; " +
+                        "it is not necessary to save your refresh_token, as OSCR has automatically done this."
+                    )
+             
+        # If user has 2FA enabled and has already authorised OSCR
+        else:
+            reddit = praw.Reddit(
+                user_agent = f"{System.OS}:oscr:v{Globals.VERSION}(by /u/MurdoMaclachlan)",
+                client_id = credentials["client_id"],
+                client_secret = credentials["client_secret"],
+                username = credentials["username"],
+                refresh_token = credentials["refresh_token"]
+            )
+   
+    # If user does not have 2FA enabled
     else:
         reddit = praw.Reddit(
             user_agent = f"{System.OS}:oscr:v{Globals.VERSION}(by /u/MurdoMaclachlan)",
             client_id = credentials["client_id"],
             client_secret = credentials["client_secret"],
             username = credentials["username"],
-            refresh_token=credentials["refresh_token"]
+            password = credentials["password"]
         )
-        return reddit
+        
+        try:
+            reddit.user.me()
+        
+        except Exception as e:
+            if (str(e) != 'invalid_grant error processing request'):
+                Log.new(Log.warning([f"LOGIN FAILURE, ERROR IS: {e}"]))
+                sys.exit(0)
+            else:
+                Log.new([Log.warning("2FA detected, but not enabled. Please run 'oscr -S' and set useRefreshTokens to True, then re-run OSCR.")])
+                sys.exit(0)
+    
+    return reddit
 
 
 # This connects to a server or something I don't know
