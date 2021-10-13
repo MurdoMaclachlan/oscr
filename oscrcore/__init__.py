@@ -9,6 +9,11 @@ from .arguments import showConfig
 from .arguments import showVersion
 from .arguments import tempChangeConfig
 
+# auth handling
+from .auth import login
+from .auth import receiveConnection
+from .auth import sendMessage
+
 # comments handling
 from .comment import blacklist
 from .comment import checkArray
@@ -20,6 +25,7 @@ from .globals import DEFAULT_CONFIG
 from .globals import VERSION
 
 # ini handling
+from .ini import addRefreshToken
 from .ini import createIni
 from .ini import getCredentials
 

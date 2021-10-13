@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-    Contact me at murdo@maclachlans.org.uk
+    Contact me at murdomaclachlan@duck.com
 """
 
 # This whole module is an ugly bastard, but it works
@@ -44,7 +44,7 @@ def settingsMain() -> NoReturn:
             "\n4. Continue to program"
             "\n5. Exit"
         )
-        choice = validateChoice(["1", "2", "3", "4", "5"])
+        choice = validateChoice(1,5)
 
         # Determines which result happens
         if choice == "1":
@@ -91,21 +91,23 @@ def editConfig() -> bool:
         "\n11. Recur"
         "\n12. Add to regexBlacklist"
         "\n13. Remove from regexBlacklist"
-        "\n14. Add to subredditList"
-        "\n15. Remove from subredditList"
-        "\n16. Wait unit"
-        "\n17. User"
-        "\n18. Use regex"
-        "\n19. Add to userList"
-        "\n20. Remove from userList"
-        "\n21. Wait amount"
-        "\n22. Return to main settings menu"
+        "\n14. Report totals"
+        "\n15. Add to subredditList"
+        "\n16. Remove from subredditList"
+        "\n17. Wait unit"
+        "\n18. User"
+        "\n19. Use refresh tokens"
+        "\n20. Use regex"
+        "\n21. Add to userList"
+        "\n22. Remove from userList"
+        "\n23. Wait amount"
+        "\n24. Return to main settings menu"
     )
     resultNames = list(Globals.config.keys())
-    choice = validateChoice(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"])
+    choice = validateChoice(1,j)
 
     # Returns to main settings menu
-    if choice == "21":
+    if choice == "24":
         return True
     else:
         keys = {
@@ -123,21 +125,23 @@ def editConfig() -> bool:
             "12": "10",
             "13": "10",
             "14": "11",
-            "15": "11",
+            "15": "12",
             "16": "12",
             "17": "13",
             "18": "14",
             "19": "15",
-            "20": "15",
-            "21": "16"
+            "20": "16",
+            "21": "17",
+            "22": "17",
+            "23": "18"
         }
     
     key = resultNames[int(keys[choice])]
     
     # Adds/removes from blacklist
-    if choice in ["1", "2", "12", "13", "14", "15", "19", "20"]:
+    if choice in ["1", "2", "12", "13", "15", "16", "21", "22"]:
   
-        if choice in ["1", "12", "14", "19"]:
+        if choice in ["1", "12", "15", "21"]:
             value = input(f"\nPlease enter the phrase to add to the {key}\n>> ")
             if value == "-e":
                 return True
@@ -155,7 +159,7 @@ def editConfig() -> bool:
     else:
 
         # All edits that require one integer value.
-        if choice in ["4", "5", "7", "21"]:
+        if choice in ["4", "5", "7", "23"]:
             while True:
                 value = input(f"\nEditing {key}\nPlease enter an integer value\n>> ")
                 if value == "-e":
@@ -167,7 +171,7 @@ def editConfig() -> bool:
                     print(f"{e} - Not an integer.")
 
         # All edits that require boolean values.
-        elif choice in ["3", "6", "8", "10", "18"]:
+        elif choice in ["3", "6", "8", "10", "14", "19", "20"]:
             while True:
                 value = input(f"\nEditing {key}\nPlease enter a boolean value\n>> ")
                 if value == "-e":
@@ -179,14 +183,14 @@ def editConfig() -> bool:
                     print(f"{e} - Not a boolean.")
 
         # All edits that require one string value.
-        elif choice in ["9", "17"]:
+        elif choice in ["9", "18"]:
             value = input(f"\nEditing {key}\nPlease enter the new value\n>> ")
             if value == "-e":
                 return True
             Globals.config[key] = value
             
         # Replaces waitUnit
-        elif choice == "16":
+        elif choice == "17":
             print(f"Editing {key}")
             newUnit = [
                 input("Please enter the singular noun for the new unit. \n>> "),
@@ -202,85 +206,34 @@ def editConfig() -> bool:
 # Does what it says on the fucking tin
 def editPraw() -> bool:
 
-    # Setup results
-    results = []
-    resultNames = [
-        "client_id",
-        "client_secret",
-        "username",
-        "password",
-        # "refresh_token",
-        "Return to main settings menu"
-    ]
-    
+    try:
+        creds = getCredentials()
+    except FileNotFoundError:
+        Log.new([Log.warning(f"ERROR: file '{System.PATHS['config']}/praw.ini' not found.")])
+        createIni()
+
+    keys = creds.keys()
+
     # Prints menu
     print("\nWhich option would you like?")
-    for i in range(len(resultNames)):
-        print(f"{i+1}. {resultNames[i]}")
-        results.append(str(i+1))
-    
+
+    j = 1
+    for i in keys:
+        print(f"{j}. {i}")
+        j += 1
+
     # Get user choice
-    choice = validateChoice(results)
-    key = resultNames[int(choice)-1]
-    
-    # Returns to main settings menu
-    if choice == "5":
-        return True
-    
-    try:
-        
-        # Retrieve information from praw.ini
-        with open(f"{System.PATHS['config']}/praw.ini", "r+") as file:
-            content = file.read().splitlines()
-            success = False
-            allowChanges = False
-            
-            # Find and replace necessary line
-            for line in content:
-                if not line == "":
-                    if line in ["[oscr]", "[oscr]          "]:
-                        allowChanges = True
-                    elif list(line)[0] == "[":
-                        allowChanges = False
-                    if allowChanges and not list(line[0]) == "[":
-                        lineStart = line.split("=")[0]
-                        if lineStart == key:
-                            oldLine = line
-                            line = key+"="+input(f"\nEditing {key}\nPlease enter the new value\n>> ")
-                            if len(oldLine) > len(line):
-                                line = line + " "*(len(oldLine)-len(line))
-                            content[content.index(oldLine)] = line
-                            success = True
-                else:
-                    Log.new([f"Skipping irrelevant line: {line}"])
-            
-            # Writes content back into file
-            if success:
-                
-                # Ensure all lines have newlines at the end, because apparently writelines is loathe to do this
-                for line in content:
-                    content[content.index(line)] = line+"\n"
-                file.seek(0)
-                file.writelines(content)
-            
-            # In case necessary line is not found
-            else:
-                if key in resultNames[0:3]:
-                    Log.new([f"{key} is not in praw.ini."])
-                """
-                if key == resultNames[3]:
-                    print("If you are using refresh tokens to log in, please choose that option instead.")
-                    return False
-                elif key == resultNames[4]:
-                    print("If you are not using refresh tokens to log in, please choose password instead.")
-                    return False
-                """
-                createIni()
-    
-    # In case praw.ini is not found
-    except FileNotFoundError:
-        Log.new([Log.warning("praw.ini file not found.")])
-        createIni()
+    choice = validateChoice(1,j)
+
+    key = ini[int(choice)-1]
+    value = input(f"Editing {key}. Please input a new value.\n >> ")
+
+    # Returns to the main settings menu
+    if value == "-e":
+        pass
+    else:
+        ini[key] = value
+        dumpIni()
 
     return True
 
@@ -300,10 +253,11 @@ def howToUse():
 
 # Validates the user's choice to make sure it's in the viable results
 # The only function in this module that doesn't look like shrek got acne
-def validateChoice(results: List) -> str:
-    choice = ""
+def validateChoice(low: int, high: int) -> str:
+    results = [f"{i}" for i in range(low,high+1)]
+    results.append("-e")
+    choice = input("\n>> ")
     while choice not in results:
+        print(f"Please enter a number from 1 to {results[len(results)-2]}.")
         choice = input("\n>> ")
-        if choice not in results:
-            print(f"Please enter a number from 1 to {results[len(results)-1]}.")
     return choice

@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <https://www.gnu.org/licenses/>.
     
-    Contact me at murdo@maclachlans.org.uk
+    Contact me at murdomaclachlan@duck.com
 """
 
 from datetime import datetime
@@ -58,6 +58,7 @@ DEFAULT_CONFIG = {
         "minutes",
         60
     ],
+    "useRefreshTokens": False,
     "useRegex": False,
     "userList": [
         "transcribersofreddit"

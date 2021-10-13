@@ -18,7 +18,7 @@
 """
 
 from configparser import ConfigParser
-from typing import Dict
+from typing import Dict, NoReturn
 from .globals import Globals, Log, System
 global Globals, Log, System
 
@@ -26,6 +26,13 @@ global Globals, Log, System
     This module contains functions relating to the handling
     the praw.ini file.
 """
+
+
+# Appends a refresh token to the ini
+def addRefreshToken(refreshToken: str) -> NoReturn:
+    
+    with open(f"{System.PATHS['config']}/praw.ini", "a+") as file:
+        file.write(f"refresh_token={refreshToken}\n")
 
 
 # Creates new ini file based on user input
@@ -36,7 +43,8 @@ def createIni() -> bool:
         "client_id": input("Please input your client id:  "),
         "client_secret": input("Please input your client secret:  "),
         "username": Globals.config["user"],  # Since createIni is never called before the config is initialised, this is safe to draw from
-        "password": input("Please input your Reddit password:  ")
+        "password": input("Please input your Reddit password:  "),
+        "redirect_uri": "http://localhost:8080/users/auth/reddit/callback"
     }
     
     # Writes contents to appropriate ini location

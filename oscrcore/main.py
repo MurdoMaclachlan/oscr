@@ -22,10 +22,11 @@ import configparser
 from time import sleep
 from alive_progress import alive_bar as aliveBar
 from typing import NoReturn
-from .globals import Globals, Log, Stats, System
+from .auth import login
+from .globals import Globals, Log, Stats
 from .comment import blacklist, regex, remover
 from .log import exitWithLog, updateLog
-from .ini import createIni, getCredentials
+from .ini import createIni
 global Globals, Log, Stats, System
 
 """
@@ -52,10 +53,7 @@ def oscr() -> NoReturn:
     
     # Initialises Reddit() instance
     try:
-        reddit = praw.Reddit(
-            user_agent = f"{System.OS}:oscr:v{Globals.VERSION}(by /u/MurdoMaclachlan)",
-            **getCredentials()
-        )
+        reddit = login()
     
     # Catch for invalid ini, will create a new one then restart the program;
     # the restart is required due to current PRAW limitations. :'(
