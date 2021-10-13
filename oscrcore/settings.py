@@ -44,7 +44,7 @@ def settingsMain() -> NoReturn:
             "\n4. Continue to program"
             "\n5. Exit"
         )
-        choice = validateChoice(["1", "2", "3", "4", "5"])
+        choice = validateChoice(1,5)
 
         # Determines which result happens
         if choice == "1":
@@ -104,7 +104,7 @@ def editConfig() -> bool:
         "\n24. Return to main settings menu"
     )
     resultNames = list(Globals.config.keys())
-    choice = validateChoice(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"])
+    choice = validateChoice(1,j)
 
     # Returns to main settings menu
     if choice == "24":
@@ -206,85 +206,34 @@ def editConfig() -> bool:
 # Does what it says on the fucking tin
 def editPraw() -> bool:
 
-    # Setup results
-    results = []
-    resultNames = [
-        "client_id",
-        "client_secret",
-        "username",
-        "password",
-        # "refresh_token",
-        "Return to main settings menu"
-    ]
-    
+    try:
+        creds = getCredentials()
+    except FileNotFoundError:
+        Log.new([Log.warning(f"ERROR: file '{System.PATHS['config']}/praw.ini' not found.")])
+        createIni()
+
+    keys = creds.keys()
+
     # Prints menu
     print("\nWhich option would you like?")
-    for i in range(len(resultNames)):
-        print(f"{i+1}. {resultNames[i]}")
-        results.append(str(i+1))
-    
+
+    j = 1
+    for i in keys:
+        print(f"{j}. {i}")
+        j += 1
+
     # Get user choice
-    choice = validateChoice(results)
-    key = resultNames[int(choice)-1]
-    
-    # Returns to main settings menu
-    if choice == "5":
-        return True
-    
-    try:
-        
-        # Retrieve information from praw.ini
-        with open(f"{System.PATHS['config']}/praw.ini", "r+") as file:
-            content = file.read().splitlines()
-            success = False
-            allowChanges = False
-            
-            # Find and replace necessary line
-            for line in content:
-                if not line == "":
-                    if line in ["[oscr]", "[oscr]          "]:
-                        allowChanges = True
-                    elif list(line)[0] == "[":
-                        allowChanges = False
-                    if allowChanges and not list(line[0]) == "[":
-                        lineStart = line.split("=")[0]
-                        if lineStart == key:
-                            oldLine = line
-                            line = key+"="+input(f"\nEditing {key}\nPlease enter the new value\n>> ")
-                            if len(oldLine) > len(line):
-                                line = line + " "*(len(oldLine)-len(line))
-                            content[content.index(oldLine)] = line
-                            success = True
-                else:
-                    Log.new([f"Skipping irrelevant line: {line}"])
-            
-            # Writes content back into file
-            if success:
-                
-                # Ensure all lines have newlines at the end, because apparently writelines is loathe to do this
-                for line in content:
-                    content[content.index(line)] = line+"\n"
-                file.seek(0)
-                file.writelines(content)
-            
-            # In case necessary line is not found
-            else:
-                if key in resultNames[0:3]:
-                    Log.new([f"{key} is not in praw.ini."])
-                """
-                if key == resultNames[3]:
-                    print("If you are using refresh tokens to log in, please choose that option instead.")
-                    return False
-                elif key == resultNames[4]:
-                    print("If you are not using refresh tokens to log in, please choose password instead.")
-                    return False
-                """
-                createIni()
-    
-    # In case praw.ini is not found
-    except FileNotFoundError:
-        Log.new([Log.warning("praw.ini file not found.")])
-        createIni()
+    choice = validateChoice(1,j)
+
+    key = ini[int(choice)-1]
+    value = input(f"Editing {key}. Please input a new value.\n >> ")
+
+    # Returns to the main settings menu
+    if value == "-e":
+        pass
+    else:
+        ini[key] = value
+        dumpIni()
 
     return True
 
@@ -304,10 +253,11 @@ def howToUse():
 
 # Validates the user's choice to make sure it's in the viable results
 # The only function in this module that doesn't look like shrek got acne
-def validateChoice(results: List) -> str:
-    choice = ""
+def validateChoice(low: int, high: int) -> str:
+    results = [f"{i}" for i in range(low,high+1)]
+    results.append("-e")
+    choice = input("\n>> ")
     while choice not in results:
+        print(f"Please enter a number from 1 to {results[len(results)-2]}.")
         choice = input("\n>> ")
-        if choice not in results:
-            print(f"Please enter a number from 1 to {results[len(results)-1]}.")
     return choice
