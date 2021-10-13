@@ -55,6 +55,13 @@ def createIni() -> bool:
     return True
 
 
+#Use configparser magic to output new credentials to praw.ini
+def dumpCredentials(creds: Dict) -> NoReturn:
+    Parser = ConfigParser
+    Parser["oscr"] = creds
+    Parser.write(f"{System.PATHS['config']}/praw.ini")
+
+
 # Use configparser magic to get the credentials from praw.ini
 def getCredentials() -> Dict:
    
