@@ -31,6 +31,7 @@ DEFAULT_CONFIG = {
         "claim",
         "claiming",
         "claim -- this was a automated action. please contact me with any questions.",
+        "dibs",
         "done",
         "done -- this was a automated action. please contact me with any questions.",
         "unclaim",
@@ -47,7 +48,7 @@ DEFAULT_CONFIG = {
     "printLogs": True,
     "recur": True,
     "regexBlacklist": [
-        "^(claim|done|unclaim)(?!(.|\n)*treasure[\s-]*hunt)"
+        "^(claim|done|dibs|unclaim)(?!(.|\n)*treasure[\s-]*hunt)"
     ],
     "reportTotals": True,
     "subredditList": [
@@ -66,7 +67,7 @@ DEFAULT_CONFIG = {
     "wait": 10
 }
 
-VERSION = "2.1.0-dev6-20211013"
+VERSION = "2.1.0-dev7-202101014"
 
 """
     Globals is the miscellaneous global class, containing
