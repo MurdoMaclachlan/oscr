@@ -44,17 +44,15 @@ global Globals, Log, Stats, System
 
 def oscr() -> NoReturn:
 
-    Log.new(
-        [
-            f"Running OSCR version {Globals.VERSION} with recur set to {Globals.config['recur']}.",
-            Log.warning("WARNING: Log updates are OFF. Console log will not be saved for this instance.") if not Globals.config["logUpdates"] else ""
-        ]
-    )
-    
+    Log.new([
+        f"Running OSCR version {Globals.VERSION} with recur set to {Globals.config['recur']}.",
+        Log.warning("WARNING: Log updates are OFF. Console log will not be saved for this instance.") if not Globals.config["logUpdates"] else ""
+    ])
+
     # Initialises Reddit() instance
     try:
         reddit = login()
-    
+
     # Catch for invalid ini, will create a new one then restart the program;
     # the restart is required due to current PRAW limitations. :'(
     except (configparser.NoSectionError, praw.exceptions.MissingRequiredAttributeException, KeyError):
@@ -64,85 +62,74 @@ def oscr() -> NoReturn:
         ) if createIni() else exitWithLog(
             [Log.warning("WARNING: Failed to create praw.ini file, something went wrong.")]
         )
-    
+
     # Fetches statistics
     if Globals.config["reportTotals"]:
         from .statistics import dumpStats, fetchStats
         fetchStats()
-    
+
     updateLog(["Updating log...", "Log updated successfully."]) if Globals.config["logUpdates"] else None
-    
+
     while True:
-        
+
         Stats.reset()
-        
+
         # Fetches the comment list from Reddit
         Log.new(["Retrieving comments..."])
         commentList = reddit.redditor(Globals.config["user"]).comments.new(limit=Globals.config["limit"])
         Log.new(["Comments retrieved; checking..."])
-        
+
         # Initialises the progress bar
         with aliveBar(Globals.config["limit"], spinner='classic', bar='classic', enrich_print=False) as progress:
-            
+
             # Checks all the user's comments, deleting them if they're past the cutoff.
             for comment in commentList:
+
+                # Reduce API calls per iteration
+                body = comment.body
                 try:
-                    if (blacklist(comment), regex(comment))[Globals.config["useRegex"]]:
-                        remover(comment)
+                    if (blacklist(body), regex(body))[Globals.config["useRegex"]]:
+                        remover(comment, body)
 
                 # Result of a comment being in reply to a deleted/removed submission
                 except AttributeError as e:
                     Log.new([Log.warning(f"Handled error on iteration {Globals.Stats.get('counted')}: {e} | Comment at {comment.permalink}")])
-                Stats.increment("counted")
 
+                Stats.increment("counted")
                 progress()
 
         Log.new([f"Successfully checked all {Stats.get('current', stat='counted')} available comments."])
 
         # Notifies if the end of Reddit's listing is reached (i.e. no new comments due to API limitations)
-        try:
-            if Stats.get("current", stat="counted") < Globals.config["limit"]:
-                Log.new([Log.warning(
-                    f"WARNING: OSCR counted less comments than your limit of {Globals.config['limit']}. You may have deleted all available elligible comments," +
-                    " or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more."
-                )])
-        except TypeError:
-            if Stats.get("current", stat="counted") < 1000:
-                Log.new([Log.warning(
-                    "WARNING: OSCR counted less comments than your limit of 1000. You may have deleted all available elligible comments," +
-                    " or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more."
-                )])
+        if Stats.get("current", stat="counted") < Globals.config["limit"]:
+            Log.new([Log.warning(
+                f"WARNING: OSCR counted less comments than your limit of {Globals.config['limit']}. You may have deleted all available elligible comments," +
+                " or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more."
+            )])
 
         # Gives info about this iteration; how many comments were counted, deleted, still waiting for.
-        Log.new(
-            [
-                f"Counted this cycle: {str(Stats.get('current', stat='counted'))}",
-                f"Deleted this cycle: {str(Stats.get('current', stat='deleted'))}",
-                f"Waiting for: {str(Stats.get('current', stat='waitingFor'))}"
-            ]
-        )
+        Log.new([
+            f"Counted this cycle: {Stats.get('current', stat='counted')}",
+            f"Deleted this cycle: {Stats.get('current', stat='deleted')}",
+            f"Waiting for: {Stats.get('current', stat='waitingFor')}"
+        ])
 
         # Updates total statistics
-        if Globals.config["reportTotals"]:
-            Stats.updateTotals()
-            dumpStats()
-            Log.new(
-                [
-                    f"Total Counted: {str(Stats.get('total', stat='counted'))}",
-                    f"Total Deleted: {str(Stats.get('total', stat='deleted'))}"
-                ]
-            )
+        Stats.updateTotals()
+        Stats.enabled = dumpStats() if Stats.enabled else False
+        Log.new([
+            f"Total Counted: {str(Stats.get('total', stat='counted'))}",
+            f"Total Deleted: {str(Stats.get('total', stat='deleted'))}"
+        ]) if Globals.config["reportTotals"] else None
 
         # If recur is set to false, updates log and kills the program.
         if not Globals.config["recur"]:
             exitWithLog(["Updating log...", "Log updated successfully."])
 
         # Updates log, prepares for next cycle.
-        updateLog(
-            [
-                "Updating log...", "Log updated successfully.",
-                f"Waiting {str(Globals.config['wait'])} {Globals.config['unit'][0] if Globals.config['wait'] == 1 else Globals.config['unit'][1]} before checking again..."
-            ]
-        )
+        updateLog([
+            "Updating log...", "Log updated successfully.",
+            f"Waiting {str(Globals.config['wait'])} {Globals.config['unit'][0] if Globals.config['wait'] == 1 else Globals.config['unit'][1]} before checking again..."
+        ])
 
         sleep(Globals.config["waitTime"])
