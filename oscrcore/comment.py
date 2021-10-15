@@ -31,35 +31,43 @@ global Globals, Log, Stats
 
 
 # Blacklist check; placed here for ease of readability in main.py.
-def blacklist(comment):
+def blacklist(string: str) -> bool:
     
-    return True if (comment.body.lower(), comment.body)[Globals.config["caseSensitive"]] in Globals.config["blacklist"] else False
+    return True if (string.casefold(), string)[Globals.config["caseSensitive"]] in Globals.config["blacklist"] else False
 
 
 # Checks a given value against an array; the value passes the
 # check either if it is in the array or if the array is empty
-def checkArray(array: List, value: Any) -> bool:
+def checkArray(array: List, value: Any = "", mode: str = "len") -> bool:
     
-    return True if len(array) < 1 or value in array else False
+    if mode not in ["len", "val"]:
+        Log.new([Log.warning("WARNING: unknown mode passed to checkArray(). Skipping.")])
+        return False
+    return True if (len(array) < 1 and mode == "len") or (value in array and mode == "val") else False
 
 
 # Regex check; placed here for easy of readability in main.py.
-def regex(comment):
+def regex(string: str) -> bool:
     
-    return True if Globals.config["useRegex"] and checkRegex(re, comment) else False
+    return True if Globals.config["useRegex"] and checkRegex(re, string) else False
 
 
 # The main comment deletion algorithm
-def remover(comment: object) -> NoReturn:
+def remover(comment: object, body: str) -> NoReturn:
     
-    if checkArray(Globals.config["subredditList"], str(comment.subreddit).lower()) and checkArray(Globals.config["userList"], comment.parent().author.name):
-        
-        # Only delete comments older than the cutoff
-        if time() - comment.created_utc > Globals.config["cutoffSec"]:
-            Log.new([f"Obsolete '{comment.body}' found, deleting."])
-            if not Globals.config["debug"]:
-                comment.delete()
-                Stats.increment("deleted")
-        else:
-            Log.new([f"Waiting for '{comment.body}'."])
-            Stats.increment("waitingFor")
+    if (
+        checkArray(Globals.config["subredditList"]) and checkArray(Globals.config["userList"]) or
+        (
+            checkArray(Globals.config["subredditList"], value=str(comment.subreddit).casefold(), mode="val") and
+            checkArray(Globals.config["userList"], value=comment.parent().author.name, mode="val")
+        )):
+
+            # Only delete comments older than the cutoff
+            if time() - comment.created_utc > Globals.config["cutoffSec"]:
+                Log.new([f"Obsolete '{body}' found, deleting."])
+                if not Globals.config["debug"]:
+                    comment.delete()
+                    Stats.increment("deleted")
+            else:
+                Log.new([f"Waiting for '{body}'."])
+                Stats.increment("waitingFor")
