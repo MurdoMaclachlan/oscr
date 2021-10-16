@@ -204,7 +204,7 @@ def editPraw() -> bool:
         pass
     else:
         ini[key] = value
-        dumpIni()
+        dumpCredentials()
 
     return True
 
