@@ -20,14 +20,13 @@
 import praw
 import configparser
 from time import sleep
-from alive_progress import alive_bar as aliveBar
 from typing import NoReturn
-from .auth import login
+from .auth import init
 from .globals import Globals, Log, Stats
-from .comment import blacklist, regex, remover
+from .comment import checkComments
 from .log import exitWithLog, updateLog
-from .ini import createIni
-global Globals, Log, Stats, System
+from .statistics import updateAndLogStats
+global Globals, Log, Stats
 
 """
     Beneath is the main program. From here, all run-time flow
@@ -49,19 +48,8 @@ def oscr() -> NoReturn:
         Log.warning("WARNING: Log updates are OFF. Console log will not be saved for this instance.") if not Globals.config["logUpdates"] else ""
     ])
 
-    # Initialises Reddit() instance
-    try:
-        reddit = login()
-
-    # Catch for invalid ini, will create a new one then restart the program;
-    # the restart is required due to current PRAW limitations. :'(
-    except (configparser.NoSectionError, praw.exceptions.MissingRequiredAttributeException, KeyError):
-
-        exitWithLog(
-            ["praw.ini successfully created, program restart required for this to take effect."]
-        ) if createIni() else exitWithLog(
-            [Log.warning("WARNING: Failed to create praw.ini file, something went wrong.")]
-        )
+    # Initialises Reddit instance
+    reddit = init()
 
     # Fetches statistics
     if Globals.config["reportTotals"]:
@@ -79,24 +67,8 @@ def oscr() -> NoReturn:
         commentList = reddit.redditor(Globals.config["user"]).comments.new(limit=Globals.config["limit"])
         Log.new(["Comments retrieved; checking..."])
 
-        # Initialises the progress bar
-        with aliveBar(Globals.config["limit"], spinner='classic', bar='classic', enrich_print=False) as progress:
-
-            # Checks all the user's comments, deleting them if they're past the cutoff.
-            for comment in commentList:
-
-                # Reduce API calls per iteration
-                body = comment.body
-                try:
-                    if (blacklist(body), regex(body))[Globals.config["useRegex"]]:
-                        remover(comment, body)
-
-                # Result of a comment being in reply to a deleted/removed submission
-                except AttributeError as e:
-                    Log.new([Log.warning(f"Handled error on iteration {Globals.Stats.get('counted')}: {e} | Comment at {comment.permalink}")])
-
-                Stats.increment("counted")
-                progress()
+        # Iterate through commentList and delete any that meet requirements
+        checkComments(commentList)
 
         Log.new([f"Successfully checked all {Stats.get('current', stat='counted')} available comments."])
 
@@ -107,20 +79,7 @@ def oscr() -> NoReturn:
                 " or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more."
             )])
 
-        # Gives info about this iteration; how many comments were counted, deleted, still waiting for.
-        Log.new([
-            f"Counted this cycle: {Stats.get('current', stat='counted')}",
-            f"Deleted this cycle: {Stats.get('current', stat='deleted')}",
-            f"Waiting for: {Stats.get('current', stat='waitingFor')}"
-        ])
-
-        # Updates total statistics
-        Stats.updateTotals()
-        Stats.enabled = dumpStats() if Stats.enabled else False
-        Log.new([
-            f"Total Counted: {str(Stats.get('total', stat='counted'))}",
-            f"Total Deleted: {str(Stats.get('total', stat='deleted'))}"
-        ]) if Globals.config["reportTotals"] else None
+        updateAndLogStats()
 
         # If recur is set to false, updates log and kills the program.
         if not Globals.config["recur"]:
