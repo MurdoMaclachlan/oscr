@@ -20,7 +20,7 @@
 import json
 from .globals import Log, Stats, System
 from .misc import dumpJSON
-global Log, Stats, System
+global Globals, Log, Stats, System
 
 """
     This module contains file handling for the statistics,
@@ -45,7 +45,7 @@ def dumpStats() -> bool:
 
 
 # Retrieve statistics from stats.json
-def fetchStats() -> object:
+def fetchStats() -> NoReturn:
     
     try:
         with open(f"{System.PATHS['data']}/stats.json", "r") as file:
