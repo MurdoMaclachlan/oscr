@@ -100,18 +100,18 @@ def getConfig() -> NoReturn:
 # Performs any necessary one-time calculations and changes relating to the config
 def calculateEssentials() -> NoReturn:
     
-    # Will default any non-numeric limits, or a limit of 1000, to None.
-    if not str(Globals.config["limit"]).isnumeric() or Globals.config["limit"] >= 1000:
-        Globals.config["limit"] = None
-    
+    # Will default any non-numeric limits to 1000.
+    if not str(Globals.config["limit"]).isnumeric():
+        Globals.config["limit"] = 1000
+
     # Attempts to calculate the cutoff time and wait time in seconds
     for keyList in [["cutoffSec", "cutoff", "cutoffUnit", 3600], ["waitTime", "wait", "unit", 1800]]:
         try:
-            if type(Globals.config[keyList[2]]) is list:
-                Globals.config[keyList[0]] = Globals.config[keyList[1]]*Globals.config[keyList[2]][2]
+            if type(Globals.config[keyList[2]]) == list:
+                Globals.config[keyList[0]] = Globals.config[keyList[1]] * Globals.config[keyList[2]][2]
             else:
-                Globals.config[keyList[0]] = Globals.config[keyList[1]]*Globals.config[keyList[2]]
-        
+                Globals.config[keyList[0]] = Globals.config[keyList[1]] * Globals.config[keyList[2]]
+
         # Defaults to one hour / half an hour if any of the related variables is missing or corrupted
         except (KeyError, TypeError):
             Globals.config[keyList[0]] = keyList[3]

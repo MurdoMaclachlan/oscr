@@ -75,129 +75,100 @@ def settingsMain() -> NoReturn:
 # Does what it says on the fucking tin
 def editConfig() -> bool:
 
-    # Gets user choice
-    print(
-        "\nWhich option would you like?"
-        "\n1. Add to blacklist"
-        "\n2. Remove from blacklist"
-        "\n3. Case sensitive"
-        "\n4. Cutoff"
-        "\n5. Cutoff unit"
-        "\n6. Debug"
-        "\n7. Limit"
-        "\n8. Log updates"
-        "\n9. Operating system"
-        "\n10. Print logs"
-        "\n11. Recur"
-        "\n12. Add to regexBlacklist"
-        "\n13. Remove from regexBlacklist"
-        "\n14. Report totals"
-        "\n15. Add to subredditList"
-        "\n16. Remove from subredditList"
-        "\n17. Wait unit"
-        "\n18. User"
-        "\n19. Use refresh tokens"
-        "\n20. Use regex"
-        "\n21. Add to userList"
-        "\n22. Remove from userList"
-        "\n23. Wait amount"
-        "\n24. Return to main settings menu"
-    )
-    resultNames = list(Globals.config.keys())
+    print("\nWhich option would you like?")
+    j = 1
+    keys = {}
+    keyNames = Globals.config.keys()
+
+    # Iterate every config key
+    for i in keyNames:
+        isList = type(Globals.config[i]) is list
+
+        # Account for the special case and the normal cases
+        if i == "unit" or not isList:
+            print(f"{j}. {i}")
+
+        # If the config is a list, add options for both addition and removal
+        else:
+            print(
+                f"{j}. Add to {i}"
+                f"\n{j+1}. Remove from {i}"
+            )
+
+            # Add extra key since the array is listed twice in the options
+            keys[f"{j+1}"] = f"{j}:remove"
+
+        # Add key, increment counter by appropriate amount
+        keys[f"{j}"] = f"{j}:add" if isList else f"{j}"
+        j += 1 if i == "unit" or not isList else 2
+
+    # Final option doesn't conform to a config key
+    print(f"{j}. Return to main settings menu.")
+
     choice = validateChoice(1,j)
 
     # Returns to main settings menu
-    if choice == "24":
-        return True
-    else:
-        keys = {
-            "1": "0",
-            "2": "0",
-            "3": "1",
-            "4": "2",
-            "5": "3",
-            "6": "4",
-            "7": "5",
-            "8": "6",
-            "9": "7",
-            "10": "8",
-            "11": "9",
-            "12": "10",
-            "13": "10",
-            "14": "11",
-            "15": "12",
-            "16": "12",
-            "17": "13",
-            "18": "14",
-            "19": "15",
-            "20": "16",
-            "21": "17",
-            "22": "17",
-            "23": "18"
-        }
-    
-    key = resultNames[int(keys[choice])]
-    
+    if choice == f"{j+1}": return True
+
+    target = keyNames[int(keys[choice].split(":")[0])]
+
     # Adds/removes from blacklist
-    if choice in ["1", "2", "12", "13", "15", "16", "21", "22"]:
-  
-        if choice in ["1", "12", "15", "21"]:
-            value = input(f"\nPlease enter the phrase to add to the {key}\n>> ")
-            if value == "-e":
-                return True
-            Globals.config[key].append()
-        else:
-            value = input(f"\nPlease enter the phrase to remove from the {key}.\n>> ")
-            if value == "-e":
-                return True
+    if type(Globals.config[target]) is list and target != "unit":
+        mode = keys[choice].split(":")[1]
+        value = input(f"\nPlease enter the phrase to {mode} {('from', 'to')[mode == 'add']} the {key}\n>> ")
+
+        if value == "-e":
+            return True
+
+        if case == "add:
+            Globals.config[target].append(value)
+        elif case ==  "remove":
             if value in Globals.config[key]:
-                Globals.config[key].remove(value)
+                Globals.config[target].remove(value)
             else:
                 print(f"{value} is not present in the blacklist.")
                 return True
 
-    else:
-
-        # All edits that require one integer value.
-        if choice in ["4", "5", "7", "23"]:
-            while True:
-                value = input(f"\nEditing {key}\nPlease enter an integer value\n>> ")
-                if value == "-e":
-                    return True
-                try:
-                    Globals.config[key] = int(value)
-                    break
-                except TypeError as e:
-                    print(f"{e} - Not an integer.")
-
-        # All edits that require boolean values.
-        elif choice in ["3", "6", "8", "10", "14", "19", "20"]:
-            while True:
-                value = input(f"\nEditing {key}\nPlease enter a boolean value\n>> ")
-                if value == "-e":
-                    return True
-                try:
-                    Globals.config[key] = json.loads(value.lower())
-                    break
-                except TypeError as e:
-                    print(f"{e} - Not a boolean.")
-
-        # All edits that require one string value.
-        elif choice in ["9", "18"]:
-            value = input(f"\nEditing {key}\nPlease enter the new value\n>> ")
+    # All edits that require integer values.
+    elif type(Globals.config[target]) is int:
+        while True:
+            value = input(f"\nEditing {target}\nPlease enter an integer value\n>> ")
             if value == "-e":
                 return True
-            Globals.config[key] = value
-            
-        # Replaces waitUnit
-        elif choice == "17":
-            print(f"Editing {key}")
-            newUnit = [
-                input("Please enter the singular noun for the new unit. \n>> "),
-                input("Please enter the plural noun for the new unit. \n>> "),
-                int(input("Please enter the numerical value of the new unit converted into seconds. \n>> "))
-            ]
-            Globals.config[key] = newUnit
+            try:
+                Globals.config[target] = int(value)
+                break
+            except TypeError as e:
+                print(f"{e} - Not an integer.")
+
+    # All edits that require boolean values.
+    elif type(Globals.config[target]) is bool:
+        while True:
+            value = input(f"\nEditing {target}\nPlease enter a boolean value\n>> ")
+            if value == "-e":
+                return True
+            try:
+                Globals.config[target] = json.loads(value.lower())
+                break
+            except TypeError as e:
+                print(f"{e} - Not a boolean.")
+
+    # All edits that require one string value.
+    elif type(Globals.config[target]) is str:
+        value = input(f"\nEditing {target}\nPlease enter the new value\n>> ")
+        if value == "-e":
+            return True
+        Globals.config[target] = value
+
+    # Special child
+    elif target == "unit":
+        print(f"Editing {target}")
+        newUnit = [
+            input("Please enter the singular noun for the new unit. \n>> "),
+            input("Please enter the plural noun for the new unit. \n>> "),
+            int(input("Please enter the numerical value of the new unit converted into seconds. \n>> "))
+        ]
+        Globals.config[target] = newUnit
 
     return dumpConfig()
 
