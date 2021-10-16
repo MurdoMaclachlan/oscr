@@ -28,7 +28,7 @@ import socket
 import webbrowser
 from configparser import NoSectionError
 from praw.exceptions import MissingRequiredAttributeException
-from typing import NoReturn
+from typing import Dict, NoReturn
 from .globals import Globals, Log, System
 from .ini import addRefreshToken, createIni, getCredentials
 from .log import exitWithLog
