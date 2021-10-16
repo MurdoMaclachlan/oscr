@@ -18,6 +18,7 @@
 """
 
 import json
+from typing import NoReturn
 from .globals import Log, Stats, System
 from .misc import dumpJSON
 global Globals, Log, Stats, System
