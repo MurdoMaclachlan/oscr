@@ -18,9 +18,10 @@
 """
 
 import json
-from .globals import Log, Stats, System
+from typing import NoReturn
+from .globals import Globals, Log, Stats, System
 from .misc import dumpJSON
-global Log, Stats, System
+global Globals, Log, Stats, System
 
 """
     This module contains file handling for the statistics,
@@ -45,7 +46,7 @@ def dumpStats() -> bool:
 
 
 # Retrieve statistics from stats.json
-def fetchStats() -> object:
+def fetchStats() -> NoReturn:
     
     try:
         with open(f"{System.PATHS['data']}/stats.json", "r") as file:
@@ -64,3 +65,22 @@ def fetchStats() -> object:
         Log.new([Log.warning("WARNING: Could not find stats file. It will be created.")])
         Stats.generateNew()
         Stats.failed = dumpStats()
+
+
+def updateAndLogStats() -> NoReturn:
+
+    # Gives info about most recent iteration; how many comments were counted,
+    # deleted, still waiting for.
+    Log.new([
+        f"Counted this cycle: {Stats.get('current', stat='counted')}",
+        f"Deleted this cycle: {Stats.get('current', stat='deleted')}",
+        f"Waiting for: {Stats.get('current', stat='waitingFor')}"
+    ])
+
+    # Updates total statistics
+    Stats.updateTotals()
+    Stats.enabled = dumpStats() if Stats.enabled else False
+    Log.new([
+        f"Total Counted: {str(Stats.get('total', stat='counted'))}",
+        f"Total Deleted: {str(Stats.get('total', stat='deleted'))}"
+    ]) if Globals.config["reportTotals"] else None

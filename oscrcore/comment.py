@@ -18,6 +18,7 @@
 """
 
 import re
+from alive_progress import alive_bar as aliveBar
 from time import time
 from typing import Any, List, NoReturn
 from .globals import Globals, Log, Stats
@@ -34,6 +35,27 @@ global Globals, Log, Stats
 def blacklist(string: str) -> bool:
     
     return True if (string.casefold(), string)[Globals.config["caseSensitive"]] in Globals.config["blacklist"] else False
+
+
+def checkComments(commentList: List[object]) -> NoReturn:
+
+    with aliveBar(Globals.config["limit"], spinner='classic', bar='classic', enrich_print=False) as progress:
+
+        # Checks all the user's comments, deleting them if they're past the cutoff.
+        for comment in commentList:
+
+            # Reduce API calls per iteration
+            body = comment.body
+            try:
+                if (blacklist(body), regex(body))[Globals.config["useRegex"]]:
+                    remover(comment, body)
+
+            # Result of a comment being in reply to a deleted/removed submission
+            except AttributeError as e:
+                Log.new([Log.warning(f"Handled error on iteration {Stats.get('counted')}: {e} | Comment at {comment.permalink}")])
+
+            Stats.increment("counted")
+            progress()
 
 
 # Checks a given value against an array; the value passes the

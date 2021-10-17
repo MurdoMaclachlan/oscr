@@ -116,13 +116,11 @@ def checkArgs() -> NoReturn:
 def cleanHunt() -> NoReturn:
     
     # I'm going to clean this shit up in 2.1.0
-    tempChangeConfig(
-        [
-            ["blacklist", ["claim -- treasure hunt", "done -- treasure hunt"]] if not Globals.config["useRegex"] else ["regexBlacklist", ["^(claim|claiming|done).*treasure *hunt.*"]],
-            ["recur", False],
-            ["userList", ["transcribersofreddit"]] if not Globals.config["userList"] == ["transcribersofreddit"] else ["", ""]
-        ]
-    )
+    tempChangeConfig([
+        ["regexBlacklist", ["^(claim|claiming|done).*treasure *hunt.*"]] if Globals.config["useRegex"] else ["blacklist", ["claim -- treasure hunt", "done -- treasure hunt"]],
+        ["recur", False],
+        ["", ""] if Globals.config["userList"] == ["transcribersofreddit"] else ["userList", ["transcribersofreddit"]]
+    ])
 
 
 # Prints a list of arguments and their functions
@@ -183,7 +181,7 @@ def resetConfig() -> NoReturn:
     except FileNotFoundError:
         Log.new(["Config file already absent."])
     Globals.config = DEFAULT_CONFIG
-    Globals.config["user"] = input("Please enter your Reddit username:  /u/")
+    Globals.config["user"] = input("Please enter your Reddit username:\n  /u/")
     dumpConfig()
 
 
@@ -209,5 +207,6 @@ def showVersion() -> NoReturn:
 # Executes a list of passed config changes
 def tempChangeConfig(keys: List[List[Any]]) -> NoReturn:
     for key in keys:
+        # This check allows for dynamic construction of passed lists
         if key == ["", ""]: continue
         else: Globals.editConfig(key[0], key[1])

@@ -30,7 +30,6 @@ global Globals, Log, System
 
 # Appends a refresh token to the ini
 def addRefreshToken(refreshToken: str) -> NoReturn:
-    
     with open(f"{System.PATHS['config']}/praw.ini", "a+") as file:
         file.write(f"refresh_token={refreshToken}\n")
 
@@ -39,32 +38,26 @@ def addRefreshToken(refreshToken: str) -> NoReturn:
 def createIni() -> bool:
     
     Log.new(["praw.ini missing, incomplete or incorrect. It will need to be created."])
-    iniVars = {
+    return dumpCredentials({
         "client_id": input("Please input your client id:  "),
         "client_secret": input("Please input your client secret:  "),
-        "username": Globals.config["user"],  # Since createIni is never called before the config is initialised, this is safe to draw from
+        "username": Globals.config["user"],  # Since createIni is never called before the config
+                                             # is initialised, this is safe to draw from
         "password": input("Please input your Reddit password:  "),
         "redirect_uri": "http://localhost:8080/users/auth/reddit/callback"
-    }
-    
-    # Writes contents to appropriate ini location
-    with open(f"{System.PATHS['config']}/praw.ini", "a+") as file:
-        file.write("[oscr]\n")
-        for i in iniVars: file.write(i+"="+iniVars[i]+"\n")
-    
-    return True
+    })
 
 
 #Use configparser magic to output new credentials to praw.ini
 def dumpCredentials(creds: Dict) -> NoReturn:
-    Parser = ConfigParser
+    Parser = ConfigParser()
     Parser["oscr"] = creds
     Parser.write(f"{System.PATHS['config']}/praw.ini")
+    return True
 
 
 # Use configparser magic to get the credentials from praw.ini
 def getCredentials() -> Dict:
-   
     credentials = ConfigParser()
     credentials.read(f"{System.PATHS['config']}/praw.ini")
     return dict(credentials["oscr"])
