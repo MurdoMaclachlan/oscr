@@ -78,10 +78,9 @@ def editConfig() -> bool:
     print("\nWhich option would you like?")
     j = 1
     keys = {}
-    keyNames = Globals.config.keys()
 
     # Iterate every config key
-    for i in keyNames:
+    for i in Globals.config.keys():
         isList = type(Globals.config[i]) is list
 
         # Account for the special case and the normal cases
@@ -96,10 +95,10 @@ def editConfig() -> bool:
             )
 
             # Add extra key since the array is listed twice in the options
-            keys[f"{j+1}"] = f"{j}:remove"
+            keys[f"{j+1}"] = f"{i}:remove"
 
         # Add key, increment counter by appropriate amount
-        keys[f"{j}"] = f"{j}:add" if isList else f"{j}"
+        keys[f"{j}"] = f"{i}:add" if isList else f"{i}"
         j += 1 if i == "unit" or not isList else 2
 
     # Final option doesn't conform to a config key
@@ -110,19 +109,21 @@ def editConfig() -> bool:
     # Returns to main settings menu
     if choice == f"{j+1}": return True
 
-    target = keyNames[int(keys[choice].split(":")[0])]
+    target = keys[choice].split(":")[0]
+
+    print(f"\nEditing '{target}'. Current value: '{Globals.config[target]}'")
 
     # Adds/removes from blacklist
     if type(Globals.config[target]) is list and target != "unit":
         mode = keys[choice].split(":")[1]
-        value = input(f"\nPlease enter the phrase to {mode} {('from', 'to')[mode == 'add']} the {key}\n>> ")
+        value = input(f"Please enter the phrase to {mode} {('from', 'to')[mode == 'add']} the {key}\n>> ")
 
         if value == "-e":
             return True
 
-        if case == "add:
+        if mode == "add":
             Globals.config[target].append(value)
-        elif case ==  "remove":
+        else:
             if value in Globals.config[key]:
                 Globals.config[target].remove(value)
             else:
@@ -132,7 +133,7 @@ def editConfig() -> bool:
     # All edits that require integer values.
     elif type(Globals.config[target]) is int:
         while True:
-            value = input(f"\nEditing {target}\nPlease enter an integer value\n>> ")
+            value = input("Please enter an integer value\n>> ")
             if value == "-e":
                 return True
             try:
@@ -144,7 +145,7 @@ def editConfig() -> bool:
     # All edits that require boolean values.
     elif type(Globals.config[target]) is bool:
         while True:
-            value = input(f"\nEditing {target}\nPlease enter a boolean value\n>> ")
+            value = input("Please enter a boolean value\n>> ")
             if value == "-e":
                 return True
             try:
@@ -155,14 +156,13 @@ def editConfig() -> bool:
 
     # All edits that require one string value.
     elif type(Globals.config[target]) is str:
-        value = input(f"\nEditing {target}\nPlease enter the new value\n>> ")
+        value = input("Please enter the new value\n>> ")
         if value == "-e":
             return True
         Globals.config[target] = value
 
     # Special child
     elif target == "unit":
-        print(f"Editing {target}")
         newUnit = [
             input("Please enter the singular noun for the new unit. \n>> "),
             input("Please enter the plural noun for the new unit. \n>> "),
@@ -196,14 +196,14 @@ def editPraw() -> bool:
     # Get user choice
     choice = validateChoice(1,j)
 
-    key = ini[int(choice)-1]
+    key = creds[int(choice)-1]
     value = input(f"Editing {key}. Please input a new value.\n >> ")
 
     # Returns to the main settings menu
     if value == "-e":
         pass
     else:
-        ini[key] = value
+        creds[key] = value
         dumpCredentials()
 
     return True
