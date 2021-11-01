@@ -18,11 +18,11 @@
 # -- Project information -----------------------------------------------------
 
 project = 'OSCR'
-copyright = '2021, Murdo Maclachlan'
+copyright = '2020-present, Murdo Maclachlan'
 author = 'Murdo Maclachlan'
 
 # The full version, including alpha/beta/rc tags
-release = '2.0.0'
+release = '2.1.0'
 
 
 # -- General configuration ---------------------------------------------------

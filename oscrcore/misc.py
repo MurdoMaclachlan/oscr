@@ -14,13 +14,11 @@
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <https://www.gnu.org/licenses/>.
     
-    Contact me at murdo@maclachlans.org.uk
+    Contact me at murdomaclachlan@duck.com
 """
 
 import json
 import sys
-from os import environ, mkdir
-from os.path import isdir
 from typing import Dict, List, NoReturn, TextIO
 from .globals import Globals, Log, System
 global Globals, Log, System
@@ -40,6 +38,7 @@ global Globals, Log, System
     the creation, retrieval and management of these files.
 """
 
+
 # Checks if all necessary config options are there
 def checkConfig() -> NoReturn:
     
@@ -47,11 +46,12 @@ def checkConfig() -> NoReturn:
     
     # Check to see if each key in the default config is also in the config file
     for key in DEFAULT_CONFIG:
-        if not key in Globals.config:
+        if key not in Globals.config:
             Log.new([Log.warning(f"Detected missing config key: {key}. Adding with default value.")])
             Globals.config[key] = DEFAULT_CONFIG[key]
 
     dumpConfig()
+
 
 # Attempts to update the config file
 def dumpConfig() -> bool:
@@ -59,7 +59,8 @@ def dumpConfig() -> bool:
     return dumpJSON(
             f"{System.PATHS['config']}/config.json",
             {"config": [Globals.config]}
-        )
+    )
+
 
 # Retrieves the user configurations from a .json file, or creates a config file from default values if one can't be found.
 def getConfig() -> NoReturn:  
@@ -87,6 +88,7 @@ def getConfig() -> NoReturn:
         Globals.config["user"] = input("No config file found. Please enter your Reddit username:  /u/")
         dumpConfig()
 
+
 """
     TRUE MISCELLANEOUS
     
@@ -94,31 +96,34 @@ def getConfig() -> NoReturn:
     category at all.
 """
 
+
 # Performs any necessary one-time calculations and changes relating to the config
 def calculateEssentials() -> NoReturn:
     
-    # Will default any non-numeric limits, or a limit of 1000, to None.
-    if not str(Globals.config["limit"]).isnumeric() or Globals.config["limit"] >= 1000:
-        Globals.config["limit"] = None
-    
+    # Will default any non-numeric limits to 1000.
+    if not str(Globals.config["limit"]).isnumeric():
+        Globals.config["limit"] = 1000
+
     # Attempts to calculate the cutoff time and wait time in seconds
     for keyList in [["cutoffSec", "cutoff", "cutoffUnit", 3600], ["waitTime", "wait", "unit", 1800]]:
         try:
-            if type(Globals.config[keyList[2]]) is list:
-                Globals.config[keyList[0]] = Globals.config[keyList[1]]*Globals.config[keyList[2]][2]
+            if type(Globals.config[keyList[2]]) == list:
+                Globals.config[keyList[0]] = Globals.config[keyList[1]] * Globals.config[keyList[2]][2]
             else:
-                Globals.config[keyList[0]] = Globals.config[keyList[1]]*Globals.config[keyList[2]]
-        
+                Globals.config[keyList[0]] = Globals.config[keyList[1]] * Globals.config[keyList[2]]
+
         # Defaults to one hour / half an hour if any of the related variables is missing or corrupted
         except (KeyError, TypeError):
             Globals.config[keyList[0]] = keyList[3]
+
 
 # Checks a comment against the regex
 def checkRegex(re, comment: object) -> bool:
     for pattern in Globals.config["regexBlacklist"]:
         if re.match(pattern, (comment.body.lower(), comment.body)[Globals.config["caseSensitive"]]):
-            return True   
+            return True
     return False
+
 
 # Dumps JSON content to a given path
 def dumpJSON(path: str, data: Dict) -> bool:
@@ -129,10 +134,12 @@ def dumpJSON(path: str, data: Dict) -> bool:
         return True
     except FileNotFoundError: return False
 
+
 # Deletes a portion of a given array, based on passed elements
 def filterArray(array: List, elements: List) -> List:
     del array[array.index(elements[0]):array.index(elements[len(elements)-1])]
     return array
+
 
 # Writes contents of a list to a file
 def writeToFile(content: List, file: TextIO) -> bool:

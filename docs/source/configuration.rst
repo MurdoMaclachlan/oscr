@@ -8,26 +8,28 @@ Once properly intialised, there should be a ``config.json`` file in the followin
            {
                "blacklist": [
                    "claim",
-                   "done",
-                   "unclaim",
+                   "claiming",
                    "claim -- this was a automated action. please contact me with any questions.",
+                   "dibs",
+                   "done",
                    "done -- this was a automated action. please contact me with any questions.",
-                   "unclaim -- this was a automated action. please contact me with any questions.",
-                   "claiming"
+                   "unclaim",
+                   "unclaiming",
+                   "unclaim -- this was a automated action. please contact me with any questions."
                ],
-               "caseSensitive": false,
+               "caseSensitive": False,
                "cutoff": 1,
                "cutoffUnit": 3600,
-               "debug": false,
+               "debug": False,
                "limit": 100,
-               "logUpdates": true,
+               "logUpdates": True,
                "os": "[Your OS here]",
-               "printLogs": true,
-               "recur": true,
+               "printLogs": True,
+               "recur": True,
                "regexBlacklist": [
-                   "^(claim|done|unclaim)(?!(.|\n)*treasure[\s-]*hunt)"
+                   "^(claim|done|dibs|unclaim)(?!(.|\n)*treasure[\s-]*hunt)"
                ],
-               "reportTotals": true,
+               "reportTotals": True,
                "subredditList": [
                    "transcribersofreddit"
                ],
@@ -36,10 +38,11 @@ Once properly intialised, there should be a ``config.json`` file in the followin
                    "minutes",
                    60
                ],
+               "useRefreshTokens": False,
                "useRegex": False,
                "userList": [
                    "transcribersofreddit"
-               ]
+               ],
                "wait": 10
            }
        ]
@@ -49,7 +52,7 @@ The following is an explanation of what each configuration option does:
 
 .. list-table::
    :header-rows: 1
-   
+
    * - Name
      - Type
      - Description
@@ -95,12 +98,12 @@ The following is an explanation of what each configuration option does:
    * - unit
      - Array
      - A list containing all the variations on the unit of time used for the wait variable; singular word, plural word, and integer equivalent converted into seconds. The default unit is minutes.
-   * - user
-     - String
-     - Your Reddit username. Obtained upon running the program for the first time.
+   * - useRefreshTokens
+     - Boolean
+     - Determines whether or not OSCR should authenticate using refresh tokens; enable this if you are using two-factor authentication.
    * - useRegex
      - Boolean
-     - Determines whether the program should use the blacklist key, only deleting comments that exactly match it, or the regexBlacklist key, which allows for more flexible and powerful control over what the programs delete. It is set to False by default, and users not familiar with regexes should leave it this way, as getting your regex wrong can result in OSCR deleting a lot more than you intend.
+     - Determines whether OSCR should use the blacklist key, only deleting comments that exactly match it, or the regexBlacklist key, which allows for more flexible and powerful control over what the programs delete. It is set to False by default, and users not familiar with regexes should leave it this way, as getting your regex wrong can result in OSCR deleting a lot more than you intend.
    * - userList
      - Array
      - The list of users that OSCR cares about. Comments that are in the blacklist or match your set regexes but are not in reply to one of these users will be ignored. If the list is empty, OSCR will check comments regardless of whom they are in reply to.
@@ -108,4 +111,4 @@ The following is an explanation of what each configuration option does:
      - Integer
      - The number of units of time (unit being determined by the unit variable) OSCr will wait before re-checking your comments. It is set to 10 by default.
 
-You can edit the config.json and praw.ini files from within OSCR by running ``oscr --settings``, although the menu is somewhat awkward to use.
+You can edit the config.json and praw.ini files from within OSCR by running ``oscr --settings`` or ``oscr -S``.

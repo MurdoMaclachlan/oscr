@@ -1,10 +1,35 @@
 Changelogs
-===========
+==========
 
 A list of changelogs for OSCR, with the most recent version first. These are also available `here <https://github.com/MurdoMaclachlan/oscr/releases>`_.
 
-2.0.0 - Current Release
+2.1.0 - Current Release
 -----------------------
+
+**Functionality**
+
+- Added refresh token support. (#33, #139)
+- Added "dibs" to the default blacklist and regexBlacklist. (#140, #141)
+- Removed ``--format-old`` runtime argument. (#105, #131)
+
+**Cleanup/Optimisation**
+
+- Deferred various functionalities in ``main.py`` to functions in other modules. (#128, #145)
+- Optimised the settings menu to allow for easier addition of new config and ini options. (#127, #139, #142)
+- Combined ``Log.clear()`` and ``Log.get()`` into ``Log.request()``. (#125, #130)
+- Other general cleanup, readability and optimisation improvements. (#136, #137, #139, #142, #145)
+
+**Documentation/Logs**
+
+- Changed "core" folder to "oscrcore" to avoid issues with pip. (#138, #139)
+
+**Bug Fixes**
+
+- Fixed a crash on calling ``resetConfig()``. (#132, #134)
+- Fixed a crash on passing an unknown run-time argument. (#133, #135)
+
+2.0.0
+-----
 
 **Functionality**
 
@@ -54,12 +79,12 @@ A list of changelogs for OSCR, with the most recent version first. These are als
 
 **Bug Fixes**
 
-- #45: Crash on attempting to use ``--show-config`` due to accidentally assigning ``Globals()`` instance to ``gvars.config``. (fixed in #58)
-- #61: Attempting to update integer or boolean keys in the settings menu causes an infinite loop. (fixed in #63)
-- #86: Regexes may delete comments that are not bot interactions. (fixed in #87)
-- #88: Runtime arguments are not processed in the correct priority order. (fixed in #90)
-- #89: Crash on passing conflicting arguments. (fixed in #90)
-- #92: Potential crash on failing to update a statistic. (fixed in #94)
+- Fixed a crash on attempting to use ``--show-config`` due to accidentally assigning ``Globals()`` instance to ``gvars.config``. (#45, #58)
+- Fixed an infinite loop on attempting to update integer or boolean keys in the settings menu. (#61 #63)
+- Fxied regexes sometimes deleting comments that are not bot interactions. (#86, #87)
+- Fixed run-time arguments not being processed in the correct priority order. (#88, #90)
+- Fixed a crash on passing conflicting run-time arguments. (#89, #90)
+- Fixed a potential crash on failing to update a statistic. (#92, #94)
 
 1.2.1
 -----
@@ -85,7 +110,7 @@ A list of changelogs for OSCR, with the most recent version first. These are als
 
 **Bug Fixes**
 
-- #16: Recursion error on initialising Reddit instance with empty Redditor (fixed upstream in PRAW 7.1.1).
+- #16: Recursion error on initialising Reddit instance with empty Redditor. (fixed upstream in PRAW 7.1.1)
 
 
 1.2.0
@@ -209,7 +234,7 @@ A list of changelogs for OSCR, with the most recent version first. These are als
 - Made home, log and version variables global throughout all files and functions.
 
 **Cleanup/Optimisation**
-   
+
 - Renamed libcdr module cdrmodules; included main.py.
 - Optimisation improvements for both increased speed and reduced file size.
 

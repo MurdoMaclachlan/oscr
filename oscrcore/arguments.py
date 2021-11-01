@@ -14,36 +14,34 @@
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <https://www.gnu.org/licenses/>.
     
-    Contact me at murdo@maclachlans.org.uk
+    Contact me at murdomaclachlan@duck.com
 """
 
 import sys
-from os import remove, rename
+from os import remove
 from typing import Any, List, NoReturn
-from .globals import DEFAULT_CONFIG, Globals, Log, System, VERSION
-from .ini import reformatIni
-from .misc import calculateEssentials
+from .globals import DEFAULT_CONFIG, Globals, Log, System
+from .misc import calculateEssentials, dumpConfig
 global Globals, Log, System
+
 
 def checkArgs() -> NoReturn:
     
     # Setting up of essential dicts and lists
     arguments = {
-        "--help": helpMenu, # priority 1
+        "--help": helpMenu,  # priority 1
         "-h": helpMenu,
-        "--version": showVersion, # priority 2
+        "--version": showVersion,  # priority 2
         "-v": showVersion,
-        "--credits": printCredits, # priority 3
+        "--credits": printCredits,  # priority 3
         "-c": printCredits,
-        "--show-config": showConfig, # priority 4
+        "--show-config": showConfig,  # priority 4
         "-s": showConfig,
-        "--format-old": formatOld, # priority 5
-        "-F": formatOld,
-        "--reset-config": resetConfig, # priority 6
+        "--reset-config": resetConfig,  # priority 5
         "-R": resetConfig,
-        "--settings": settings, # priority 7
+        "--settings": settings,  # priority 6
         "-S": settings,
-        "--force-regex": tempChangeConfig, # lowest priority; alphabetical
+        "--force-regex": tempChangeConfig,  # lowest priority; alphabetical
         "-f": tempChangeConfig,
         "--clean-hunt": cleanHunt,
         "-C": cleanHunt,
@@ -96,9 +94,10 @@ def checkArgs() -> NoReturn:
     # Handles passing of unknown arguments
     for argument in sys.argv[1:]:
         if argument not in arguments:
-            print(warn(f"WARNING: Unknown argument '{argument}' passed - ignoring.", Globals))
+            print(Log.warning(f"WARNING: Unknown argument '{argument}' passed - ignoring.", Globals))
     
     sys.exit(0) if closing else calculateEssentials()
+
 
 """
     Below are listed the function definitions for
@@ -108,30 +107,21 @@ def checkArgs() -> NoReturn:
     of their names; not in alphabetical order of the
     argument name, nor in order of run-time priority.
     
-    For run-time priority, see their order in the 
+    For run-time priority, see their order in the
     'arguments' dictionary in checkArgs(), above.
 """
+
 
 # Performs necessary configuration changes for --clean-hunt runtime arg
 def cleanHunt() -> NoReturn:
     
     # I'm going to clean this shit up in 2.1.0
-    tempChangeConfig(
-        [
-            ["blacklist", ["claim -- treasure hunt", "done -- treasure hunt"]] if not Globals.config["useRegex"] else ["regexBlacklist", ["^(claim|claiming|done).*treasure *hunt.*"]],
-            ["recur", False],
-            ["userList", ["transcribersofreddit"]] if not Globals.config["userList"] == ["transcribersofreddit"] else ["",""]
-        ]
-    )
+    tempChangeConfig([
+        ["regexBlacklist", ["^(claim|claiming|done).*treasure *hunt.*"]] if Globals.config["useRegex"] else ["blacklist", ["claim -- treasure hunt", "done -- treasure hunt"]],
+        ["recur", False],
+        ["", ""] if Globals.config["userList"] == ["transcribersofreddit"] else ["userList", ["transcribersofreddit"]]
+    ])
 
-# Changes ./cdremover folders to ./oscr and calls reformat ini
-def formatOld() -> NoReturn:
-    Log.new(["Reformatting CDRemover files to OSCR."], Globals)
-    try:
-        rename(System.HOME+"/.cdremover", System.HOME+"/.oscr")
-    except FileNotFoundError: pass
-    reformatIni(Globals)
-    Log.new(["Reformatting complete."])
 
 # Prints a list of arguments and their functions
 def helpMenu() -> NoReturn:
@@ -140,7 +130,6 @@ def helpMenu() -> NoReturn:
         "--clean-hunt, -C:    runs an isolated instance of OSCR that deletes ToR bot interactions containing the phrase 'treasure hunt'\n",
         "--credits, -c:       lists everyone who has helped with the creation of the program\n",
         "--force-regex, -f:   forces the program to enable regex for one instance regardless of configuration\n",
-        "--format-old, -F:    rename old .cdremover directories, etc. to fit OSCR's new name, and move old praw.ini to new location\n",
         "--help, -h:          displays this list\n",
         "--no-recur, -n:      forces program to run only one cycle regardless of 'recur' configuration\n",
         "--print-logs, -p:    forces program to print logs for one instance regardless of 'printLogs' configuration\n",
@@ -150,6 +139,7 @@ def helpMenu() -> NoReturn:
         "--show-config, -s:   displays the contents of the config file\n",
         "--version, -v:       displays the currently installed version"
     )
+
 
 # Prints a list of contributors and their contributions
 def printCredits() -> NoReturn:
@@ -181,23 +171,26 @@ def printCredits() -> NoReturn:
         "- Help with default regex list"
     )
 
+
 # Deletes the config file and replaces it with the default config
 # Prompts for username, then saves default config
 def resetConfig() -> NoReturn:
     Log.new(["Resetting config file."])
     try:
-        remove(f"{System.PATHS['config']/config.json}")
+        remove(f"{System.PATHS['config']}/config.json")
     except FileNotFoundError:
         Log.new(["Config file already absent."])
     Globals.config = DEFAULT_CONFIG
-    Globals.config["user"] = input("Please enter your Reddit username:  /u/")
+    Globals.config["user"] = input("Please enter your Reddit username:\n  /u/")
     dumpConfig()
+
 
 # Enters the settings menu
 def settings() -> NoReturn:
     from .settings import settingsMain
-    Log.new([f"Running OSCR with --settings parameter, entering settings menu."])
+    Log.new(["Running OSCR with --settings parameter, entering settings menu."])
     settingsMain()
+
 
 # Prints the contents of the config file
 def showConfig() -> NoReturn:
@@ -205,12 +198,15 @@ def showConfig() -> NoReturn:
     for i in Globals.config:
         print(f"{i}: {Globals.config[i]}")
 
+
 # Prints the current version number
 def showVersion() -> NoReturn:
     print(f"The installed version of OSCR is: {Globals.VERSION}")
 
+
 # Executes a list of passed config changes
 def tempChangeConfig(keys: List[List[Any]]) -> NoReturn:
     for key in keys:
-        if key == ["",""]: continue
+        # This check allows for dynamic construction of passed lists
+        if key == ["", ""]: continue
         else: Globals.editConfig(key[0], key[1])

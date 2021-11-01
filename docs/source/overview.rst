@@ -27,4 +27,4 @@ License for more details.
 You should receive a copy of the GNU General Public License when you
 install OSCR. If not, see https://www.gnu.org/licenses/.
 
-For help, contact me at murdo@maclachlans.org.uk
+For help, contact me at murdomaclachlan@duck.com

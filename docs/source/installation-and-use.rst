@@ -6,9 +6,9 @@ Installation and Use
 Requirements
 -------------
 
-In order to install OSCR, you will need a version of Python installed. The original framework was written in 3.7, and current development uses 3.9, but anything 3.5 onwards should work. A minimum of 3.5 is required because that is when type-hinting, which OSCR uses extensively, was added.
+In order to install OSCR, you will need a version of Python installed. The original framework was written in 3.7, and current development uses 3.10, but anything 3.5 onwards should work. A minimum of 3.5 is required because that is when type-hinting, which OSCR uses extensively, was added.
 
-OSCR also relies on several python packages; configparser, PRAW, and alive_progress. Any version of configparser will do, but for PRAW you will need 7.1.2 or over, and for alive_progress you will need 1.6.1 or over.
+OSCR also relies on several python packages; configparser, PRAW, and alive_progress. Any version of configparser will do, but for PRAW you will need at least 7.1.2, and for alive_progress you will need at least 1.6.1.
 
 Installation
 -------------
@@ -21,25 +21,28 @@ To install OSCR,
     - Give it a name ("Oscar" or "OSCR" are easy to remember).
     - Choose "script".
     - Give it a description (which can really be anything you want).
-    - Set an about url and redirect uri. The about url doesn't matter (I just linked the project's repository), and the redirect uri will not matter either; it is related to refresh tokens, which OSCR does not currently support.
-    
-3. Now, in your console, run the command ``oscr`` and you will be prompted to enter information for both config.json and praw.ini. The praw.ini will ask for your client id and client secret, which you can see on `the apps page <https://www.reddit.com/prefs/apps/>`_.
+    - Set an about url and redirect uri. The about url doesn't matter (I just linked the project's repository). If you have two-factor authentication enabled, set the redirect uri to ``http://localhost:8080/users/auth/reddit/callback``. If you do not have 2FA enabled, the redirect uri does not matter.
 
-    - Go to the page and scroll down until you find the bot you created. Underneath its name should be "personal use script", and below that a string of random characters. This is your client id. If you can't see a field that labeled "secret" with another, longer string of random characters after it, then click the edit button and it should appear (along with other fields you filled out when you were creating the bot).
-    
-    - Once praw.ini is created, the program will exit and you will need to rerun it (this is because PRAW currently can't reload praw.ini files once Reddit() has been initialised).
+3. If you are not using two-factor authentication, you can skip this step. If you are, then in your console, run the command ``oscr -S``; you will be taken to the settings menu. Select "Edit config" and then "useRefreshTokens". Set the value to "True". You can then select "Continue to program" in place of running ``oscr`` in the next step.
+4. Now, in your console, run the command ``oscr`` and you will be prompted to enter information for the creation of the praw.ini file. It will ask for your client id and client secret, which you can see on `the apps page <https://www.reddit.com/prefs/apps/>`_.
 
-Once it has been created, the contents of your praw.ini file should look something like this:::
+    - Go to the page and scroll down until you find the bot you created. Underneath its name should be "personal use script", and below that a string of random characters. This is your client id. If you can't see a field labeled "secret" with another, longer string of random characters after it, then click the edit button and it should appear (along with other fields you filled out when you were creating the app).
+
+    - For those using 2FA, OSCR will automatically set your redirect_uri to ``http://localhost:8080/users/auth/reddit/callback``, which should be what you set it to for the app in step 2.
+
+Once the ini has been created, OSCR will detect whether or not you are using 2FA. If you are, it will open a tab in your browser for you to authorise it to read your submission history and edit your submissions - the necessary scopes to delete comments. Once fully initialised, the contents of your praw.ini file should look something like this (the last one will only appear if you have 2FA enabled):::
 
     [oscr]
     client_id=lI3fAkE7x82LiE
     client_secret=4lS0f4Ke1234567894NdN0tR3aL
     username=testuser
     password=yourpasswordhere
+    redirect_uri=http://localhost:8080/users/auth/reddit/callback
+    refresh_token=yourrefreshtokenhere
 
 You can check if they are correct by navigating to your config folder, which should be .config on Linux and Mac, and AppData on Windows.
 
-4. Once you've rerun the program, each comment older than the cutoff should be deleted. By default, it will search every 10 minutes, and you can then either leave the program running in the background to delete posts in real time as they reach the cutoff, or you could turn recur off in your config file and manually run it every now and then.
+4. Once you've rerun the program, each comment older than the cutoff should be deleted. By default, it will search every 10 minutes, and you can then either leave the program running in the background to delete posts in real time as they reach the cutoff, or you can turn recur off in your config file and manually run it whenever you want to delete comments.
 
 Updating
 ---------

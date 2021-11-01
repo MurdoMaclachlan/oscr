@@ -14,11 +14,10 @@
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <https://www.gnu.org/licenses/>.
     
-    Contact me at murdo@maclachlans.org.uk
+    Contact me at murdomaclachlan@duck.com
 """
 
 import sys
-from time import time
 from typing import List, NoReturn
 from .globals import Globals, Log, System
 global Globals, Log, System
@@ -31,6 +30,7 @@ global Globals, Log, System
     alphabetical order.
 """
 
+
 # Exits OSCR while updating the log with some last messages
 def exitWithLog(messages: List) -> NoReturn:
     
@@ -39,6 +39,7 @@ def exitWithLog(messages: List) -> NoReturn:
     updateLog(["Exiting..."]) if Globals.config["logUpdates"] else print("Exiting...")
         
     sys.exit(0)
+
 
 # Updates the log file with the current log.
 def updateLog(messages: List) -> bool:
@@ -51,25 +52,26 @@ def updateLog(messages: List) -> bool:
     if Globals.config["logUpdates"]:
         
         if writeLog():
-            Log.clear()
+            Log.request(["clear", "all"])
             return True
         
         else:
             print(
-                Log.warning(f"WARNING: Error updating log; disabling log updates for this instance."),
-                Log.warning(f"Most recent log was:\n"),
-                Log.get(mode="recent")
+                Log.warning("WARNING: Error updating log; disabling log updates for this instance."),
+                Log.warning("Most recent log was:\n"),
+                Log.request(["get", "recent"])
             )
             Globals.config["logUpdates"] = False
     
     return False
+
 
 # Writes the contents of the log array to the log.txt file
 def writeLog() -> bool:
     
     try:
         with open(f"{System.PATHS['data']}/log.txt", "a") as file:
-            for i in Log.get("all"): file.write(i)
+            for i in Log.request(["get", "all"]): file.write(i)
         return True
     
     # Catch all exceptions to avoid the program crashing;
