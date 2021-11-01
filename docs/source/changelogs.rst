@@ -10,6 +10,7 @@ A list of changelogs for OSCR, with the most recent version first. These are als
 
 - Fixed a crash when using regexes due to a type mismatch in the ``checkRegex()`` method.
 - Fixed a crash on attempting to handle AttributeErrors in comment checking due to not specifying a dataset to call from.
+- Fixed a crash on attempting to dumpStats due to an attribute naming mismatch.
 
 2.1.0 - Current Release
 -----------------------
