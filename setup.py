@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-from core.globals import VERSION
+from oscrcore.globals import VERSION
 
 
 def readme():
