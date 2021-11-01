@@ -3,6 +3,14 @@ Changelogs
 
 A list of changelogs for OSCR, with the most recent version first. These are also available `here <https://github.com/MurdoMaclachlan/oscr/releases>`_.
 
+2.1.1 - Current Release
+-----------------------
+
+**Bug Fixes**
+
+- Fixed a crash when using regexes due to a type mismatch in the ``checkRegex()`` method.
+- Fixed a crash on attempting to handle AttributeErrors in comment checking due to not specifying a dataset to call from.
+
 2.1.0 - Current Release
 -----------------------
 

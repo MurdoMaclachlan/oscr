@@ -52,7 +52,7 @@ def checkComments(commentList: List[object]) -> NoReturn:
 
             # Result of a comment being in reply to a deleted/removed submission
             except AttributeError as e:
-                Log.new([Log.warning(f"Handled error on iteration {Stats.get('counted')}: {e} | Comment at {comment.permalink}")])
+                Log.new([Log.warning(f"Handled error on iteration {Stats.get('current', 'counted')}: {e} | Comment at {comment.permalink}")])
 
             Stats.increment("counted")
             progress()
