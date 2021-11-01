@@ -169,7 +169,7 @@ class Statistics:
             },
             "total": {}
         }
-        self.failed = False
+        self.enabled = True
     
     # Returns either a single statistic or an entire dataset (current/total)
     def get(self: object, dataset: str, stat="") -> int:
