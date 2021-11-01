@@ -120,7 +120,7 @@ def calculateEssentials() -> NoReturn:
 # Checks a comment against the regex
 def checkRegex(re, comment: object) -> bool:
     for pattern in Globals.config["regexBlacklist"]:
-        if re.match(pattern, (comment.body.lower(), comment.body)[Globals.config["caseSensitive"]]):
+        if re.match(pattern, (comment.casefold(), comment)[Globals.config["caseSensitive"]]):
             return True
     return False
 
