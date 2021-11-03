@@ -13,8 +13,13 @@
 
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <https://www.gnu.org/licenses/>.
-    
+
     Contact me at murdomaclachlan@duck.com
+
+    ----------
+
+    This module handles functions relating to the identification and
+    processing of run-time arguments passed to the OSCR script.
 """
 
 import sys
@@ -26,7 +31,13 @@ global Globals, Log, System
 
 
 def checkArgs() -> NoReturn:
-    
+    """Checks all passed arguments against a master list, processes them in the right
+    order and calls the necessary functions.
+
+    No arguments.
+
+    No return value.
+    """
     # Setting up of essential dicts and lists
     arguments = {
         "--help": helpMenu,  # priority 1
@@ -112,19 +123,30 @@ def checkArgs() -> NoReturn:
 """
 
 
-# Performs necessary configuration changes for --clean-hunt runtime arg
 def cleanHunt() -> NoReturn:
-    
+    """Performs the necessary temporary configuration changes for the --client-hunt
+    runtime mode.
+
+    No arguments.
+
+    No return value.
+    """
     # I'm going to clean this shit up in 2.1.0
+    # lol nvm I'll do it 2.2.0
     tempChangeConfig([
         ["regexBlacklist", ["^(claim|claiming|done).*treasure *hunt.*"]] if Globals.config["useRegex"] else ["blacklist", ["claim -- treasure hunt", "done -- treasure hunt"]],
         ["recur", False],
         ["", ""] if Globals.config["userList"] == ["transcribersofreddit"] else ["userList", ["transcribersofreddit"]]
     ])
 
-
-# Prints a list of arguments and their functions
+    
 def helpMenu() -> NoReturn:
+    """Prints a list of arguments and their functionalities.
+
+    No arguments.
+
+    No return value.
+    """
     print(
         "List of Arguments:\n",
         "--clean-hunt, -C:    runs an isolated instance of OSCR that deletes ToR bot interactions containing the phrase 'treasure hunt'\n",
@@ -141,8 +163,14 @@ def helpMenu() -> NoReturn:
     )
 
 
-# Prints a list of contributors and their contributions
 def printCredits() -> NoReturn:
+    """Prints a list of contributors, what they have contributed, and links to various
+    accounts or websites of theirs.
+
+    No arguments.
+
+    No return value.
+    """
     print(
         "Credits (alphabetical):\n\n"
         "/u/--B_L_A_N_K--\n",
@@ -172,9 +200,14 @@ def printCredits() -> NoReturn:
     )
 
 
-# Deletes the config file and replaces it with the default config
-# Prompts for username, then saves default config
 def resetConfig() -> NoReturn:
+    """Deletes the config file and replaces it with the default config; prompts for
+    username before saving the default.
+
+    No arguments.
+
+    No return value.
+    """
     Log.new(["Resetting config file."])
     try:
         remove(f"{System.PATHS['config']}/config.json")
@@ -185,27 +218,48 @@ def resetConfig() -> NoReturn:
     dumpConfig()
 
 
-# Enters the settings menu
 def settings() -> NoReturn:
+    """Enters the settings menu.
+
+    No arguments.
+
+    No return value.
+    """
     from .settings import settingsMain
     Log.new(["Running OSCR with --settings parameter, entering settings menu."])
     settingsMain()
 
 
-# Prints the contents of the config file
 def showConfig() -> NoReturn:
+    """Prints the contents of the config file.
+
+    No arguments.
+
+    No return value.
+    """
     print("The config is as follows:\n")
     for i in Globals.config:
         print(f"{i}: {Globals.config[i]}")
 
 
-# Prints the current version number
 def showVersion() -> NoReturn:
+    """Prints the current version number.
+
+    No arguments.
+
+    No return value.
+    """
     print(f"The installed version of OSCR is: {Globals.VERSION}")
 
 
-# Executes a list of passed config changes
 def tempChangeConfig(keys: List[List[Any]]) -> NoReturn:
+    """Executes a list of config changes.
+
+    Arguments:
+    - keys (array of arrays)
+
+    No return value.
+    """
     for key in keys:
         # This check allows for dynamic construction of passed lists
         if key == ["", ""]: continue
