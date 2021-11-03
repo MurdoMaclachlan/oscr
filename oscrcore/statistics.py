@@ -13,8 +13,14 @@
 
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <https://www.gnu.org/licenses/>.
-    
+
     Contact me at murdomaclachlan@duck.com
+
+    ----------
+
+    This module contains file handling for the statistics "deleted" and
+    "counted", including a function to fetch these statistics at the
+    beginning of run-time and another to update them after each iteration.
 """
 
 import json
@@ -23,17 +29,14 @@ from .globals import Globals, Log, Stats, System
 from .misc import dumpJSON
 global Globals, Log, Stats, System
 
-"""
-    This module contains file handling for the statistics,
-    deleted and counted, including a function to fetch
-    the stats at the beginning of run-time, and another
-    to update them after each iteration.
-"""
 
-
-# Updates statistics in stats.json
 def dumpStats() -> bool:
-    
+    """Writes the total statistics to stats.json.
+
+    No arguments.
+
+    Returns: boolean success status.
+    """
     if dumpJSON(
             f"{System.PATHS['data']}/stats.json",
             {"statistics": [Stats.get("total")]}
@@ -45,9 +48,13 @@ def dumpStats() -> bool:
         return True
 
 
-# Retrieve statistics from stats.json
 def fetchStats() -> NoReturn:
-    
+    """Fetches statistics from the stats.json file in the data path.
+
+    No arguments.
+
+    No return value.
+    """
     try:
         with open(f"{System.PATHS['data']}/stats.json", "r") as file:
             try: data = json.load(file)
@@ -68,7 +75,13 @@ def fetchStats() -> NoReturn:
 
 
 def updateAndLogStats() -> NoReturn:
+    """Logs current statistics and updates and logs totals following an iteration of
+    OSCR.
 
+    No arguments.
+
+    No return value.
+    """
     # Gives info about most recent iteration; how many comments were counted,
     # deleted, still waiting for.
     Log.new([
