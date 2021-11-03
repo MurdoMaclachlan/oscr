@@ -13,8 +13,13 @@
 
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <https://www.gnu.org/licenses/>.
-    
+
     Contact me at murdomaclachlan@duck.com
+
+    ----------
+
+    This module contains functions relating to the handling
+    the praw.ini file.
 """
 
 from configparser import ConfigParser
@@ -22,21 +27,26 @@ from typing import Dict, NoReturn
 from .globals import Globals, Log, System
 global Globals, Log, System
 
-"""
-    This module contains functions relating to the handling
-    the praw.ini file.
-"""
 
-
-# Appends a refresh token to the ini
 def addRefreshToken(refreshToken: str) -> NoReturn:
+    """Appends a given Reddit refresh token to praw.ini.
+
+    Arguments:
+    - refreshToken (string)
+
+    No return value.
+    """
     with open(f"{System.PATHS['config']}/praw.ini", "a+") as file:
         file.write(f"refresh_token={refreshToken}\n")
 
 
-# Creates new ini file based on user input
 def createIni() -> bool:
-    
+    """Creates a new ini file based on user input.
+
+    No arguments.
+
+    Returns: boolean success status.
+    """
     Log.new(["praw.ini missing, incomplete or incorrect. It will need to be created."])
     return dumpCredentials({
         "client_id": input("Please input your client id:  "),
@@ -48,16 +58,27 @@ def createIni() -> bool:
     })
 
 
-#Use configparser magic to output new credentials to praw.ini
 def dumpCredentials(creds: Dict) -> NoReturn:
+    """Outputs updated Reddit credentials to praw.ini.
+
+    Arguments:
+    - creds (dictionary)
+
+    Returns: boolean success status.
+    """
     Parser = ConfigParser()
     Parser["oscr"] = creds
     Parser.write(f"{System.PATHS['config']}/praw.ini")
     return True
 
 
-# Use configparser magic to get the credentials from praw.ini
 def getCredentials() -> Dict:
+    """Retrieves Reddit credentials from praw.ini.
+
+    No arguments.
+
+    Returns: dictionary containing credentials.
+    """
     credentials = ConfigParser()
     credentials.read(f"{System.PATHS['config']}/praw.ini")
     return dict(credentials["oscr"])
