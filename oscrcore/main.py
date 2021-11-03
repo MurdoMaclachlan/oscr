@@ -13,8 +13,17 @@
 
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <https://www.gnu.org/licenses/>.
-    
+
     Contact me at murdomaclachlan@duck.com
+
+    ----------
+
+    Beneath is the main program. From here, all run-time flow of the
+    main OSCR program is controlled through the oscr() function.
+
+    This function initiates after all arguments have been checked and
+    global variables have been collected and processed as needed, and
+    continues to loop until run-time ends.
 """
 
 import praw
@@ -28,21 +37,15 @@ from .log import exitWithLog, updateLog
 from .statistics import updateAndLogStats
 global Globals, Log, Stats
 
-"""
-    Beneath is the main program. From here, all run-time flow
-    of OSCR is controlled through the oscr() function, passed
-    Globals by the oscr top-level script run through the console
-    command.
-
-    This function initiates after all arguments have been
-    checked and global variables have been collected and
-    processed as needed, and continues to loop until run-time
-    ends.
-"""
-
 
 def oscr() -> NoReturn:
+    """The primary OSCR function controlling the flow of all primary functionality. Also
+    a hot mess.
 
+    No arguments.
+
+    No return value.
+    """
     Log.new([
         f"Running OSCR version {Globals.VERSION} with recur set to {Globals.config['recur']}.",
         Log.warning("WARNING: Log updates are OFF. Console log will not be saved for this instance.") if not Globals.config["logUpdates"] else ""
