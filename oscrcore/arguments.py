@@ -25,12 +25,12 @@
 import sys
 from os import remove
 from typing import Any, List, NoReturn
-from .globals import DEFAULT_CONFIG, Globals, Log, System
-from .misc import calculateEssentials, dumpConfig
+from .classes import DEFAULT_CONFIG, Globals, Log, System
+from .misc import calculate_essentials, dump_config
 global Globals, Log, System
 
 
-def checkArgs() -> NoReturn:
+def check_args() -> NoReturn:
     """Checks all passed arguments against a master list, processes them in the right
     order and calls the necessary functions.
 
@@ -40,32 +40,32 @@ def checkArgs() -> NoReturn:
     """
     # Setting up of essential dicts and lists
     arguments = {
-        "--help": helpMenu,  # priority 1
-        "-h": helpMenu,
-        "--version": showVersion,  # priority 2
-        "-v": showVersion,
-        "--credits": printCredits,  # priority 3
-        "-c": printCredits,
-        "--show-config": showConfig,  # priority 4
-        "-s": showConfig,
-        "--reset-config": resetConfig,  # priority 5
-        "-R": resetConfig,
+        "--help": help_menu,  # priority 1
+        "-h": help_menu,
+        "--version": show_version,  # priority 2
+        "-v": show_version,
+        "--credits": print_credits,  # priority 3
+        "-c": print_credits,
+        "--show-config": show_config,  # priority 4
+        "-s": show_config,
+        "--reset-config": reset_config,  # priority 5
+        "-R": reset_config,
         "--settings": settings,  # priority 6
         "-S": settings,
-        "--force-regex": tempChangeConfig,  # lowest priority; alphabetical
-        "-f": tempChangeConfig,
-        "--clean-hunt": cleanHunt,
-        "-C": cleanHunt,
-        "--no-recur": tempChangeConfig,
-        "-n": tempChangeConfig,
-        "--print-logs": tempChangeConfig,
-        "-p": tempChangeConfig,
-        "--report-totals": tempChangeConfig,
-        "-r": tempChangeConfig
+        "--force-regex": temp_config_change,  # lowest priority; alphabetical
+        "-f": temp_config_change,
+        "--clean-hunt": clean_hunt,
+        "-C": clean_hunt,
+        "--no-recur": temp_config_change,
+        "-n": temp_config_change,
+        "--print-logs": temp_config_change,
+        "-p": temp_config_change,
+        "--report-totals": temp_config_change,
+        "-r": temp_config_change
     }
     
     # List of argumets that require a change to the config
-    configChanges = {
+    config_changes = {
         "--force-regex": [["useRegex", True]],
         "-f": [["useRegex", True]],
         "--no-recur": [["recur", False]],
@@ -90,13 +90,13 @@ def checkArgs() -> NoReturn:
         if argument in sys.argv[1:]:
             
             # If argument changes config and is not closing, will call its appropriate function
-            if not closing and argument in configChanges:
-                arguments[argument](configChanges[argument])
+            if not closing and argument in config_changes:
+                arguments[argument](config_changes[argument])
                 if argument in ["--clean-hunt", "-C"] and sys.argv.index(argument) != len(sys.argv):
                     print(Log.warning("WARNING: --clean-hunt was passed, but so were other arguments. Subsequent arguments will not be processed."))
             
             # If a closing argument and an argument that will be overwritten by it were both passed, warns user
-            elif (argument in list(arguments.keys())[8:] or argument in configChanges) and closing:
+            elif (argument in list(arguments.keys())[8:] or argument in config_changes) and closing:
                 print(Log.warning(f"WARNING: '{argument}' was passed but was accompanied by a closing argument and will not be processed."))
             
             else:
@@ -107,7 +107,7 @@ def checkArgs() -> NoReturn:
         if argument not in arguments:
             print(Log.warning(f"WARNING: Unknown argument '{argument}' passed - ignoring.", Globals))
     
-    sys.exit(0) if closing else calculateEssentials()
+    sys.exit(0) if closing else calculate_essentials()
 
 
 """
@@ -123,7 +123,7 @@ def checkArgs() -> NoReturn:
 """
 
 
-def cleanHunt() -> NoReturn:
+def clean_hunt() -> NoReturn:
     """Performs the necessary temporary configuration changes for the --client-hunt
     runtime mode.
 
@@ -133,14 +133,14 @@ def cleanHunt() -> NoReturn:
     """
     # I'm going to clean this shit up in 2.1.0
     # lol nvm I'll do it 2.2.0
-    tempChangeConfig([
+    temp_config_change([
         ["regexBlacklist", ["^(claim|claiming|done).*treasure *hunt.*"]] if Globals.config["useRegex"] else ["blacklist", ["claim -- treasure hunt", "done -- treasure hunt"]],
         ["recur", False],
         ["", ""] if Globals.config["userList"] == ["transcribersofreddit"] else ["userList", ["transcribersofreddit"]]
     ])
 
     
-def helpMenu() -> NoReturn:
+def help_menu() -> NoReturn:
     """Prints a list of arguments and their functionalities.
 
     No arguments.
@@ -163,7 +163,7 @@ def helpMenu() -> NoReturn:
     )
 
 
-def printCredits() -> NoReturn:
+def print_credits() -> NoReturn:
     """Prints a list of contributors, what they have contributed, and links to various
     accounts or websites of theirs.
 
@@ -200,7 +200,7 @@ def printCredits() -> NoReturn:
     )
 
 
-def resetConfig() -> NoReturn:
+def reset_config() -> NoReturn:
     """Deletes the config file and replaces it with the default config; prompts for
     username before saving the default.
 
@@ -215,7 +215,7 @@ def resetConfig() -> NoReturn:
         Log.new(["Config file already absent."])
     Globals.config = DEFAULT_CONFIG
     Globals.config["user"] = input("Please enter your Reddit username:\n  /u/")
-    dumpConfig()
+    dump_config()
 
 
 def settings() -> NoReturn:
@@ -225,12 +225,12 @@ def settings() -> NoReturn:
 
     No return value.
     """
-    from .settings import settingsMain
+    from .settings import settings_main
     Log.new(["Running OSCR with --settings parameter, entering settings menu."])
-    settingsMain()
+    settings_main()
 
 
-def showConfig() -> NoReturn:
+def show_config() -> NoReturn:
     """Prints the contents of the config file.
 
     No arguments.
@@ -242,7 +242,7 @@ def showConfig() -> NoReturn:
         print(f"{i}: {Globals.config[i]}")
 
 
-def showVersion() -> NoReturn:
+def show_version() -> NoReturn:
     """Prints the current version number.
 
     No arguments.
@@ -252,7 +252,7 @@ def showVersion() -> NoReturn:
     print(f"The installed version of OSCR is: {Globals.VERSION}")
 
 
-def tempChangeConfig(keys: List[List[Any]]) -> NoReturn:
+def temp_config_change(keys: List[List[Any]]) -> NoReturn:
     """Executes a list of config changes.
 
     Arguments:
@@ -263,4 +263,4 @@ def tempChangeConfig(keys: List[List[Any]]) -> NoReturn:
     for key in keys:
         # This check allows for dynamic construction of passed lists
         if key == ["", ""]: continue
-        else: Globals.editConfig(key[0], key[1])
+        else: Globals.edit_config(key[0], key[1])
