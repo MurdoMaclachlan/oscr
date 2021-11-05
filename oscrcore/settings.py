@@ -15,10 +15,12 @@
     along with this program. If not, see <https://www.gnu.org/licenses/>.
 
     Contact me at murdomaclachlan@duck.com
-"""
 
-# This whole module is an ugly bastard, but it works
-# I'll deal with it eventually probably maybe
+    ----------
+
+    This whole module is an ugly bastard, but it works. I'll deal with
+    it eventually, probably, maybe...
+"""
 
 import sys
 import json
@@ -30,10 +32,13 @@ from .misc import dumpConfig
 global Globals, Log, System
 
 
-# Main settings menu
-# If-tree the first, but not the last
 def settingsMain() -> NoReturn:
+    """The main settings menu; controls all other sub-menus.
 
+    No arguments.
+
+    No return value.
+    """
     while True:
         # Gets user choice
         print(
@@ -69,12 +74,14 @@ def settingsMain() -> NoReturn:
             sys.exit(0)
 
 
-# This fucking shite is the bane of my existence
-# You'd think I wouldn't need to turn my r/badcode flair into actual fucking code
-# But apparently I do
-# Does what it says on the fucking tin
 def editConfig() -> bool:
+    """Constructs the edit config menu and deals with whichever option the user chooses.
+    Should really be split into multiple methods, but I haven't got round to it yet.
 
+    No arguments.
+
+    Returns: boolean success status
+    """
     print("\nWhich option would you like?")
     j = 1
     keys = {}
@@ -173,10 +180,14 @@ def editConfig() -> bool:
     return dumpConfig()
 
 
-# No refresh token support implemented yet, but I'm preparing for it
-# Does what it says on the fucking tin
 def editPraw() -> bool:
+    """Provides a menu for selecting and editing Reddit credentials. Upon a successful
+    edit, will output updated credentials to praw.ini.
 
+    No arguments.
+
+    Returns: boolean success status.
+    """
     try:
         creds = getCredentials()
     except FileNotFoundError:
@@ -209,8 +220,13 @@ def editPraw() -> bool:
     return True
 
 
-# Prints explanation of how to use the settings menu
 def howToUse():
+    """Prints guide for using the settings menu.
+
+    No arguments.
+
+    No return value.
+    """
     print(
         "\nHOW TO USE\n",
         "This menu is designed for editing the config file and the praw.ini file for this program.\n",
@@ -222,9 +238,16 @@ def howToUse():
     input("\nPress enter to return to the main settings menu.")
 
 
-# Validates the user's choice to make sure it's in the viable results
-# The only function in this module that doesn't look like shrek got acne
 def validateChoice(low: int, high: int) -> str:
+    """Validates the user's choice based on a list generated from a given range of
+    numbers.
+
+    Arguments:
+    - low (int)
+    - high (int)
+
+    Returns: a single numerical string.
+    """
     results = [f"{i}" for i in range(low,high+1)]
     results.append("-e")
     choice = input("\n>> ")

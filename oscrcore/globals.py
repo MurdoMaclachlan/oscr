@@ -13,8 +13,12 @@
 
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <https://www.gnu.org/licenses/>.
-    
+
     Contact me at murdomaclachlan@duck.com
+
+    ----------
+
+    This module contains the basic global variables used by OSCR.
 """
 
 from datetime import datetime
@@ -69,55 +73,70 @@ DEFAULT_CONFIG = {
 
 VERSION = "2.1.1"
 
-"""
-    Globals is the miscellaneous global class, containing
-    essential variables that don't belong in any of the
-    other 3. Currently, that means the config settings and
-    the version number.
-"""
-
 
 class Globals:
-    
+    """The Globals class contains essential miscellaneous global variables that don't
+    belong in any of the other three classes. Currently, that means the config settings,
+    the version number and the default config.
+
+    WARNING: Globals.config will soon be made private. All write calls should go through
+    editConfig(). A getConfig() will soon be implemented for read access.
+    """ 
     def __init__(self: object) -> NoReturn:
         self.config = {}
         self.VERSION = VERSION
     
-    # Read/write access to the base config may be replaced with a function call soon
-    # All edits should go through this function to prevent a breaking change
+
     def editConfig(self: object, key: str, value: Any) -> NoReturn:
+        """Sets a single config key to a single new given value. All write commands to
+        the config should go through this call.
+
+        Arguments:
+        - key (string)
+        - value (any type)
+
+        No return value.
+        """
         self.config[key] = value
 
 
-"""
-    Log handles the logging system, surprise surprise. In
-    addition to containing the main log array, Log contains
-    data relating to the colouring of log output, and also
-    defines a simple API for access and modification to/of
-    the data contained therein.
-"""
-
-
 class Log:
-    
+    """The Log class handles the logging system, surprise surprise. In addition to
+    containing the main log array, Log contains data relating to the colouring of log
+    output, and also defines a simple API for access and modification to/of the data
+    contained therein.
+    """  
     def __init__(self: object) -> NoReturn:
         self.ConsoleColours = self.Colours(130, 0)
         self.__log = []
     
-    # Colour attributes for log highlighting
     class Colours:
-        
+        """The Colours class stores colour attributes which can be applied to strings in
+        order to colour the console output of log entries.
+        """
         def __init__(self: object, warning: int, reset: int) -> NoReturn:
             self.RESET = attr(reset)
             self.WARNING = fg(warning)
     
-    # Finds the current time and returns it in a human readable format.
     def getTime(self: object, timeToFind: int) -> str:
+        """Gets the current time and parses it to a human-readable format.
+
+        Arguments:
+        - time (int): optional with 'time.time()' as default
+
+        Returns: a single date string in format 'YYYY-MM-DD HH:MM:SS'.
+        """
         return datetime.fromtimestamp(timeToFind).strftime("%Y-%m-%d %H:%M:%S")
     
-    # Updates the log array and prints to console
     def new(self: object, messages: Union[List[str], str]) -> bool:
-        
+        """Initiates a new log entry and prints it to the console, if printLogs is
+        enabled.
+
+        Arguments:
+        - messages (string array)
+
+        Returns: boolean success status.
+        """
         for message in messages:
             
             # Allows for dynamic passing of lists
@@ -129,10 +148,19 @@ class Log:
             print(f"{currentTime} - {message}") if Globals.config["printLogs"] else None
         
         return True
-    
-    # Returns or deletes item(s) in the log; either all or the most recent.
+
     def request(self: object, mode: List) -> NoReturn:
-        
+        """Returns or deletes item(s) in the log, either all items or the most
+        recently-added item.
+
+        Arguments:
+        - mode (string array of length 2): options;
+            - options for the first item are "clear" and "get",
+            - options for the second item are "all" and "recent",
+
+        Returns: a single log entry (string), list of log entries (string array), or
+                 nothing.
+        """
         requests = {
             "all": (self.__log, self.__log[:])[1 if mode[0] == "clear" else 0],
             "recent": self.__log[len(self.__log)-1]
@@ -146,20 +174,24 @@ class Log:
         except KeyError:
             print(self.warning("WARNING: Log.request() received unknown mode '{i}'."))
     
-    # Colours a single string orange
     def warning(self: object, message: str) -> str:
+        """WARNING: soon-to-be deprecated.
+
+        Creates and returns a string that when printed will be coloured with the warning
+        colour.
+
+        Arguments:
+        - message (string)
+
+        Returns: a single coloured string.
+        """
         return self.ConsoleColours.WARNING + message + self.ConsoleColours.RESET
 
 
-"""
-    Statistics stores the current and total statistics
-    and provides a simple API for accessing and modifying
-    the data contained therein.
-"""
-
-
 class Statistics:
-    
+    """The Statistics class stores the current and total statistics and provides a
+    simple API for accessing and modifying the data contained therein.
+    """
     def __init__(self: object) -> NoReturn:
         self.__data = {
             "current": {
@@ -171,61 +203,104 @@ class Statistics:
         }
         self.enabled = True
     
-    # Returns either a single statistic or an entire dataset (current/total)
     def get(self: object, dataset: str, stat="") -> int:
+        """Returns either a single statistic or, if no statistic is specified, an entire
+        dataset.
+        - Dataset options are: "current", "total"
+        - Statistic options are: "counted", "deleted", "waitingFor"
+          ("waitingFor" is only available for the "current" dataset)
+
+        Arguments:
+        - dataset (string)
+        - stat (string): optional; default is an empty string
+
+        Returns: a single dictionary or integer.
+        """
         if not stat:
             return self.__data[dataset]
         else:
             return self.__data[dataset][stat]
     
-    # Resets total dataset to 0; only use if stats file can't be found
     def generateNew(self) -> NoReturn:
+        """Resets all statistics in the "total" dataset to  0. Should only be used if
+        the stats file cannot be found.
+
+        No arguments.
+
+        No return value.
+        """
         self.__data["total"] = {
                 "counted": 0,
                 "deleted": 0
         }
     
-    # Increments a single current statistic
     def increment(self: object, stat: str) -> NoReturn:
+        """Increments a single statistic of the "current" dataset.
+
+        Arguments:
+        - stat (string)
+
+        No return value.
+        """
         self.__data["current"][stat] += 1
     
-    # Resets current dataset
     def reset(self: object) -> NoReturn:
+        """Resets all entries in the "current" dataset to 0. Should be called every
+        program loop.
+
+        No arguments.
+
+        No return value.
+        """
         self.__data["current"] = {
                 "counted": 0,
                 "deleted": 0,
                 "waitingFor": 0
         }
     
-    # Sets dataset to passed value
     def setTotals(self: object, totals: Dict) -> NoReturn:
+        """Sets the "total" dataset to a new given set of values.
+
+        Arguments:
+        - totals (dictionary)
+
+        No return value.
+        """
         self.__data["total"] = totals
     
-    # Updates total dataset using current dataset
     def updateTotals(self: object) -> NoReturn:
+        """Adds the "counted" and "deleted" statistics in the "current" dataset to those
+        in the "total" dataset.
+
+        No arguments.
+
+        No return value.
+        """
         for statistic in ["counted", "deleted"]:
             self.__data["total"][statistic] += self.__data["current"][statistic]
 
 
-"""
-    System class handles the most important variables to
-    do with file-handling. The paths to the data and config
-    directories are contained here, as well as the location
-    of the home directory and the auto-detected OS.
-"""
-
-
 class System:
-    
+    """The System class handles the most important variables to do with file-handling.
+    The paths to the data and config directories are contained here, as well as the
+    location of the home directory and the auto-detected OS.
+    """
     def __init__(self: object) -> NoReturn:
         self.HOME = expanduser("~")
         self.OS = platform
         self.PATHS = self.definePaths(self.HOME, self.OS)
     
-    # Defines save paths for config and data based on the user's OS
     def definePaths(self: object, home: str, os: str) -> List:
-        
-        # Gets first 3 characters of OS
+        """Detects OS and defines the appropriate save paths for the config and data.
+        Exits on detecting an unspported OS. Supported OS's are: Linux, MacOS, Windows.
+
+        Arguments:
+        - home (string)
+        - os (string)
+
+        Returns: a single string array containing the newly-
+                 defined paths
+        """
         os = ''.join(list(os)[:3])
         
         if os in ["dar", "lin", "win"]:

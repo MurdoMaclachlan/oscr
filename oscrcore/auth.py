@@ -13,12 +13,19 @@
 
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <https://www.gnu.org/licenses/>.
-    
+
     Contact me at murdomaclachlan@duck.com
-    
+
+    ----------
+
     The code in this module was adapted from the example in the PRAW
     documentation, found at the following link:
     https://praw.readthedocs.io/en/stable/tutorials/refresh_token.html
+
+    ----------
+
+    This module contains functions related to Reddit authentication, including
+    logging into accounts and authorising using 2FA.
 """
 
 import praw
@@ -36,6 +43,16 @@ global Globals, Log, System
 
 
 def checkFailure(client: object, params: Dict, state: str) -> NoReturn:
+    """Checks for an authorisation failure, either due to a state mismatch or Reddit
+    throwing an error in the return parameters.
+
+    Arguments:
+    - client (object)
+    - params (dictionary)
+    - state (string)
+
+    No return value.
+    """
     if state != params['state']:
         sendMessage(client, f'State mismatch. Expected: {state} Received: {params["state"]}')
         Log.new([f'State mismatch. Expected: {state} Received: {params["state"]}'])
@@ -47,9 +64,14 @@ def checkFailure(client: object, params: Dict, state: str) -> NoReturn:
 
 
 def init() -> object:
+    """Initialises the Reddit instance, creating a new praw.ini if none is found.
+
+    No arguments.
+
+    Returns: praw.Reddit instance.
+    """
     try:
         return login()
-
     # Catch for invalid praw.ini, will create a new one then restart the program;
     # the restart is required due to current PRAW limitations. :'(
     except (NoSectionError, MissingRequiredAttributeException, KeyError):
@@ -60,9 +82,14 @@ def init() -> object:
         )
 
 
-# I don't know how half of this shit works but it does work so I don't care
 def login() -> object:
-    
+    """Handles the Reddit login and authorisation using credentials from praw.ini; will
+    also handle initial refresh token setup if 2FA is enabled for the account.
+
+    No arguments.
+
+    Returns: praw.Reddit instance.
+    """
     creds = getCredentials()
 
     constants = {
@@ -140,11 +167,13 @@ def login() -> object:
     return reddit
 
 
-# This connects to a server or something I don't know
 def receiveConnection() -> object:
-    """
-    Wait for and then return a connected socket..
-    Opens a TCP connection on port 8080, and waits for a single client.
+    """Wait for and then return a connected socket. Opens a TCP connection on port 8080,
+    and waits for a single client.
+
+    No arguments.
+
+    Returns: client object.
     """
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -155,10 +184,14 @@ def receiveConnection() -> object:
     return client
 
 
-# Sends a message to the client I suppose
 def sendMessage(client: object, message: str) -> NoReturn:
-    """
-    Send message to client and close the connection.
+    """Sends a message to the client and closes the connection.
+
+    Arguments:
+    - client (object)
+    - message (string)
+
+    No return value.
     """
     client.send(f'HTTP/1.1 200 OK\r\n\r\n{message}'.encode('utf-8'))
     client.close()

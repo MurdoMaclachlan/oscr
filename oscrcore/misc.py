@@ -13,8 +13,14 @@
 
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <https://www.gnu.org/licenses/>.
-    
+
     Contact me at murdomaclachlan@duck.com
+
+    ----------
+
+    This module is divided into several categories, which is probably
+    contradictory to its classification as "misc", but it's my module
+    and I'll modulate it however I please.
 """
 
 import json
@@ -23,13 +29,6 @@ from typing import Dict, List, NoReturn, TextIO
 from .globals import Globals, Log, System
 global Globals, Log, System
 
-"""
-    This module is divided into several categories,
-    which to be fair ruins the 'misc'-ness of it, but
-    you just shush there, meta. This is my module
-    and I'll modulate it how I want to.
-"""
-   
 
 """
     CONFIGURATION FUNCTIONS
@@ -39,9 +38,13 @@ global Globals, Log, System
 """
 
 
-# Checks if all necessary config options are there
 def checkConfig() -> NoReturn:
-    
+    """Checks if all necessary config options exist within the config file.
+
+    No arguments.
+
+    No return value.
+    """
     from .globals import DEFAULT_CONFIG
     
     # Check to see if each key in the default config is also in the config file
@@ -53,18 +56,27 @@ def checkConfig() -> NoReturn:
     dumpConfig()
 
 
-# Attempts to update the config file
 def dumpConfig() -> bool:
-    
+    """Attempts to dump the config to the config file
+
+    No arguments.
+
+    Returns: boolean success status.
+    """
     return dumpJSON(
             f"{System.PATHS['config']}/config.json",
             {"config": [Globals.config]}
     )
 
 
-# Retrieves the user configurations from a .json file, or creates a config file from default values if one can't be found.
 def getConfig() -> NoReturn:  
+    """Retrieves the config from the config.json file; if no config is found, creates
+    one from the default values.
 
+    No arguments.
+
+    No return value.
+    """
     try:
         with open(f"{System.PATHS['config']}/config.json") as configFile:
             try: data = json.load(configFile)
@@ -97,9 +109,13 @@ def getConfig() -> NoReturn:
 """
 
 
-# Performs any necessary one-time calculations and changes relating to the config
 def calculateEssentials() -> NoReturn:
-    
+    """Performs any necessary one-time calculations or changes relating to the config.
+
+    No arguments.
+
+    No return value.
+    """
     # Will default any non-numeric limits to 1000.
     if not str(Globals.config["limit"]).isnumeric():
         Globals.config["limit"] = 1000
@@ -116,18 +132,31 @@ def calculateEssentials() -> NoReturn:
         except (KeyError, TypeError):
             Globals.config[keyList[0]] = keyList[3]
 
-
-# Checks a comment against the regex
+            
 def checkRegex(re, comment: str) -> bool:
+    """Checks a given string against all members of the regex blacklist.
+
+    Arguments:
+    - re (module)
+    - comment (string)
+
+    Returns: boolean.
+    """
     for pattern in Globals.config["regexBlacklist"]:
         if re.match(pattern, (comment.casefold(), comment)[Globals.config["caseSensitive"]]):
             return True
     return False
 
 
-# Dumps JSON content to a given path
 def dumpJSON(path: str, data: Dict) -> bool:
-    
+    """Dumps dictionary as JSON content to a given path.
+
+    Arguments:
+    - path (string)
+    - data (dictionary)
+
+    Returns: boolean success status.
+    """
     try:
         with open(path, "w") as outFile:
             outFile.write(json.dumps(data, indent=4, sort_keys=True))
@@ -135,13 +164,27 @@ def dumpJSON(path: str, data: Dict) -> bool:
     except FileNotFoundError: return False
 
 
-# Deletes a portion of a given array, based on passed elements
 def filterArray(array: List, elements: List) -> List:
+    """Deletes a portion of a given array based on given elements.
+
+    Arguments:
+    - array (array)
+    - elements (array)
+
+    Returns: a single array.
+    """
     del array[array.index(elements[0]):array.index(elements[len(elements)-1])]
     return array
 
 
-# Writes contents of a list to a file
 def writeToFile(content: List, file: TextIO) -> bool:
+    """Writes each element of a list as a new line to a given file.
+
+    Arguments:
+    - content (list)
+    - file (TextIO instance)
+
+    Returns: boolean success status.
+    """
     for line in content: file.write(line+"\n")
     return True

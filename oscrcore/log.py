@@ -13,8 +13,13 @@
 
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <https://www.gnu.org/licenses/>.
-    
+
     Contact me at murdomaclachlan@duck.com
+
+    ----------
+
+    This module contains functions relating to the handling of output
+    to the log file.
 """
 
 import sys
@@ -22,18 +27,15 @@ from typing import List, NoReturn
 from .globals import Globals, Log, System
 global Globals, Log, System
 
-"""
-    This module contains functions relating to the handling
-    of log output to a file within OSCR.
-    
-    As with all other modules, the functions are listed in
-    alphabetical order.
-"""
 
-
-# Exits OSCR while updating the log with some last messages
 def exitWithLog(messages: List) -> NoReturn:
-    
+    """Updates the log with final message(s) then exits OSCR.
+
+    Arguments:
+    - messages (string array)
+
+    No return value.
+    """
     Log.new(messages)
     
     updateLog(["Exiting..."]) if Globals.config["logUpdates"] else print("Exiting...")
@@ -41,9 +43,15 @@ def exitWithLog(messages: List) -> NoReturn:
     sys.exit(0)
 
 
-# Updates the log file with the current log.
 def updateLog(messages: List) -> bool:
-    
+    """Outputs the current log to the log file, then resets the current log. Can also
+    create new logs before doing so.
+
+    Arguments:
+    - messages (string array, optional, default: [])
+
+    Returns: boolean success status
+    """
     # This check is necessary to avoid empty lines in log.txt and the console output,
     # as in some places in the program, updateLog() is called with an empty array to
     # prompt the program to update the file without adding any new lines.
@@ -66,9 +74,13 @@ def updateLog(messages: List) -> bool:
     return False
 
 
-# Writes the contents of the log array to the log.txt file
 def writeLog() -> bool:
-    
+    """Writes the contents of the log to log.txt.
+
+    No arguments.
+
+    Returns: boolean success status.
+    """
     try:
         with open(f"{System.PATHS['data']}/log.txt", "a") as file:
             for i in Log.request(["get", "all"]): file.write(i)

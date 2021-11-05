@@ -13,8 +13,13 @@
 
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <https://www.gnu.org/licenses/>.
-    
+
     Contact me at murdomaclachlan@duck.com
+
+    ----------
+
+    This module handles methods related to working with
+    the comments retrieved from Reddit.
 """
 
 import re
@@ -25,20 +30,27 @@ from .globals import Globals, Log, Stats
 from .misc import checkRegex
 global Globals, Log, Stats
 
-"""
-    This module handles methods related to working with
-    the comments retrieved from Reddit.
-"""
 
-
-# Blacklist check; placed here for ease of readability in main.py.
 def blacklist(string: str) -> bool:
-    
+    """Matches a given string value to elements of the blacklist.
+
+    Arguments:
+    - string (string)
+
+    Returns: boolean
+    """
     return True if (string.casefold(), string)[Globals.config["caseSensitive"]] in Globals.config["blacklist"] else False
 
 
 def checkComments(commentList: List[object]) -> NoReturn:
+    """Iterates through a list of Reddit comments, deleting any that meet the
+    requirements to do so.
 
+    Arguments:
+    - comment_list (a praw.models.Comment array)
+
+    No return value.
+    """
     with aliveBar(Globals.config["limit"], spinner='classic', bar='classic', enrich_print=False) as progress:
 
         # Checks all the user's comments, deleting them if they're past the cutoff.
@@ -58,25 +70,43 @@ def checkComments(commentList: List[object]) -> NoReturn:
             progress()
 
 
-# Checks a given value against an array; the value passes the
-# check either if it is in the array or if the array is empty
 def checkArray(array: List, value: Any = "", mode: str = "len") -> bool:
-    
+    """Checks a given value against an array; the value passes the check either if it is
+    in the array or if the array is empty
+
+    Arguments:
+    - array (array)
+    - value (any, optional, default: empty string)
+    - mode (string, optional, default: "len")
+
+    Returns: boolean.
+    """
     if mode not in ["len", "val"]:
         Log.new([Log.warning("WARNING: unknown mode passed to checkArray(). Skipping.")])
         return False
     return True if (len(array) < 1 and mode == "len") or (value in array and mode == "val") else False
 
 
-# Regex check; placed here for easy of readability in main.py.
 def regex(string: str) -> bool:
-    
+    """Matches a given string value to regexes in the regex list.
+
+    Arguments:
+    - string (string)
+
+    Returns: boolean.
+    """
     return True if Globals.config["useRegex"] and checkRegex(re, string) else False
 
 
-# The main comment deletion algorithm
 def remover(comment: object, body: str) -> NoReturn:
-    
+    """Main comment remover algorithm; checks that comment passes deletion requirements,
+    deletes if so, counts as "waiting for" if not.
+
+    Arguments:
+    - comment (praw.Reddit.Comment instance)
+
+    No return value.
+    """
     if (
         checkArray(Globals.config["subredditList"]) and checkArray(Globals.config["userList"]) or
         (
