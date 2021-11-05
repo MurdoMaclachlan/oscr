@@ -32,9 +32,9 @@ from time import sleep
 from typing import NoReturn
 from .auth import init
 from .globals import Globals, Log, Stats
-from .comment import checkComments
-from .log import exitWithLog, updateLog
-from .statistics import updateAndLogStats
+from .comment import check_comments
+from .log import exit_with_log, update_log
+from .statistics import update_and_log_stats
 global Globals, Log, Stats
 
 
@@ -56,10 +56,10 @@ def oscr() -> NoReturn:
 
     # Fetches statistics
     if Globals.config["reportTotals"]:
-        from .statistics import dumpStats, fetchStats
-        fetchStats()
+        from .statistics import dumpStats, fetch_stats
+        fetch_stats()
 
-    updateLog(["Updating log...", "Log updated successfully."]) if Globals.config["logUpdates"] else None
+    update_log(["Updating log...", "Log updated successfully."]) if Globals.config["logUpdates"] else None
 
     while True:
 
@@ -67,11 +67,11 @@ def oscr() -> NoReturn:
 
         # Fetches the comment list from Reddit
         Log.new(["Retrieving comments..."])
-        commentList = reddit.redditor(Globals.config["user"]).comments.new(limit=Globals.config["limit"])
+        comment_list = reddit.redditor(Globals.config["user"]).comments.new(limit=Globals.config["limit"])
         Log.new(["Comments retrieved; checking..."])
 
         # Iterate through commentList and delete any that meet requirements
-        checkComments(commentList)
+        check_comments(comment_list)
 
         Log.new([f"Successfully checked all {Stats.get('current', stat='counted')} available comments."])
 
@@ -82,14 +82,14 @@ def oscr() -> NoReturn:
                 " or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more."
             )])
 
-        updateAndLogStats()
+        update_and_log_stats()
 
         # If recur is set to false, updates log and kills the program.
         if not Globals.config["recur"]:
-            exitWithLog(["Updating log...", "Log updated successfully."])
+            exit_with_log(["Updating log...", "Log updated successfully."])
 
         # Updates log, prepares for next cycle.
-        updateLog([
+        update_log([
             "Updating log...", "Log updated successfully.",
             f"Waiting {str(Globals.config['wait'])} {Globals.config['unit'][0] if Globals.config['wait'] == 1 else Globals.config['unit'][1]} before checking again..."
         ])
