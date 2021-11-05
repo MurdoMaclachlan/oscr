@@ -71,7 +71,7 @@ DEFAULT_CONFIG = {
     "wait": 10
 }
 
-VERSION = "2.1.1"
+VERSION = "2.2.0-dev1-20211105"
 
 
 class Globals:
