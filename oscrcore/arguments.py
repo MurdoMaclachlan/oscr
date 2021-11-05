@@ -25,7 +25,7 @@
 import sys
 from os import remove
 from typing import Any, List, NoReturn
-from .classes import DEFAULT_CONFIG, Globals, Log, System
+from .globals import DEFAULT_CONFIG, Globals, Log, System
 from .misc import calculate_essentials, dump_config
 global Globals, Log, System
 
