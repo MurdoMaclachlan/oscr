@@ -26,13 +26,13 @@ import sys
 import json
 from typing import List, NoReturn
 from .globals import Globals, Log, System
-from .ini import createIni
-from .log import exitWithLog, updateLog
-from .misc import dumpConfig
+from .ini import create_ini, get_credentials
+from .log import exit_with_log, update_log
+from .misc import dump_config
 global Globals, Log, System
 
 
-def settingsMain() -> NoReturn:
+def settings_main() -> NoReturn:
     """The main settings menu; controls all other sub-menus.
 
     No arguments.
@@ -49,12 +49,12 @@ def settingsMain() -> NoReturn:
             "\n4. Continue to program"
             "\n5. Exit"
         )
-        choice = validateChoice(1,5)
+        choice = validate_choice(1,5)
 
         # Determines which result happens
         if choice == "1":
             Log.new(["Opening config edit menu."])
-            editConfig()
+            edit_config()
         elif choice == "2":
             Log.new(
                 [
@@ -62,19 +62,19 @@ def settingsMain() -> NoReturn:
                     Log.warning("WARNING: edits to praw.ini will require a restart to take effect.")
                 ]
             )
-            editPraw()
+            edit_credentials()
         elif choice == "3":
-            howToUse()
+            how_to_use()
         elif choice == "4":
             Log.new(["Exiting settings menu, continuing to main program."])
             break
         else:
-            updateLog(["Updating log..."])
-            exitWithLog(["Log updated successfully."])
+            update_log(["Updating log..."])
+            exit_with_log(["Log updated successfully."])
             sys.exit(0)
 
 
-def editConfig() -> bool:
+def edit_config() -> bool:
     """Constructs the edit config menu and deals with whichever option the user chooses.
     Should really be split into multiple methods, but I haven't got round to it yet.
 
@@ -88,10 +88,10 @@ def editConfig() -> bool:
 
     # Iterate every config key
     for i in Globals.config.keys():
-        isList = type(Globals.config[i]) is list
+        is_list = type(Globals.config[i]) is list
 
         # Account for the special case and the normal cases
-        if i == "unit" or not isList:
+        if i == "unit" or not is_list:
             print(f"{j}. {i}")
 
         # If the config is a list, add options for both addition and removal
@@ -105,13 +105,13 @@ def editConfig() -> bool:
             keys[f"{j+1}"] = f"{i}:remove"
 
         # Add key, increment counter by appropriate amount
-        keys[f"{j}"] = f"{i}:add" if isList else f"{i}"
-        j += 1 if i == "unit" or not isList else 2
+        keys[f"{j}"] = f"{i}:add" if is_list else f"{i}"
+        j += 1 if i == "unit" or not is_list else 2
 
     # Final option doesn't conform to a config key
     print(f"{j}. Return to main settings menu.")
 
-    choice = validateChoice(1,j)
+    choice = validate_choice(1,j)
 
     # Returns to main settings menu
     if choice == f"{j+1}": return True
@@ -170,17 +170,17 @@ def editConfig() -> bool:
 
     # Special child
     elif target == "unit":
-        newUnit = [
+        new_unit = [
             input("Please enter the singular noun for the new unit. \n>> "),
             input("Please enter the plural noun for the new unit. \n>> "),
             int(input("Please enter the numerical value of the new unit converted into seconds. \n>> "))
         ]
-        Globals.config[target] = newUnit
+        Globals.config[target] = new_unit
 
-    return dumpConfig()
+    return dump_config()
 
 
-def editPraw() -> bool:
+def edit_credentials() -> bool:
     """Provides a menu for selecting and editing Reddit credentials. Upon a successful
     edit, will output updated credentials to praw.ini.
 
@@ -189,10 +189,10 @@ def editPraw() -> bool:
     Returns: boolean success status.
     """
     try:
-        creds = getCredentials()
+        creds = get_credentials()
     except FileNotFoundError:
         Log.new([Log.warning(f"ERROR: file '{System.PATHS['config']}/praw.ini' not found.")])
-        createIni()
+        create_ini()
 
     keys = creds.keys()
 
@@ -205,7 +205,7 @@ def editPraw() -> bool:
         j += 1
 
     # Get user choice
-    choice = validateChoice(1,j)
+    choice = validate_choice(1,j)
 
     key = creds[int(choice)-1]
     value = input(f"Editing {key}. Please input a new value.\n >> ")
@@ -215,12 +215,12 @@ def editPraw() -> bool:
         pass
     else:
         creds[key] = value
-        dumpCredentials()
+        dump_credentials()
 
     return True
 
 
-def howToUse():
+def how_to_use():
     """Prints guide for using the settings menu.
 
     No arguments.
@@ -238,7 +238,7 @@ def howToUse():
     input("\nPress enter to return to the main settings menu.")
 
 
-def validateChoice(low: int, high: int) -> str:
+def validate_choice(low: int, high: int) -> str:
     """Validates the user's choice based on a list generated from a given range of
     numbers.
 
