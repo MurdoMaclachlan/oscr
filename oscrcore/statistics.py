@@ -26,18 +26,18 @@
 import json
 from typing import NoReturn
 from .globals import Globals, Log, Stats, System
-from .misc import dumpJSON
+from .misc import dump_json
 global Globals, Log, Stats, System
 
 
-def dumpStats() -> bool:
+def dump_stats() -> bool:
     """Writes the total statistics to stats.json.
 
     No arguments.
 
     Returns: boolean success status.
     """
-    if dumpJSON(
+    if dump_json(
             f"{System.PATHS['data']}/stats.json",
             {"statistics": [Stats.get("total")]}
     ):
@@ -48,7 +48,7 @@ def dumpStats() -> bool:
         return True
 
 
-def fetchStats() -> NoReturn:
+def fetch_stats() -> NoReturn:
     """Fetches statistics from the stats.json file in the data path.
 
     No arguments.
@@ -62,19 +62,19 @@ def fetchStats() -> NoReturn:
             # Catch invalid JSON in the config file (usually a result of manual editing)
             except json.decoder.JSONDecodeError as e:
                 Log.new([Log.warning("WARNING: Failed to fetch statistics; could not decode JSON file. Returning 0."), Log.warning(f"Error was: {e}")])
-                Stats.generateNew()
+                Stats.generate_new()
             
-            Stats.setTotals(data["statistics"][0])
+            Stats.set_totals(data["statistics"][0])
             Log.new(["Fetched statistics successfully."])
         
     # Catch missing stats file
     except FileNotFoundError:
         Log.new([Log.warning("WARNING: Could not find stats file. It will be created.")])
-        Stats.generateNew()
-        Stats.failed = dumpStats()
+        Stats.generate_new()
+        Stats.enabled = dump_stats()
 
 
-def updateAndLogStats() -> NoReturn:
+def update_and_log_stats() -> NoReturn:
     """Logs current statistics and updates and logs totals following an iteration of
     OSCR.
 
@@ -91,8 +91,8 @@ def updateAndLogStats() -> NoReturn:
     ])
 
     # Updates total statistics
-    Stats.updateTotals()
-    Stats.enabled = dumpStats() if Stats.enabled else False
+    Stats.update_totals()
+    Stats.enabled = dump_stats() if Stats.enabled else False
     Log.new([
         f"Total Counted: {str(Stats.get('total', stat='counted'))}",
         f"Total Deleted: {str(Stats.get('total', stat='deleted'))}"
