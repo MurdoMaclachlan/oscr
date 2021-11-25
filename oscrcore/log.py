@@ -28,7 +28,7 @@ from .globals import Globals, Log, System
 global Globals, Log, System
 
 
-def exitWithLog(messages: List) -> NoReturn:
+def exit_with_log(messages: List) -> NoReturn:
     """Updates the log with final message(s) then exits OSCR.
 
     Arguments:
@@ -38,12 +38,12 @@ def exitWithLog(messages: List) -> NoReturn:
     """
     Log.new(messages)
     
-    updateLog(["Exiting..."]) if Globals.config["logUpdates"] else print("Exiting...")
+    update_log(["Exiting..."]) if Globals.config["logUpdates"] else print("Exiting...")
         
     sys.exit(0)
 
 
-def updateLog(messages: List) -> bool:
+def update_log(messages: List) -> bool:
     """Outputs the current log to the log file, then resets the current log. Can also
     create new logs before doing so.
 
@@ -59,7 +59,7 @@ def updateLog(messages: List) -> bool:
         
     if Globals.config["logUpdates"]:
         
-        if writeLog():
+        if write_log():
             Log.request(["clear", "all"])
             return True
         
@@ -74,7 +74,7 @@ def updateLog(messages: List) -> bool:
     return False
 
 
-def writeLog() -> bool:
+def write_log() -> bool:
     """Writes the contents of the log to log.txt.
 
     No arguments.

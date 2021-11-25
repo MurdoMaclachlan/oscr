@@ -21,11 +21,11 @@
     This module contains the basic global variables used by OSCR.
 """
 
+from colored import fg, attr
 from datetime import datetime
 from os import environ, mkdir
 from os.path import expanduser, isdir
 from sys import platform
-from colored import fg, attr
 from time import time
 from typing import Any, Dict, List, NoReturn, Union
 global DEFAULT_CONFIG, Globals, Log, Stats, System, VERSION
@@ -71,7 +71,7 @@ DEFAULT_CONFIG = {
     "wait": 10
 }
 
-VERSION = "2.2.0-dev2-20211118"
+VERSION = "2.2.0-dev3-20211125"
 
 
 class Globals:
@@ -87,7 +87,7 @@ class Globals:
         self.VERSION = VERSION
     
 
-    def editConfig(self: object, key: str, value: Any) -> NoReturn:
+    def edit_config(self: object, key: str, value: Any) -> NoReturn:
         """Sets a single config key to a single new given value. All write commands to
         the config should go through this call.
 
@@ -118,7 +118,7 @@ class Log:
             self.RESET = attr(reset)
             self.WARNING = fg(warning)
     
-    def getTime(self: object, timeToFind: int) -> str:
+    def get_time(self: object, timeToFind: int) -> str:
         """Gets the current time and parses it to a human-readable format.
 
         Arguments:
@@ -142,7 +142,7 @@ class Log:
             # Allows for dynamic passing of lists
             if not message: continue
             
-            currentTime = self.getTime(time())
+            current_time = self.getTime(time())
             
             self.__log.append(f"{currentTime} - {message}\n")
             print(f"{currentTime} - {message}") if Globals.config["printLogs"] else None
@@ -221,7 +221,7 @@ class Statistics:
         else:
             return self.__data[dataset][stat]
     
-    def generateNew(self) -> NoReturn:
+    def generate_new(self) -> NoReturn:
         """Resets all statistics in the "total" dataset to  0. Should only be used if
         the stats file cannot be found.
 
@@ -258,7 +258,7 @@ class Statistics:
                 "waitingFor": 0
         }
     
-    def setTotals(self: object, totals: Dict) -> NoReturn:
+    def set_totals(self: object, totals: Dict) -> NoReturn:
         """Sets the "total" dataset to a new given set of values.
 
         Arguments:
@@ -268,7 +268,7 @@ class Statistics:
         """
         self.__data["total"] = totals
     
-    def updateTotals(self: object) -> NoReturn:
+    def update_totals(self: object) -> NoReturn:
         """Adds the "counted" and "deleted" statistics in the "current" dataset to those
         in the "total" dataset.
 
@@ -290,7 +290,7 @@ class System:
         self.OS = platform
         self.PATHS = self.definePaths(self.HOME, self.OS)
     
-    def definePaths(self: object, home: str, os: str) -> List:
+    def define_paths(self: object, home: str, os: str) -> List:
         """Detects OS and defines the appropriate save paths for the config and data.
         Exits on detecting an unspported OS. Supported OS's are: Linux, MacOS, Windows.
 

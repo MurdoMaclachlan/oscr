@@ -38,7 +38,7 @@ global Globals, Log, System
 """
 
 
-def checkConfig() -> NoReturn:
+def check_config() -> NoReturn:
     """Checks if all necessary config options exist within the config file.
 
     No arguments.
@@ -53,23 +53,23 @@ def checkConfig() -> NoReturn:
             Log.new([Log.warning(f"Detected missing config key: {key}. Adding with default value.")])
             Globals.config[key] = DEFAULT_CONFIG[key]
 
-    dumpConfig()
+    dump_config()
 
 
-def dumpConfig() -> bool:
+def dump_config() -> bool:
     """Attempts to dump the config to the config file
 
     No arguments.
 
     Returns: boolean success status.
     """
-    return dumpJSON(
+    return dump_json(
             f"{System.PATHS['config']}/config.json",
             {"config": [Globals.config]}
     )
 
 
-def getConfig() -> NoReturn:  
+def get_config() -> NoReturn:  
     """Retrieves the config from the config.json file; if no config is found, creates
     one from the default values.
 
@@ -91,14 +91,14 @@ def getConfig() -> NoReturn:
             
             Globals.config = data["config"][0]
             
-            checkConfig()
+            check_config()
 
     # Catch missing config file
     except FileNotFoundError:
         from .globals import DEFAULT_CONFIG
         Globals.config = DEFAULT_CONFIG
         Globals.config["user"] = input("No config file found. Please enter your Reddit username:  /u/")
-        dumpConfig()
+        dump_config()
 
 
 """
@@ -109,7 +109,7 @@ def getConfig() -> NoReturn:
 """
 
 
-def calculateEssentials() -> NoReturn:
+def calculate_essentials() -> NoReturn:
     """Performs any necessary one-time calculations or changes relating to the config.
 
     No arguments.
@@ -133,7 +133,7 @@ def calculateEssentials() -> NoReturn:
             Globals.config[keyList[0]] = keyList[3]
 
             
-def checkRegex(re, comment: str) -> bool:
+def check_regex(re, comment: str) -> bool:
     """Checks a given string against all members of the regex blacklist.
 
     Arguments:
@@ -148,7 +148,7 @@ def checkRegex(re, comment: str) -> bool:
     return False
 
 
-def dumpJSON(path: str, data: Dict) -> bool:
+def dump_json(path: str, data: Dict) -> bool:
     """Dumps dictionary as JSON content to a given path.
 
     Arguments:
@@ -164,7 +164,7 @@ def dumpJSON(path: str, data: Dict) -> bool:
     except FileNotFoundError: return False
 
 
-def filterArray(array: List, elements: List) -> List:
+def filter_array(array: List, elements: List) -> List:
     """Deletes a portion of a given array based on given elements.
 
     Arguments:
@@ -177,7 +177,7 @@ def filterArray(array: List, elements: List) -> List:
     return array
 
 
-def writeToFile(content: List, file: TextIO) -> bool:
+def write_to_file(content: List, file: TextIO) -> bool:
     """Writes each element of a list as a new line to a given file.
 
     Arguments:

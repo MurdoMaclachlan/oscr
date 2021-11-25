@@ -28,7 +28,7 @@ from .globals import Globals, Log, System
 global Globals, Log, System
 
 
-def addRefreshToken(refreshToken: str) -> NoReturn:
+def add_refresh_token(refreshToken: str) -> NoReturn:
     """Appends a given Reddit refresh token to praw.ini.
 
     Arguments:
@@ -40,7 +40,7 @@ def addRefreshToken(refreshToken: str) -> NoReturn:
         file.write(f"refresh_token={refreshToken}\n")
 
 
-def createIni() -> bool:
+def create_ini() -> bool:
     """Creates a new ini file based on user input.
 
     No arguments.
@@ -48,7 +48,7 @@ def createIni() -> bool:
     Returns: boolean success status.
     """
     Log.new(["praw.ini missing, incomplete or incorrect. It will need to be created."])
-    return dumpCredentials({
+    return dump_credentials({
         "client_id": input("Please input your client id:  "),
         "client_secret": input("Please input your client secret:  "),
         "username": Globals.config["user"],  # Since createIni is never called before the config
@@ -58,7 +58,7 @@ def createIni() -> bool:
     })
 
 
-def dumpCredentials(creds: Dict) -> NoReturn:
+def dump_credentials(creds: Dict) -> NoReturn:
     """Outputs updated Reddit credentials to praw.ini.
 
     Arguments:
@@ -72,7 +72,7 @@ def dumpCredentials(creds: Dict) -> NoReturn:
     return True
 
 
-def getCredentials() -> Dict:
+def get_credentials() -> Dict:
     """Retrieves Reddit credentials from praw.ini.
 
     No arguments.

@@ -37,12 +37,12 @@ from configparser import NoSectionError
 from praw.exceptions import MissingRequiredAttributeException
 from typing import Dict, NoReturn
 from .globals import Globals, Log, System
-from .ini import addRefreshToken, createIni, getCredentials
-from .log import exitWithLog
+from .ini import add_refresh_token, create_ini, get_credentials
+from .log import exit_with_log
 global Globals, Log, System
 
 
-def checkFailure(client: object, params: Dict, state: str) -> NoReturn:
+def check_failure(client: object, params: Dict, state: str) -> NoReturn:
     """Checks for an authorisation failure, either due to a state mismatch or Reddit
     throwing an error in the return parameters.
 
@@ -75,9 +75,9 @@ def init() -> object:
     # Catch for invalid praw.ini, will create a new one then restart the program;
     # the restart is required due to current PRAW limitations. :'(
     except (NoSectionError, MissingRequiredAttributeException, KeyError):
-        exitWithLog(
+        exit_with_log(
             ["praw.ini successfully created, program restart required for this to take effect."]
-        ) if createIni() else exitWithLog(
+        ) if create_ini() else exit_with_log(
             [Log.warning("WARNING: Failed to create praw.ini file, something went wrong.")]
         )
 
@@ -90,7 +90,7 @@ def login() -> object:
 
     Returns: praw.Reddit instance.
     """
-    creds = getCredentials()
+    creds = get_credentials()
 
     constants = {
         "user_agent": f"{System.OS}:oscr:v{Globals.VERSION}(by /u/MurdoMaclachlan)",
@@ -127,17 +127,17 @@ def login() -> object:
 
                     client = receiveConnection()
                     data = client.recv(1024).decode('utf-8')
-                    paramTokens = data.split(' ', 2)[1].split('?', 1)[1].split('&')
-                    params = {key: value for (key, value) in [token.split('=') for token in paramTokens]}
+                    param_tokens = data.split(' ', 2)[1].split('?', 1)[1].split('&')
+                    params = {key: value for (key, value) in [token.split('=') for token in param_tokens]}
 
                     # Check for an authorisation failure
-                    checkFailure(client, params, state)
+                    check_failure(client, params, state)
 
-                    refreshToken = reddit.auth.authorize(params["code"])
-                    addRefreshToken(refreshToken)
-                    sendMessage(
+                    refresh_token = reddit.auth.authorize(params["code"])
+                    add_refresh_token(refresh_token)
+                    send_message(
                         client,
-                        f"Refresh token: {refreshToken}. Feel free to close this page. This message is simply for success confirmation; " +
+                        f"Refresh token: {refresh_token}. Feel free to close this page. This message is simply for success confirmation; " +
                         "it is not necessary to save your refresh_token, as OSCR has automatically done this."
                     )
 
@@ -167,7 +167,7 @@ def login() -> object:
     return reddit
 
 
-def receiveConnection() -> object:
+def receive_connection() -> object:
     """Wait for and then return a connected socket. Opens a TCP connection on port 8080,
     and waits for a single client.
 
@@ -184,7 +184,7 @@ def receiveConnection() -> object:
     return client
 
 
-def sendMessage(client: object, message: str) -> NoReturn:
+def send_message(client: object, message: str) -> NoReturn:
     """Sends a message to the client and closes the connection.
 
     Arguments:
