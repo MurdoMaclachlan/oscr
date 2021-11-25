@@ -52,7 +52,7 @@ DEFAULT_CONFIG = {
     "printLogs": True,
     "recur": True,
     "regexBlacklist": [
-        "^(claim|done|dibs|unclaim)(?!(.|\n)*treasure[\s-]*hunt)"
+        "^(claim|done|dibs|unclaim)(?!(.|\\n)*(treasure[\\s-]*hunt|save))"
     ],
     "reportTotals": True,
     "subredditList": [
