@@ -24,7 +24,7 @@
 
 from configparser import ConfigParser
 from typing import Dict, NoReturn
-from .globals import Globals, Log, System
+from .classes import Globals, Log, System
 global Globals, Log, System
 
 
