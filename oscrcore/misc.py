@@ -26,7 +26,7 @@
 import json
 import sys
 from typing import Dict, List, NoReturn, TextIO
-from .globals import Globals, Log, System
+from .classes import Globals, Log, System
 global Globals, Log, System
 
 
