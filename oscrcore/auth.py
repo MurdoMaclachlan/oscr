@@ -36,8 +36,8 @@ import webbrowser
 from configparser import NoSectionError
 from praw.exceptions import MissingRequiredAttributeException
 from typing import Dict, NoReturn
-from .globals import Globals, Log, System
-from .ini import add_refresh_token, create_ini, get_credentials
+from .creds import add_refresh_token, create_ini, get_credentials
+from .classes import Globals, Log, System
 from .log import exit_with_log
 global Globals, Log, System
 
