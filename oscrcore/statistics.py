@@ -25,7 +25,7 @@
 
 import json
 from typing import NoReturn
-from .globals import Globals, Log, Stats, System
+from .classes import Globals, Log, Stats, System
 from .misc import dump_json
 global Globals, Log, Stats, System
 
