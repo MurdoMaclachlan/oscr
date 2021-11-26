@@ -25,8 +25,8 @@
 import sys
 import json
 from typing import List, NoReturn
-from .globals import Globals, Log, System
-from .ini import create_ini, get_credentials
+from .classes import Globals, Log, System
+from .creds import create_ini, get_credentials
 from .log import exit_with_log, update_log
 from .misc import dump_config
 global Globals, Log, System
