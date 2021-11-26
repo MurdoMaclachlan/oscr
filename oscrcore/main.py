@@ -31,7 +31,7 @@ import configparser
 from time import sleep
 from typing import NoReturn
 from .auth import init
-from .globals import Globals, Log, Stats
+from .classes import Globals, Log, Stats
 from .comment import check_comments
 from .log import exit_with_log, update_log
 from .statistics import update_and_log_stats
