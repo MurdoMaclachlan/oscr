@@ -59,4 +59,4 @@ DEFAULT_CONFIG = {
     "wait": 10,
 }
 
-VERSION = "2.2.0-dev4-20211125"
+VERSION = "2.2.0-dev4-20211129"
