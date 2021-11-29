@@ -26,7 +26,7 @@ import re
 from alive_progress import alive_bar
 from time import time
 from typing import Any, List, NoReturn
-from .globals import Globals, Log, Stats
+from .classes import Globals, Log, Stats
 from .misc import check_regex
 global Globals, Log, Stats
 

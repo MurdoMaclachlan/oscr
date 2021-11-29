@@ -24,7 +24,7 @@
 
 import sys
 from typing import List, NoReturn
-from .globals import Globals, Log, System
+from .classes import Globals, Log, System
 global Globals, Log, System
 
 

@@ -25,7 +25,7 @@
 import sys
 from os import remove
 from typing import Any, List, NoReturn
-from .globals import DEFAULT_CONFIG, Globals, Log, System
+from .classes import Globals, Log, System
 from .misc import calculate_essentials, dump_config
 global Globals, Log, System
 
@@ -213,7 +213,7 @@ def reset_config() -> NoReturn:
         remove(f"{System.PATHS['config']}/config.json")
     except FileNotFoundError:
         Log.new(["Config file already absent."])
-    Globals.config = DEFAULT_CONFIG
+    Globals.config = Globals.DEFAULT_CONFIG
     Globals.config["user"] = input("Please enter your Reddit username:\n  /u/")
     dump_config()
 
