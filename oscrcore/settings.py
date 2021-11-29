@@ -123,7 +123,7 @@ def edit_config() -> bool:
     # Adds/removes from blacklist
     if type(Globals.config[target]) is list and target != "unit":
         mode = keys[choice].split(":")[1]
-        value = input(f"Please enter the phrase to {mode} {('from', 'to')[mode == 'add']} the {key}\n>> ")
+        value = input(f"Please enter the phrase to {mode} {('from', 'to')[mode == 'add']} the {target}\n>> ")
 
         if value == "-e":
             return True
@@ -131,7 +131,7 @@ def edit_config() -> bool:
         if mode == "add":
             Globals.config[target].append(value)
         else:
-            if value in Globals.config[key]:
+            if value in Globals.config[target]:
                 Globals.config[target].remove(value)
             else:
                 print(f"{value} is not present in the blacklist.")
