@@ -134,7 +134,7 @@ def login() -> object:
                     check_failure(client, params, state)
 
                     refresh_token = reddit.auth.authorize(params["code"])
-                    add_refresh_token(refresh_token)
+                    add_refresh_token(creds, refresh_token)
                     send_message(
                         client,
                         f"Refresh token: {refresh_token}. Feel free to close this page. This message is simply for success confirmation; " +
