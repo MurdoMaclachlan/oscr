@@ -28,16 +28,16 @@ from .classes import Globals, Log, System
 global Globals, Log, System
 
 
-def add_refresh_token(refreshToken: str) -> NoReturn:
+def add_refresh_token(creds: Dict, refresh_token: str) -> NoReturn:
     """Appends a given Reddit refresh token to praw.ini.
 
     Arguments:
-    - refreshToken (string)
+    - refresh_token (string)
 
     No return value.
     """
-    with open(f"{System.PATHS['config']}/praw.ini", "a+") as file:
-        file.write(f"refresh_token={refreshToken}\n")
+    creds["refresh_token"] = refresh_token
+    dump_credentials(creds)
 
 
 def create_ini() -> bool:
