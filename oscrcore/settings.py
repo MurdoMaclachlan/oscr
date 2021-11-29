@@ -191,8 +191,13 @@ def edit_credentials() -> bool:
     try:
         creds = get_credentials()
     except FileNotFoundError:
-        Log.new([Log.warning(f"ERROR: file '{System.PATHS['config']}/praw.ini' not found.")])
-        create_ini()
+        Log.new(
+            Log.warning(f"ERROR: file '{System.PATHS['config']}/praw.ini' not found.")
+        )
+        if create_ini():
+            creds = get_credentials()
+        else:
+            return False
 
     keys = creds.keys()
 
