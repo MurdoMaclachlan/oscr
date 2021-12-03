@@ -38,7 +38,7 @@ def exit_with_log(messages: List) -> NoReturn:
     """
     Log.new(messages)
     
-    update_log(["Exiting..."]) if Globals.get(key="logUpdates") else print("Exiting...")
+    update_log(["Exiting..."]) if Globals.get(key="log_updates") else print("Exiting...")
         
     sys.exit(0)
 
@@ -57,7 +57,7 @@ def update_log(messages: Union[List[str], str] = None) -> bool:
     # prompt the program to update the file without adding any new lines.
     if messages: Log.new(messages)
         
-    if Globals.get(key="logUpdates"):
+    if Globals.get(key="log_updates"):
         
         if write_log():
             Log.request(["clear", "all"])
@@ -69,7 +69,7 @@ def update_log(messages: Union[List[str], str] = None) -> bool:
                 Log.warning("Most recent log was:\n"),
                 Log.request(["get", "recent"])
             )
-            Globals.set(False, key="logUpdates")
+            Globals.set(False, key="log_updates")
     
     return False
 
