@@ -99,7 +99,7 @@ def login() -> object:
         "username": creds["username"],
     }
 
-    if Globals.config["useRefreshTokens"]:
+    if Globals.get(key="useRefreshTokens"):
 
         # Indicates user will not have authorised OSCR yet
         if "refresh_token" not in creds.keys():
