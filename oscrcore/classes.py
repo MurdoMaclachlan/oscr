@@ -112,7 +112,7 @@ class Log:
             current_time = self.getTime(time())
             
             self.__log.append(f"{currentTime} - {message}\n")
-            print(f"{currentTime} - {message}") if Globals.config["printLogs"] else None
+            print(f"{currentTime} - {message}") if Globals.get("printLogs") else None
         
         return True
 
