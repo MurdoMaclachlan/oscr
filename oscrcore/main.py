@@ -47,19 +47,19 @@ def oscr() -> NoReturn:
     No return value.
     """
     Log.new([
-        f"Running OSCR version {Globals.VERSION} with recur set to {Globals.config['recur']}.",
-        Log.warning("WARNING: Log updates are OFF. Console log will not be saved for this instance.") if not Globals.config["logUpdates"] else ""
+        f"Running OSCR version {Globals.VERSION} with recur set to {Globals.get(key='recur')}.",
+        Log.warning("WARNING: Log updates are OFF. Console log will not be saved for this instance.") if not Globals.get(key="logUpdates") else ""
     ])
 
     # Initialises Reddit instance
     reddit = init()
 
     # Fetches statistics
-    if Globals.config["reportTotals"]:
+    if Globals.get(key="reportTotals"):
         from .statistics import dumpStats, fetch_stats
         fetch_stats()
 
-    update_log(["Updating log...", "Log updated successfully."]) if Globals.config["logUpdates"] else None
+    update_log(["Updating log...", "Log updated successfully."]) if Globals.get(key="logUpdates") else None
 
     while True:
 
@@ -67,7 +67,7 @@ def oscr() -> NoReturn:
 
         # Fetches the comment list from Reddit
         Log.new(["Retrieving comments..."])
-        comment_list = reddit.redditor(Globals.config["user"]).comments.new(limit=Globals.config["limit"])
+        comment_list = reddit.redditor(Globals.get(key="user")).comments.new(limit=Globals.get(key="limit"))
         Log.new(["Comments retrieved; checking..."])
 
         # Iterate through commentList and delete any that meet requirements
@@ -76,22 +76,22 @@ def oscr() -> NoReturn:
         Log.new([f"Successfully checked all {Stats.get('current', stat='counted')} available comments."])
 
         # Notifies if the end of Reddit's listing is reached (i.e. no new comments due to API limitations)
-        if Stats.get("current", stat="counted") < Globals.config["limit"]:
+        if Stats.get("current", stat="counted") < Globals.get(key="limit"):
             Log.new([Log.warning(
-                f"WARNING: OSCR counted less comments than your limit of {Globals.config['limit']}. You may have deleted all available elligible comments," +
+                f"WARNING: OSCR counted less comments than your limit of {Globals.get(key='limit')}. You may have deleted all available elligible comments," +
                 " or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more."
             )])
 
         update_and_log_stats()
 
         # If recur is set to false, updates log and kills the program.
-        if not Globals.config["recur"]:
+        if not Globals.get(key="recur"):
             exit_with_log(["Updating log...", "Log updated successfully."])
 
         # Updates log, prepares for next cycle.
         update_log([
             "Updating log...", "Log updated successfully.",
-            f"Waiting {str(Globals.config['wait'])} {Globals.config['unit'][0] if Globals.config['wait'] == 1 else Globals.config['unit'][1]} before checking again..."
+            f"Waiting {str(Globals.get(key='wait'))} {Globals.get(key='unit')[0] if Globals.get(key='wait') == 1 else Globals.get(key='unit')[1]} before checking again..."
         ])
 
-        sleep(Globals.config["waitTime"])
+        sleep(Globals.get(key="waitTime"))
