@@ -43,12 +43,12 @@ def exit_with_log(messages: List) -> NoReturn:
     sys.exit(0)
 
 
-def update_log(messages: List) -> bool:
+def update_log(messages: Union[List[str], str] = None) -> bool:
     """Outputs the current log to the log file, then resets the current log. Can also
     create new logs before doing so.
 
     Arguments:
-    - messages (string array, optional, default: [])
+    - messages (string array, optional, default: None)
 
     Returns: boolean success status
     """
