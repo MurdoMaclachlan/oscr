@@ -48,18 +48,18 @@ def oscr() -> NoReturn:
     """
     Log.new([
         f"Running OSCR version {Globals.VERSION} with recur set to {Globals.get(key='recur')}.",
-        Log.warning("WARNING: Log updates are OFF. Console log will not be saved for this instance.") if not Globals.get(key="logUpdates") else ""
+        Log.warning("WARNING: Log updates are OFF. Console log will not be saved for this instance.") if not Globals.get(key="log_updates") else ""
     ])
 
     # Initialises Reddit instance
     reddit = init()
 
     # Fetches statistics
-    if Globals.get(key="reportTotals"):
+    if Globals.get(key="report_totals"):
         from .statistics import dumpStats, fetch_stats
         fetch_stats()
 
-    update_log(["Updating log...", "Log updated successfully."]) if Globals.get(key="logUpdates") else None
+    update_log(["Updating log...", "Log updated successfully."]) if Globals.get(key="log_updates") else None
 
     while True:
 
@@ -94,4 +94,4 @@ def oscr() -> NoReturn:
             f"Waiting {str(Globals.get(key='wait'))} {Globals.get(key='unit')[0] if Globals.get(key='wait') == 1 else Globals.get(key='unit')[1]} before checking again..."
         ])
 
-        sleep(Globals.get(key="waitTime"))
+        sleep(Globals.get(key="wait_time"))
