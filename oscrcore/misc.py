@@ -46,7 +46,9 @@ def check_config() -> NoReturn:
     No return value.
     """
     # Check to see if each key in the default config is also in the config file
-    current_config = Globals.get()
+    # Also call .snake_case() to ensure there are no camel case remnants from earlier
+    # versions of OSCR
+    current_config = Globals.snake_case().get()
     for key in Globals.DEFAULT_CONFIG:
         if key not in current_config:
             Log.new([Log.warning(f"Detected missing config key: {key}. Adding with default value.")])
@@ -62,8 +64,7 @@ def dump_config() -> bool:
     Returns: boolean success status.
     """
     return dump_json(
-            f"{System.PATHS['config']}/config.json",
-            {"config": [Globals.get()]}
+        f"{System.PATHS['config']}/config.json", {"config": [Globals.get()]}
     )
 
 
@@ -124,7 +125,7 @@ def calculate_essentials() -> NoReturn:
         Globals.set(1000, key="limit")
 
     # Attempts to calculate the cutoff time and wait time in seconds
-    for keyList in [["cutoffSec", "cutoff", "cutoffUnit", 3600], ["waitTime", "wait", "unit", 1800]]:
+    for keyList in [["cutoff_sec", "cutoff", "cutoff_unit", 3600], ["wait_time", "wait", "unit", 1800]]:
         try:
             Globals.set(
                 Globals.get(key=keyList[1]) *
