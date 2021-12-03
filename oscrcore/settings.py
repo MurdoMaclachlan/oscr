@@ -220,7 +220,7 @@ def edit_credentials() -> bool:
         pass
     else:
         creds[key] = value
-        dump_credentials()
+        dump_credentials(creds)
 
     return True
 
