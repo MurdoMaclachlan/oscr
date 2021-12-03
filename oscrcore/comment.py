@@ -39,7 +39,7 @@ def blacklist(string: str) -> bool:
 
     Returns: boolean
     """
-    return True if (string.casefold(), string)[Globals.get(key="caseSensitive")] in Globals.get(key="blacklist") else False
+    return True if (string.casefold(), string)[Globals.get(key="case_sensitive")] in Globals.get(key="blacklist") else False
 
 
 def check_comments(comment_list: List[object]) -> NoReturn:
@@ -59,7 +59,7 @@ def check_comments(comment_list: List[object]) -> NoReturn:
             # Reduce API calls per iteration
             body = comment.body
             try:
-                if (blacklist(body), regex(body))[Globals.get(key="useRegex")]:
+                if (blacklist(body), regex(body))[Globals.get(key="use_regex")]:
                     remover(comment, body)
 
             # Result of a comment being in reply to a deleted/removed submission
@@ -95,7 +95,7 @@ def regex(string: str) -> bool:
 
     Returns: boolean.
     """
-    return True if Globals.get(key="useRegex") and check_regex(re, string) else False
+    return True if Globals.get(key="use_regex") and check_regex(re, string) else False
 
 
 def remover(comment: object, body: str) -> NoReturn:
@@ -108,18 +108,18 @@ def remover(comment: object, body: str) -> NoReturn:
     No return value.
     """
     if (
-        check_array(Globals.get(key="subredditList")) and check_array(Globals.get(key="userList")) or
+        check_array(Globals.get(key="subreddit_list")) and check_array(Globals.get(key="user_list")) or
         (
-            check_array(Globals.get(key="subredditList"), value=str(comment.subreddit).casefold(), mode="val") and
-            check_array(Globals.get(key="userList"), value=comment.parent().author.name, mode="val")
+            check_array(Globals.get(key="subreddit_list"), value=str(comment.subreddit).casefold(), mode="val") and
+            check_array(Globals.get(key="user_list"), value=comment.parent().author.name, mode="val")
         )):
 
             # Only delete comments older than the cutoff
-            if time() - comment.created_utc > Globals.get(key="cutoffSec"):
+            if time() - comment.created_utc > Globals.get(key="cutoff_sec"):
                 Log.new([f"Obsolete '{body}' found, deleting."])
                 if not Globals.get(key="debug"):
                     comment.delete()
                     Stats.increment("deleted")
             else:
                 Log.new([f"Waiting for '{body}'."])
-                Stats.increment("waitingFor")
+                Stats.increment("cutoff_sec")
