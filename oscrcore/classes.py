@@ -65,6 +65,33 @@ class Globals:
             self.__config[key] = value
         else:
             self.__config = value
+    
+    def snake_case(self: object) -> object:
+        """Convert all config keys to snake case.
+
+        Regexes taken from this StackOverflow answer:
+        https://stackoverflow.com/questions/1175208/elegant-python-function-to-convert-camelcase-to-snake-case#1176023
+
+        Returns: an array containing self and a boolean flag indicating whether or not
+        any keys were changed
+        """
+        import re
+        # First run through the keys and add in the underlines
+        before = self.__config
+        for pattern in [
+            re.compile(r'(.)([A-Z][a-z]+)'),
+            re.compile(r'([a-z0-9])([A-Z])')
+        ]:
+            keys = [key for key in self.__config]
+            for key in keys:
+                self.__config[re.sub(pattern, r'\1_\2', key)] = self.__config.pop(key)
+        # Then run through again, converting everything to lowercase
+        keys = [key for key in self.__config]
+        for key in keys:
+            self.__config[key.casefold()] = self.__config.pop(key)
+        # Return the entire globals object alongside a flag to determine if any keys
+        # were changed by the function
+        return [self, True if before != self._config else False]
 
 
 class Log:
@@ -112,7 +139,7 @@ class Log:
             current_time = self.getTime(time())
             
             self.__log.append(f"{currentTime} - {message}\n")
-            print(f"{currentTime} - {message}") if Globals.get("printLogs") else None
+            print(f"{currentTime} - {message}") if Globals.get("print_logs") else None
         
         return True
 
