@@ -45,14 +45,12 @@ def check_config() -> NoReturn:
 
     No return value.
     """
-    from .globals import DEFAULT_CONFIG
-    
     # Check to see if each key in the default config is also in the config file
-    for key in DEFAULT_CONFIG:
-        if key not in Globals.config:
+    current_config = Globals.get()
+    for key in Globals.DEFAULT_CONFIG:
+        if key not in current_config:
             Log.new([Log.warning(f"Detected missing config key: {key}. Adding with default value.")])
-            Globals.config[key] = DEFAULT_CONFIG[key]
-
+            Globals.set(Globals.DEFAULT_CONFIG[key], key=key)
     dump_config()
 
 
@@ -65,7 +63,7 @@ def dump_config() -> bool:
     """
     return dump_json(
             f"{System.PATHS['config']}/config.json",
-            {"config": [Globals.config]}
+            {"config": [Globals.get()]}
     )
 
 
@@ -89,15 +87,20 @@ def get_config() -> NoReturn:
                 )
                 sys.exit(0)
             
-            Globals.config = data["config"][0]
+            Globals.set(data["config"][0])
             
             check_config()
 
     # Catch missing config file
     except FileNotFoundError:
         from .globals import DEFAULT_CONFIG
-        Globals.config = DEFAULT_CONFIG
-        Globals.config["user"] = input("No config file found. Please enter your Reddit username:  /u/")
+        Globals.set(DEFAULT_CONFIG)
+        Globals.set(
+            input(
+            "No config file found. Please enter your Reddit username:  /u/"
+            ),
+            key="user"
+        )
         dump_config()
 
 
@@ -117,20 +120,25 @@ def calculate_essentials() -> NoReturn:
     No return value.
     """
     # Will default any non-numeric limits to 1000.
-    if not str(Globals.config["limit"]).isnumeric():
-        Globals.config["limit"] = 1000
+    if not str(Globals.get("limit")).isnumeric():
+        Globals.set(1000, key="limit")
 
     # Attempts to calculate the cutoff time and wait time in seconds
     for keyList in [["cutoffSec", "cutoff", "cutoffUnit", 3600], ["waitTime", "wait", "unit", 1800]]:
         try:
-            if type(Globals.config[keyList[2]]) == list:
-                Globals.config[keyList[0]] = Globals.config[keyList[1]] * Globals.config[keyList[2]][2]
-            else:
-                Globals.config[keyList[0]] = Globals.config[keyList[1]] * Globals.config[keyList[2]]
+            Globals.set(
+                Globals.get(key=keyList[1]) *
+                (
+                    Globals.get(key=keyList[2])[2]
+                    if type(Globals.get(key=keyList[2])) == list else
+                    Globals.get(key=keyList[2])
+                ),
+                key=keyList[0]
+            )
 
         # Defaults to one hour / half an hour if any of the related variables is missing or corrupted
         except (KeyError, TypeError):
-            Globals.config[keyList[0]] = keyList[3]
+            Globals.get(keyList[3], key=keyList[0])
 
             
 def check_regex(re, comment: str) -> bool:
@@ -142,8 +150,8 @@ def check_regex(re, comment: str) -> bool:
 
     Returns: boolean.
     """
-    for pattern in Globals.config["regexBlacklist"]:
-        if re.match(pattern, (comment.casefold(), comment)[Globals.config["caseSensitive"]]):
+    for pattern in Globals.get(key="regexBlacklist"):
+        if re.match(pattern, (comment.casefold(), comment)[Globals.get(key="caseSensitive")]):
             return True
     return False
 

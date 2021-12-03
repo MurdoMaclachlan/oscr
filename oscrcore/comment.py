@@ -39,7 +39,7 @@ def blacklist(string: str) -> bool:
 
     Returns: boolean
     """
-    return True if (string.casefold(), string)[Globals.config["caseSensitive"]] in Globals.config["blacklist"] else False
+    return True if (string.casefold(), string)[Globals.get(key="caseSensitive")] in Globals.get(key="blacklist") else False
 
 
 def check_comments(comment_list: List[object]) -> NoReturn:
@@ -51,7 +51,7 @@ def check_comments(comment_list: List[object]) -> NoReturn:
 
     No return value.
     """
-    with alive_bar(Globals.config["limit"], spinner='classic', bar='classic', enrich_print=False) as progress:
+    with alive_bar(Globals.get(key="limit"), spinner='classic', bar='classic', enrich_print=False) as progress:
 
         # Checks all the user's comments, deleting them if they're past the cutoff.
         for comment in comment_list:
@@ -59,7 +59,7 @@ def check_comments(comment_list: List[object]) -> NoReturn:
             # Reduce API calls per iteration
             body = comment.body
             try:
-                if (blacklist(body), regex(body))[Globals.config["useRegex"]]:
+                if (blacklist(body), regex(body))[Globals.get(key="useRegex")]:
                     remover(comment, body)
 
             # Result of a comment being in reply to a deleted/removed submission
@@ -95,7 +95,7 @@ def regex(string: str) -> bool:
 
     Returns: boolean.
     """
-    return True if Globals.config["useRegex"] and check_regex(re, string) else False
+    return True if Globals.get(key="useRegex") and check_regex(re, string) else False
 
 
 def remover(comment: object, body: str) -> NoReturn:
@@ -108,16 +108,16 @@ def remover(comment: object, body: str) -> NoReturn:
     No return value.
     """
     if (
-        check_array(Globals.config["subredditList"]) and check_array(Globals.config["userList"]) or
+        check_array(Globals.get(key="subredditList")) and check_array(Globals.get(key="userList")) or
         (
-            check_array(Globals.config["subredditList"], value=str(comment.subreddit).casefold(), mode="val") and
-            check_array(Globals.config["userList"], value=comment.parent().author.name, mode="val")
+            check_array(Globals.get(key="subredditList"), value=str(comment.subreddit).casefold(), mode="val") and
+            check_array(Globals.get(key="userList"), value=comment.parent().author.name, mode="val")
         )):
 
             # Only delete comments older than the cutoff
-            if time() - comment.created_utc > Globals.config["cutoffSec"]:
+            if time() - comment.created_utc > Globals.get(key="cutoffSec"):
                 Log.new([f"Obsolete '{body}' found, deleting."])
-                if not Globals.config["debug"]:
+                if not Globals.get(key="debug"):
                     comment.delete()
                     Stats.increment("deleted")
             else:

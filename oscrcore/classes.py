@@ -36,18 +36,24 @@ class Globals:
     """The Globals class contains essential miscellaneous global variables that don't
     belong in any of the other three classes. Currently, that means the config settings,
     the version number and the default config.
-
-    WARNING: Globals.config will soon be made private. All write calls should go through
-    editConfig(). A getConfig() will soon be implemented for read access.
-    """ 
+    """
     def __init__(self: object) -> NoReturn:
-        self.config = {}
+        self.__config = {}
+        self.DEFAULT_CONFIG = default_config
         self.VERSION = VERSION
-    
 
-    def edit_config(self: object, key: str, value: Any) -> NoReturn:
-        """Sets a single config key to a single new given value. All write commands to
-        the config should go through this call.
+    def get(self: object, key: str = None) -> NoReturn:
+        """Gets a single config value from a given key.
+
+        Arguments:
+        - key (string)
+
+        Returns: the value in the config at the given key
+        """
+        return self.__config[key] if key else self.__config
+    
+    def set(self: object, value: Any, key: str = None) -> NoReturn:
+        """Sets a single config key to a single new given value.
 
         Arguments:
         - key (string)
@@ -55,7 +61,10 @@ class Globals:
 
         No return value.
         """
-        self.config[key] = value
+        if key:
+            self.__config[key] = value
+        else:
+            self.__config = value
 
 
 class Log:
@@ -103,7 +112,7 @@ class Log:
             current_time = self.getTime(time())
             
             self.__log.append(f"{currentTime} - {message}\n")
-            print(f"{currentTime} - {message}") if Globals.config["printLogs"] else None
+            print(f"{currentTime} - {message}") if Globals.get("printLogs") else None
         
         return True
 

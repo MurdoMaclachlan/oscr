@@ -134,9 +134,9 @@ def clean_hunt() -> NoReturn:
     # I'm going to clean this shit up in 2.1.0
     # lol nvm I'll do it 2.2.0
     temp_config_change([
-        ["regexBlacklist", ["^(claim|claiming|done).*treasure *hunt.*"]] if Globals.config["useRegex"] else ["blacklist", ["claim -- treasure hunt", "done -- treasure hunt"]],
+        ["regexBlacklist", ["^(claim|claiming|done).*treasure *hunt.*"]] if Globals.get(key="useRegex") else ["blacklist", ["claim -- treasure hunt", "done -- treasure hunt"]],
         ["recur", False],
-        ["", ""] if Globals.config["userList"] == ["transcribersofreddit"] else ["userList", ["transcribersofreddit"]]
+        ["", ""] if Globals.get(key="userList") == ["transcribersofreddit"] else ["userList", ["transcribersofreddit"]]
     ])
 
     
@@ -213,8 +213,8 @@ def reset_config() -> NoReturn:
         remove(f"{System.PATHS['config']}/config.json")
     except FileNotFoundError:
         Log.new(["Config file already absent."])
-    Globals.config = Globals.DEFAULT_CONFIG
-    Globals.config["user"] = input("Please enter your Reddit username:\n  /u/")
+    Globals.set(Globals.DEFAULT_CONFIG)
+    Globals.set(input("Please enter your Reddit username:\n  /u/"), key="user")
     dump_config()
 
 
@@ -238,8 +238,9 @@ def show_config() -> NoReturn:
     No return value.
     """
     print("The config is as follows:\n")
-    for i in Globals.config:
-        print(f"{i}: {Globals.config[i]}")
+    config = Globals.get()
+    for i in config:
+        print(f"{i}: {config[i]}")
 
 
 def show_version() -> NoReturn:
@@ -263,4 +264,4 @@ def temp_config_change(keys: List[List[Any]]) -> NoReturn:
     for key in keys:
         # This check allows for dynamic construction of passed lists
         if key == ["", ""]: continue
-        else: Globals.edit_config(key[0], key[1])
+        else: Globals.set(key[1], key=key[0])
