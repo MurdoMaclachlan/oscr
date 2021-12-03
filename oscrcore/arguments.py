@@ -66,14 +66,14 @@ def check_args() -> NoReturn:
     
     # List of argumets that require a change to the config
     config_changes = {
-        "--force-regex": [["useRegex", True]],
-        "-f": [["useRegex", True]],
+        "--force-regex": [["use_regex", True]],
+        "-f": [["use_regex", True]],
         "--no-recur": [["recur", False]],
         "-n": [["recur", False]],
-        "--print-logs": [["printLogs", True]],
-        "-p": [["printLogs", True]],
-        "--report-totals": [["reportTotals", True]],
-        "-r": [["reportTotals", True]]
+        "--print-logs": [["print_logs", True]],
+        "-p": [["print_logs", True]],
+        "--report-totals": [["report_totals", True]],
+        "-r": [["report_totals", True]],
     }
     
     # If any of the closing args, i.e. args like "help" or "version"
@@ -134,9 +134,9 @@ def clean_hunt() -> NoReturn:
     # I'm going to clean this shit up in 2.1.0
     # lol nvm I'll do it 2.2.0
     temp_config_change([
-        ["regexBlacklist", ["^(claim|claiming|done).*treasure *hunt.*"]] if Globals.get(key="useRegex") else ["blacklist", ["claim -- treasure hunt", "done -- treasure hunt"]],
+        ["regex_blacklist", ["^(claim|claiming|done).*treasure *hunt.*"]] if Globals.get(key="use_regex") else ["blacklist", ["claim -- treasure hunt", "done -- treasure hunt"]],
         ["recur", False],
-        ["", ""] if Globals.get(key="userList") == ["transcribersofreddit"] else ["userList", ["transcribersofreddit"]]
+        ["", ""] if Globals.get(key="user_list") == ["transcribersofreddit"] else ["user_list", ["transcribersofreddit"]]
     ])
 
     
