@@ -87,8 +87,8 @@ def edit_config() -> bool:
     keys = {}
 
     # Iterate every config key
-    for i in Globals.config.keys():
-        is_list = type(Globals.config[i]) is list
+    for i in Globals.get().keys():
+        is_list = isinstance(Globals.get()[i], list)
 
         # Account for the special case and the normal cases
         if i == "unit" or not is_list:
@@ -118,55 +118,58 @@ def edit_config() -> bool:
 
     target = keys[choice].split(":")[0]
 
-    print(f"\nEditing '{target}'. Current value: '{Globals.config[target]}'")
+    print(f"\nEditing '{target}'. Current value: '{Globals.get(key=target)}'")
 
     # Adds/removes from blacklist
-    if type(Globals.config[target]) is list and target != "unit":
+    if type(Globals.get(key=target)) is list and target != "unit":
         mode = keys[choice].split(":")[1]
         value = input(f"Please enter the phrase to {mode} {('from', 'to')[mode == 'add']} the {target}\n>> ")
 
         if value == "-e":
             return True
 
+        target_val = Globals.get(key=target)
+
         if mode == "add":
-            Globals.config[target].append(value)
-        else:
-            if value in Globals.config[target]:
-                Globals.config[target].remove(value)
+            Globals.set(target_val.append(value), key=target)
+        elif mode == "remove":
+            if value in target_val:
+                Globals.set(target_val.remove(value), key=target)
             else:
                 print(f"{value} is not present in the blacklist.")
-                return True
+                return False
+        return True
 
     # All edits that require integer values.
-    elif type(Globals.config[target]) is int:
+    elif isinstance(Globals.get(kry=target), int):
         while True:
             value = input("Please enter an integer value\n>> ")
             if value == "-e":
                 return True
             try:
-                Globals.config[target] = int(value)
+                Globals.set(int(value), key=target)
                 break
             except TypeError as e:
                 print(f"{e} - Not an integer.")
 
     # All edits that require boolean values.
-    elif type(Globals.config[target]) is bool:
+    elif isinstance(Globals.get(key=target), bool):
         while True:
             value = input("Please enter a boolean value\n>> ")
             if value == "-e":
                 return True
             try:
-                Globals.config[target] = json.loads(value.lower())
+                Globals.set(json.loads(value.lower()), key=target)
                 break
             except TypeError as e:
                 print(f"{e} - Not a boolean.")
 
     # All edits that require one string value.
-    elif type(Globals.config[target]) is str:
+    elif isinstance(Globals.get(key=target), str):
         value = input("Please enter the new value\n>> ")
         if value == "-e":
             return True
-        Globals.config[target] = value
+        Globals.set(value, key=target)
 
     # Special child
     elif target == "unit":
@@ -175,7 +178,7 @@ def edit_config() -> bool:
             input("Please enter the plural noun for the new unit. \n>> "),
             int(input("Please enter the numerical value of the new unit converted into seconds. \n>> "))
         ]
-        Globals.config[target] = new_unit
+        Globals.set(new_unit, key=target)
 
     return dump_config()
 
