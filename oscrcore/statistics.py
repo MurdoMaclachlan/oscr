@@ -96,4 +96,4 @@ def update_and_log_stats() -> NoReturn:
     Log.new([
         f"Total Counted: {str(Stats.get('total', stat='counted'))}",
         f"Total Deleted: {str(Stats.get('total', stat='deleted'))}"
-    ]) if Globals.config["reportTotals"] else None
+    ]) if Globals.get(key="reportTotals") else None
