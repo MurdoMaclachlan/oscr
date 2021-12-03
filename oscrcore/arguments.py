@@ -134,9 +134,9 @@ def clean_hunt() -> NoReturn:
     # I'm going to clean this shit up in 2.1.0
     # lol nvm I'll do it 2.2.0
     temp_config_change([
-        ["regexBlacklist", ["^(claim|claiming|done).*treasure *hunt.*"]] if Globals.get("useRegex") else ["blacklist", ["claim -- treasure hunt", "done -- treasure hunt"]],
+        ["regexBlacklist", ["^(claim|claiming|done).*treasure *hunt.*"]] if Globals.get(key="useRegex") else ["blacklist", ["claim -- treasure hunt", "done -- treasure hunt"]],
         ["recur", False],
-        ["", ""] if Globals.get("userList") == ["transcribersofreddit"] else ["userList", ["transcribersofreddit"]]
+        ["", ""] if Globals.get(key="userList") == ["transcribersofreddit"] else ["userList", ["transcribersofreddit"]]
     ])
 
     
