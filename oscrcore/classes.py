@@ -132,7 +132,7 @@ class LogHandler:
 
         Returns: boolean success status.
         """
-        if messages is list:
+        if type(messages) == list:
             for message in messages:
                 self.process(message)
         else:
@@ -153,7 +153,7 @@ class LogHandler:
         if not message:
             return False
 
-        statement = f"{self.get_time()} - {message}\n"
+        statement = f"{self.get_time()} - {message}"
         self.__log.append(statement)
         print(statement) if Globals.get("print_logs") else None
 
