@@ -27,19 +27,20 @@ import json
 import sys
 from typing import Dict, List, NoReturn, TextIO
 from .classes import Globals, Log, System
+
 global Globals, Log, System
 
 
 """
     CONFIGURATION FUNCTIONS
-    
-    These functions are related to the config and praw.ini, including
-    the creation, retrieval and management of these files.
+
+    These functions are related to the config, including the creation, retrieval and
+    management of its values.
 """
 
 
 def check_config() -> NoReturn:
-    """Checks if all necessary config options exist within the config file.
+    """Checks if all necessary config options are present and conform the correct format
 
     No arguments.
 
@@ -51,7 +52,12 @@ def check_config() -> NoReturn:
     current_config = Globals.snake_case().get()
     for key in Globals.DEFAULT_CONFIG:
         if key not in current_config:
-            Log.new([Log.warning(f"Detected missing config key: {key}. Adding with default value.")])
+            Log.new(
+                Log.warning(
+                    f"Detected missing config key: {key}. Adding with default"
+                    + " value."
+                )
+            )
             Globals.set(Globals.DEFAULT_CONFIG[key], key=key)
     dump_config()
 
@@ -68,7 +74,7 @@ def dump_config() -> bool:
     )
 
 
-def get_config() -> NoReturn:  
+def get_config() -> NoReturn:
     """Retrieves the config from the config.json file; if no config is found, creates
     one from the default values.
 
@@ -77,24 +83,27 @@ def get_config() -> NoReturn:
     No return value.
     """
     try:
-        with open(f"{System.PATHS['config']}/config.json") as configFile:
-            try: data = json.load(configFile)
-            
+        with open(f"{System.PATHS['config']}/config.json") as config_file:
+            try:
+                data = json.load(config_file)
+
             # Catch invalid JSON in the config file (usually a result of manual editing)
             except json.decoder.JSONDecodeError as e:
                 print(
-                    Log.warning("Failed to get config; could not decode JSON file. Exiting."),
-                    f"Error was: {e}"
+                    Log.warning(
+                        "Failed to get config; could not decode JSON file. Exiting."
+                    ),
+                    f"Error was: {e}",
                 )
                 sys.exit(0)
-            
+
             Globals.set(data["config"][0])
-            
             check_config()
 
     # Catch missing config file
     except FileNotFoundError:
         from .globals import DEFAULT_CONFIG
+
         Globals.set(DEFAULT_CONFIG)
         Globals.set(
             input(
@@ -107,9 +116,8 @@ def get_config() -> NoReturn:
 
 """
     TRUE MISCELLANEOUS
-    
-    The following functions don't fit into any real
-    category at all.
+
+    The following functions don't fit into any real category at all.
 """
 
 
@@ -125,7 +133,10 @@ def calculate_essentials() -> NoReturn:
         Globals.set(1000, key="limit")
 
     # Attempts to calculate the cutoff time and wait time in seconds
-    for keyList in [["cutoff_sec", "cutoff", "cutoff_unit", 3600], ["wait_time", "wait", "unit", 1800]]:
+    for keyList in [
+        ["cutoff_sec", "cutoff", "cutoff_unit", 3600],
+        ["wait_time", "wait", "unit", 1800],
+    ]:
         try:
             Globals.set(
                 Globals.get(key=keyList[1]) *
@@ -137,11 +148,12 @@ def calculate_essentials() -> NoReturn:
                 key=keyList[0]
             )
 
-        # Defaults to one hour / half an hour if any of the related variables is missing or corrupted
+        # Defaults to one hour / half an hour if any of the related variables is missing
+        # or corrupted
         except (KeyError, TypeError):
             Globals.get(keyList[3], key=keyList[0])
 
-            
+
 def check_regex(re, comment: str) -> bool:
     """Checks a given string against all members of the regex blacklist.
 
@@ -151,8 +163,10 @@ def check_regex(re, comment: str) -> bool:
 
     Returns: boolean.
     """
-    for pattern in Globals.get(key="regexBlacklist"):
-        if re.match(pattern, (comment.casefold(), comment)[Globals.get(key="caseSensitive")]):
+    for pattern in Globals.get(key="regex_blacklist"):
+        if re.match(
+            pattern, (comment.casefold(), comment)[Globals.get(key="case_sensitive")]
+        ):
             return True
     return False
 
@@ -170,11 +184,12 @@ def dump_json(path: str, data: Dict) -> bool:
         with open(path, "w") as outFile:
             outFile.write(json.dumps(data, indent=4, sort_keys=True))
         return True
-    except FileNotFoundError: return False
+    except FileNotFoundError:
+        return False
 
 
 def filter_array(array: List, elements: List) -> List:
-    """Deletes a portion of a given array based on given elements.
+    """Deletes a portion of a given array based on given starting and ending elements.
 
     Arguments:
     - array (array)
@@ -182,7 +197,7 @@ def filter_array(array: List, elements: List) -> List:
 
     Returns: a single array.
     """
-    del array[array.index(elements[0]):array.index(elements[len(elements)-1])]
+    del array[array.index(elements[0]) : array.index(elements[len(elements) - 1])]
     return array
 
 
@@ -195,5 +210,6 @@ def write_to_file(content: List, file: TextIO) -> bool:
 
     Returns: boolean success status.
     """
-    for line in content: file.write(line+"\n")
+    for line in content:
+        file.write(line + "\n")
     return True

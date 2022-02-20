@@ -24,11 +24,12 @@
 
 import sys
 import json
-from typing import List, NoReturn
+from typing import NoReturn
 from .classes import Globals, Log, System
-from .creds import create_ini, get_credentials
+from .creds import create_ini, dump_credentials, get_credentials
 from .log import exit_with_log, update_log
 from .misc import dump_config
+
 global Globals, Log, System
 
 
@@ -49,28 +50,31 @@ def settings_main() -> NoReturn:
             "\n4. Continue to program"
             "\n5. Exit"
         )
-        choice = validate_choice(1,5)
+        choice = validate_choice(1, 5)
 
         # Determines which result happens
         if choice == "1":
-            Log.new(["Opening config edit menu."])
+            Log.new("Opening config edit menu.")
             edit_config()
         elif choice == "2":
             Log.new(
                 [
                     "Opening praw.ini edit menu.",
-                    Log.warning("WARNING: edits to praw.ini will require a restart to take effect.")
+                    Log.warning(
+                        "WARNING: edits to praw.ini will require a restart to take"
+                        + " effect."
+                    ),
                 ]
             )
             edit_credentials()
         elif choice == "3":
             how_to_use()
         elif choice == "4":
-            Log.new(["Exiting settings menu, continuing to main program."])
+            Log.new("Exiting settings menu, continuing to main program.")
             break
         else:
-            update_log(["Updating log..."])
-            exit_with_log(["Log updated successfully."])
+            update_log(messages="Updating log...")
+            exit_with_log("Log updated successfully.")
             sys.exit(0)
 
 
@@ -96,10 +100,7 @@ def edit_config() -> bool:
 
         # If the config is a list, add options for both addition and removal
         else:
-            print(
-                f"{j}. Add to {i}"
-                f"\n{j+1}. Remove from {i}"
-            )
+            print(f"{j}. Add to {i}" f"\n{j+1}. Remove from {i}")
 
             # Add extra key since the array is listed twice in the options
             keys[f"{j+1}"] = f"{i}:remove"
@@ -111,19 +112,23 @@ def edit_config() -> bool:
     # Final option doesn't conform to a config key
     print(f"{j}. Return to main settings menu.")
 
-    choice = validate_choice(1,j)
+    choice = validate_choice(1, j)
 
     # Returns to main settings menu
-    if choice == f"{j+1}": return True
+    if choice == f"{j+1}":
+        return True
 
     target = keys[choice].split(":")[0]
 
     print(f"\nEditing '{target}'. Current value: '{Globals.get(key=target)}'")
 
     # Adds/removes from blacklist
-    if type(Globals.get(key=target)) is list and target != "unit":
+    if isinstance(Globals.get(key=target), list) and target != "unit":
         mode = keys[choice].split(":")[1]
-        value = input(f"Please enter the phrase to {mode} {('from', 'to')[mode == 'add']} the {target}\n>> ")
+        value = input(
+            f"Please enter the phrase to {mode} {('from', 'to')[mode == 'add']}"
+            + f"the {target}\n>> "
+        )
 
         if value == "-e":
             return True
@@ -136,7 +141,7 @@ def edit_config() -> bool:
             if value in target_val:
                 Globals.set(target_val.remove(value), key=target)
             else:
-                print(f"{value} is not present in the blacklist.")
+                print(f"{value} is not present in the {target}.")
                 return False
         return True
 
@@ -173,12 +178,17 @@ def edit_config() -> bool:
 
     # Special child
     elif target == "unit":
-        new_unit = [
+        value = [
             input("Please enter the singular noun for the new unit. \n>> "),
             input("Please enter the plural noun for the new unit. \n>> "),
-            int(input("Please enter the numerical value of the new unit converted into seconds. \n>> "))
+            int(
+                input(
+                    "Please enter the numerical value of the new unit converted into"
+                    + " seconds. \n>> "
+                )
+            ),
         ]
-        Globals.set(new_unit, key=target)
+        Globals.set(value, key=target)
 
     return dump_config()
 
@@ -213,9 +223,9 @@ def edit_credentials() -> bool:
         j += 1
 
     # Get user choice
-    choice = validate_choice(1,j)
+    choice = validate_choice(1, j)
 
-    key = creds[int(choice)-1]
+    key = creds[int(choice) - 1]
     value = input(f"Editing {key}. Please input a new value.\n >> ")
 
     # Returns to the main settings menu
@@ -228,7 +238,7 @@ def edit_credentials() -> bool:
     return True
 
 
-def how_to_use():
+def how_to_use() -> NoReturn:
     """Prints guide for using the settings menu.
 
     No arguments.
@@ -237,11 +247,15 @@ def how_to_use():
     """
     print(
         "\nHOW TO USE\n",
-        "This menu is designed for editing the config file and the praw.ini file for this program.\n",
-        "You enter numbers to select a menu, and can from there select specific keys to change the values of.\n",
-        "Currently, you cannot change existing entries in lists, and would have to remove and re-add them to modify them.\n",
-        "If you accidentally select a key you did not mean to, you are not required to close the program;\n",
-        "simply entering '-e' will return you to the main settings menu."
+        "This menu is designed for editing the config file and the praw.ini file for",
+        "this program.\n",
+        "You enter numbers to select a menu, and can from there select specific keys",
+        "to change the values of.\n",
+        "Currently, you cannot change existing entries in lists, and would have to",
+        "remove and re-add them to modify them.\n",
+        "If you accidentally select a key you did not mean to, you are not required to",
+        "close the program;\n",
+        "simply entering '-e' will return you to the main settings menu.",
     )
     input("\nPress enter to return to the main settings menu.")
 
@@ -256,7 +270,7 @@ def validate_choice(low: int, high: int) -> str:
 
     Returns: a single numerical string.
     """
-    results = [f"{i}" for i in range(low,high+1)]
+    results = [f"{i}" for i in range(low, high + 1)]
     results.append("-e")
     choice = input("\n>> ")
     while choice not in results:

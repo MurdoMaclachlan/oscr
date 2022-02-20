@@ -45,17 +45,13 @@ DEFAULT_CONFIG = {
     "os": platform,
     "print_logs": True,
     "recur": True,
-    "regex_list": [
-        "^(claim|dibs|done|unclaim)(?!(.|\n)*treasure[\s-]*hunt)"
-    ],
+    "regex_list": ["^(claim|done|dibs|unclaim)(?!(.|\n)*(treasure[\s-]*hunt|save))"],
     "report_totals": True,
     "subreddit_list": ["transcribersofreddit"],
     "unit": ["minute", "minutes", 60],
     "use_refresh_tokens": False,
     "use_regex": False,
-    "user_list": [
-        "transcribersofreddit"
-    ],
+    "user_list": ["transcribersofreddit"],
     "wait": 10,
 }
-VERSION = "2.2.0-dev10-20211202"
+VERSION = "2.2.0-dev11-20211202"

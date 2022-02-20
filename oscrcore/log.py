@@ -23,12 +23,13 @@
 """
 
 import sys
-from typing import List, NoReturn
+from typing import List, NoReturn, Union
 from .classes import Globals, Log, System
+
 global Globals, Log, System
 
 
-def exit_with_log(messages: List) -> NoReturn:
+def exit_with_log(messages: Union[List[str], str]) -> NoReturn:
     """Updates the log with final message(s) then exits OSCR.
 
     Arguments:
@@ -37,9 +38,11 @@ def exit_with_log(messages: List) -> NoReturn:
     No return value.
     """
     Log.new(messages)
-    
-    update_log(["Exiting..."]) if Globals.get(key="log_updates") else print("Exiting...")
-        
+    (
+        update_log(["Exiting..."])
+        if Globals.get(key="log_updates")
+        else print("Exiting...")
+    )
     sys.exit(0)
 
 
@@ -52,25 +55,29 @@ def update_log(messages: Union[List[str], str] = None) -> bool:
 
     Returns: boolean success status
     """
-    # This check is necessary to avoid empty lines in log.txt and the console output,
-    # as in some places in the program, updateLog() is called with an empty array to
-    # prompt the program to update the file without adding any new lines.
-    if messages: Log.new(messages)
-        
+    # This check is necessary to avoid empty lines in log.txt and the console output, as
+    # in some places in the program, updateLog() is called with an empty array to prompt
+    # the program to update the file without adding any new lines.
+    if messages:
+        Log.new(messages)
+
     if Globals.get(key="log_updates"):
-        
+
         if write_log():
             Log.request(["clear", "all"])
             return True
-        
+
         else:
             print(
-                Log.warning("WARNING: Error updating log; disabling log updates for this instance."),
+                Log.warning(
+                    "WARNING: Error updating log; disabling log updates for"
+                    + " this instance."
+                ),
                 Log.warning("Most recent log was:\n"),
-                Log.request(["get", "recent"])
+                Log.request(["get", "recent"]),
             )
             Globals.set(False, key="log_updates")
-    
+
     return False
 
 
@@ -83,9 +90,12 @@ def write_log() -> bool:
     """
     try:
         with open(f"{System.PATHS['data']}/log.txt", "a") as file:
-            for i in Log.request(["get", "all"]): file.write(i)
+            for i in Log.request(["get", "all"]):
+                file.write(i)
         return True
-    
-    # Catch all exceptions to avoid the program crashing;
-    # updateLog will disable further log updates if it receives False.
-    except Exception as e: print(e); return False
+
+    # Catch all exceptions to avoid the program crashing; update_log will disable
+    # further log updates if it receives False.
+    except Exception as e:
+        print(f"LOG FAILURE: {e}")
+        return False

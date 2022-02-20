@@ -18,13 +18,13 @@
 
     ----------
 
-    This module contains functions relating to the handling
-    the praw.ini file.
+    This module contains functions relating to the handling the praw.ini file.
 """
 
 from configparser import ConfigParser
 from typing import Dict, NoReturn
 from .classes import Globals, Log, System
+
 global Globals, Log, System
 
 
@@ -48,14 +48,17 @@ def create_ini() -> bool:
     Returns: boolean success status.
     """
     Log.new(["praw.ini missing, incomplete or incorrect. It will need to be created."])
-    return dump_credentials({
-        "client_id": input("Please input your client id:  "),
-        "client_secret": input("Please input your client secret:  "),
-        "username": Globals.get(key="user"),  # Since createIni is never called before the config
-                                             # is initialised, this is safe to draw from
-        "password": input("Please input your Reddit password:  "),
-        "redirect_uri": "http://localhost:8080/users/auth/reddit/callback"
-    })
+    return dump_credentials(
+        {
+            "client_id": input("Please input your client id:  "),
+            "client_secret": input("Please input your client secret:  "),
+            # Since createIni is never called before the config is initialised, this is
+            # safe to draw from:
+            "username": Globals.get(key="user"),
+            "password": input("Please input your Reddit password:  "),
+            "redirect_uri": "http://localhost:8080/users/auth/reddit/callback",
+        }
+    )
 
 
 def dump_credentials(creds: Dict) -> NoReturn:
@@ -68,7 +71,8 @@ def dump_credentials(creds: Dict) -> NoReturn:
     """
     Parser = ConfigParser()
     Parser["oscr"] = creds
-    Parser.write(f"{System.PATHS['config']}/praw.ini")
+    with open(f"{System.PATHS['config']}/praw.ini", "w+") as dump_file:
+        Parser.write(dump_file)
     return True
 
 
@@ -79,6 +83,17 @@ def get_credentials() -> Dict:
 
     Returns: dictionary containing credentials.
     """
-    credentials = ConfigParser()
-    credentials.read(f"{System.PATHS['config']}/praw.ini")
-    return dict(credentials["oscr"])
+    try:
+        Parser = ConfigParser()
+        Parser.read(f"{System.PATHS['config']}/praw.ini")
+        return dict(Parser["oscr"])
+    except FileNotFoundError:
+        if create_ini():
+            return get_credentials()
+        else:
+            Log.new(
+                Log.warning(
+                    "Could not create praw.ini! Encountered a fatal error during"
+                    + " ini creation."
+                )
+            )

@@ -38,14 +38,18 @@ def dump_stats() -> bool:
     Returns: boolean success status.
     """
     if dump_json(
-            f"{System.PATHS['data']}/stats.json",
-            {"statistics": [Stats.get("total")]}
+        f"{System.PATHS['data']}/stats.json", {"statistics": [Stats.get("total")]}
     ):
-        Log.new(["Updated statistics successfully."])
-        return False
-    else:
-        Log.new([Log.warning("WARNING: Failed to update statistics, will no longer attempt to update for this instance.")])
+        Log.new("Updated statistics successfully.")
         return True
+    else:
+        Log.new(
+            Log.warning(
+                "WARNING: Failed to update statistics, will no longer attempt to"
+                + " update for this instance."
+            )
+        )
+        return False
 
 
 def fetch_stats() -> NoReturn:
@@ -57,19 +61,30 @@ def fetch_stats() -> NoReturn:
     """
     try:
         with open(f"{System.PATHS['data']}/stats.json", "r") as file:
-            try: data = json.load(file)
-            
+            try:
+                data = json.load(file)
+
             # Catch invalid JSON in the config file (usually a result of manual editing)
             except json.decoder.JSONDecodeError as e:
-                Log.new([Log.warning("WARNING: Failed to fetch statistics; could not decode JSON file. Returning 0."), Log.warning(f"Error was: {e}")])
+                Log.new(
+                    [
+                        Log.warning(
+                            "WARNING: Failed to fetch statistics; could not decode"
+                            + " JSON file. Returning 0."
+                        ),
+                        Log.warning(f"Error was: {e}"),
+                    ]
+                )
                 Stats.generate_new()
-            
+
             Stats.set_totals(data["statistics"][0])
-            Log.new(["Fetched statistics successfully."])
-        
+            Log.new("Fetched statistics successfully.")
+
     # Catch missing stats file
     except FileNotFoundError:
-        Log.new([Log.warning("WARNING: Could not find stats file. It will be created.")])
+        Log.new(
+            Log.warning("WARNING: Could not find stats file. It will be created.")
+        )
         Stats.generate_new()
         Stats.enabled = dump_stats()
 
@@ -82,18 +97,22 @@ def update_and_log_stats() -> NoReturn:
 
     No return value.
     """
-    # Gives info about most recent iteration; how many comments were counted,
-    # deleted, still waiting for.
-    Log.new([
-        f"Counted this cycle: {Stats.get('current', stat='counted')}",
-        f"Deleted this cycle: {Stats.get('current', stat='deleted')}",
-        f"Waiting for: {Stats.get('current', stat='waitingFor')}"
-    ])
+    # Gives info about most recent iteration; how many comments were counted, deleted,
+    # still waiting for.
+    Log.new(
+        [
+            f"Counted this cycle: {Stats.get('current', stat='counted')}",
+            f"Deleted this cycle: {Stats.get('current', stat='deleted')}",
+            f"Waiting for: {Stats.get('current', stat='waitingFor')}",
+        ]
+    )
 
     # Updates total statistics
     Stats.update_totals()
     Stats.enabled = dump_stats() if Stats.enabled else False
-    Log.new([
-        f"Total Counted: {str(Stats.get('total', stat='counted'))}",
-        f"Total Deleted: {str(Stats.get('total', stat='deleted'))}"
-    ]) if Globals.get(key="report_totals") else None
+    Log.new(
+        [
+            f"Total Counted: {Stats.get('total', stat='counted')}",
+            f"Total Deleted: {Stats.get('total', stat='deleted')}",
+        ]
+    ) if Globals.get(key="report_totals") else None

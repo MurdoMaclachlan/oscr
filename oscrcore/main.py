@@ -26,8 +26,6 @@
     continues to loop until run-time ends.
 """
 
-import praw
-import configparser
 from time import sleep
 from typing import NoReturn
 from .auth import init
@@ -35,6 +33,7 @@ from .classes import Globals, Log, Stats
 from .comment import check_comments
 from .log import exit_with_log, update_log
 from .statistics import update_and_log_stats
+
 global Globals, Log, Stats
 
 
@@ -46,41 +45,66 @@ def oscr() -> NoReturn:
 
     No return value.
     """
-    Log.new([
-        f"Running OSCR version {Globals.VERSION} with recur set to {Globals.get(key='recur')}.",
-        Log.warning("WARNING: Log updates are OFF. Console log will not be saved for this instance.") if not Globals.get(key="log_updates") else ""
-    ])
+    Log.new(
+        [
+            (
+                f"Running OSCR version {Globals.VERSION} with recur set to"
+                + f" {Globals.get(key='recur')}."
+            ),
+            (
+                Log.warning(
+                    "WARNING: Log updates are OFF. Console log will not be saved for"
+                    + " this instance."
+                )
+                if not Globals.get(key="log_updates")
+                else ""
+            ),
+        ]
+    )
 
     # Initialises Reddit instance
     reddit = init()
 
     # Fetches statistics
     if Globals.get(key="report_totals"):
-        from .statistics import dumpStats, fetch_stats
+        from .statistics import fetch_stats
         fetch_stats()
-
-    update_log(["Updating log...", "Log updated successfully."]) if Globals.get(key="log_updates") else None
+    (
+        update_log(["Updating log...", "Log updated successfully."])
+        if Globals.get(key="log_updates")
+        else None
+    )
 
     while True:
 
         Stats.reset()
 
         # Fetches the comment list from Reddit
-        Log.new(["Retrieving comments..."])
-        comment_list = reddit.redditor(Globals.get(key="user")).comments.new(limit=Globals.get(key="limit"))
-        Log.new(["Comments retrieved; checking..."])
+        Log.new("Retrieving comments...")
+        profile = reddit.redditor(Globals.get(key="user"))
+        comment_list = profile.comments.new(limit=Globals.get(key="limit"))
+        Log.new("Comments retrieved; checking...")
 
         # Iterate through commentList and delete any that meet requirements
         check_comments(comment_list)
 
-        Log.new([f"Successfully checked all {Stats.get('current', stat='counted')} available comments."])
+        Log.new(
+            f"Successfully checked all {Stats.get('current', stat='counted')}"
+            + " available comments."
+        )
 
-        # Notifies if the end of Reddit's listing is reached (i.e. no new comments due to API limitations)
+        # Notifies if the end of Reddit's listing is reached (i.e. no new comments due
+        # to API limitations)
         if Stats.get("current", stat="counted") < Globals.get(key="limit"):
-            Log.new([Log.warning(
-                f"WARNING: OSCR counted less comments than your limit of {Globals.get(key='limit')}. You may have deleted all available elligible comments," +
-                " or a caching error may have caused Reddit to return less coments than it should. It may be worth running OSCR once more."
-            )])
+            Log.new(
+                Log.warning(
+                    "WARNING: OSCR counted less comments than your limit of"
+                    + f" {Globals.get(key='limit')}. You may have deleted all"
+                    + " available elligible comments, or a caching error may have"
+                    + " caused Reddit to return less coments than it should. It may"
+                    + " be worth running OSCR once more."
+                )
+            )
 
         update_and_log_stats()
 
@@ -89,9 +113,16 @@ def oscr() -> NoReturn:
             exit_with_log(["Updating log...", "Log updated successfully."])
 
         # Updates log, prepares for next cycle.
-        update_log([
-            "Updating log...", "Log updated successfully.",
-            f"Waiting {str(Globals.get(key='wait'))} {Globals.get(key='unit')[0] if Globals.get(key='wait') == 1 else Globals.get(key='unit')[1]} before checking again..."
-        ])
-
+        update_log(
+            [
+                "Updating log...",
+                "Log updated successfully.",
+                f"Waiting {str(Globals.get(key='wait'))} "
+                + str(
+                    {Globals.get(key='unit')[0] if Globals.get(key='wait') == 1
+                     else Globals.get(key='unit')[1]}
+                )
+                + " before checking again..."
+            ]
+        )
         sleep(Globals.get(key="wait_time"))
