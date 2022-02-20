@@ -49,7 +49,7 @@ def check_config() -> NoReturn:
     # Check to see if each key in the default config is also in the config file
     # Also call .snake_case() to ensure there are no camel case remnants from earlier
     # versions of OSCR
-    current_config = Globals.snake_case().get()
+    current_config = Globals.snake_case()[0].get()
     for key in Globals.DEFAULT_CONFIG:
         if key not in current_config:
             Log.new(
