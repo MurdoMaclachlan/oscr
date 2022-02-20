@@ -22,15 +22,15 @@ from .comment import check_array
 from .comment import regex
 from .comment import remover
 
+# credentials handling
+from .creds import add_refresh_token
+from .creds import create_ini
+from .creds import dump_credentials
+from .creds import get_credentials
+
 # global variables
 from .globals import DEFAULT_CONFIG
 from .globals import VERSION
-
-# ini handling
-from .ini import add_refresh_token
-from .ini import create_ini
-from .ini import dump_credentials
-from .ini import get_credentials
 
 # file-handling log-related functions
 from .log import exit_with_log
