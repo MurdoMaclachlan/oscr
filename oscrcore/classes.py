@@ -91,7 +91,7 @@ class GlobalsHandler:
             self.__config[key.casefold()] = self.__config.pop(key)
         # Return the entire globals object alongside a flag to determine if any keys
         # were changed by the function
-        return [self, True if before != self._config else False]
+        return [self, True if before != self.__config else False]
 
 
 class LogHandler:
