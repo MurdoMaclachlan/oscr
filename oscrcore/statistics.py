@@ -103,7 +103,7 @@ def update_and_log_stats() -> NoReturn:
         [
             f"Counted this cycle: {Stats.get('current', stat='counted')}",
             f"Deleted this cycle: {Stats.get('current', stat='deleted')}",
-            f"Waiting for: {Stats.get('current', stat='waitingFor')}",
+            f"Waiting for: {Stats.get('current', stat='waiting_for')}",
         ]
     )
 
