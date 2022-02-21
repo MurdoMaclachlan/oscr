@@ -252,7 +252,7 @@ class StatsHandler:
 
         No return value.
         """
-        self.__data["current"] = {"counted": 0, "deleted": 0, "waitingFor": 0}
+        self.__data["current"] = {"counted": 0, "deleted": 0, "waiting_for": 0}
 
     def set_totals(self: object, totals: Dict) -> NoReturn:
         """Sets the "total" dataset to a new given set of values.
