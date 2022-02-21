@@ -305,29 +305,43 @@ class SysHandler:
             # AppData why can't you just be normal
             paths = (
                 {
-                    "config": environ["APPDATA"] + "\\oscr",
-                    "data": environ["APPDATA"] + "\\oscr\data",
+                    "config": environ["APPDATA"] + "\\\oscr",
+                    "data": environ["APPDATA"] + "\\\oscr\data",
                 }
                 if os == "win"
                 else {"config": home + "/.config/oscr", "data": home + "/.oscr/data"}
             )
 
             # Create any missing paths/directories.  This is a horrible bit of code but
-            # I'm not sure how to make it any nicer
+            # I'm not sure how to make it any nicer and I'm also not sure if it even
+            # works but hey ho
             for path in paths:
                 if not isdir(paths[path]):
                     Log.new(f"Making path: {paths[path]}")
-                    for directory in paths[path].split("/")[1:]:
-                        current_dir = paths[path].split(directory)[0] + directory
-                        if not isdir(current_dir):
-                            Log.new(f"Making directory: {current_dir}")
-                            mkdir(current_dir)
+                    for directory in paths[path].split(
+                            ("/", "\\")[os == "win"]
+                    )[(1, 2)[os == "win"]:]:
+                        self.make_directory(directory, paths[path])
             return paths
 
         # Exit if the operating system is unsupported
         else:
             Log.new(Log.warning(f"Unsupported operating system: {os}, exiting."))
             exit()
+
+    def make_directory(self: object, directory: str, path: str) -> bool:
+        """Makes a given directory within a given path.
+
+        :param directory: string, the directory to make
+        :param path:      string, the path the directory is in
+
+        :return: A bolean success status
+        """
+        current_dir = path.split(directory)[0] + directory
+        if not isdir(current_dir):
+            Log.new(f"Making directory: {current_dir}")
+            mkdir(current_dir)
+        return True
 
 
 # Declare global classes
