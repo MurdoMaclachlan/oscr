@@ -16,7 +16,7 @@ OSCR presents a number of runtime arguments that can be passed in order to give 
      - Lists everyone who has helped with the creation of the program.
      - 3
    * - ``--force-regex, -f``
-     - Forces OSCR to enable regex for one instance regardless of 'useRegex' configuration.
+     - Forces OSCR to enable regex for one instance regardless of 'use_regex' configuration.
      - 7
    * - ``--help, -h``
      - Displays the list of runtime arguments in the console.
@@ -25,13 +25,13 @@ OSCR presents a number of runtime arguments that can be passed in order to give 
      - Forces OSCR to run only one cycle regardless of 'recur' configration.
      - 7
    * - ``--print-logs, -p``
-     - Forces OSCR to print logs for one instance regardless of 'printLogs' configuration.
+     - Forces OSCR to print logs for one instance regardless of 'print_logs' configuration.
      - 7
    * - ``--reset-config, -R``
      - Resets the config file to defaults.
      - 5
    * - ``--report-totals, -r``
-     - Forces OSCR to report total statistics for one instance regardless of 'reportTotals' configuration.
+     - Forces OSCR to report total statistics for one instance regardless of 'report_totals' configuration.
      - 7
    * - ``--settings, -S``
      - Runs the settings menu.

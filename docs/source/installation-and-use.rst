@@ -52,4 +52,4 @@ To update the program to a newer version, run ``python -m pip install --upgrade 
 Using the Latest Testing Version
 ---------------------------------
 
-To use the latest testing version, download the `2.x branch files <https://github.com/MurdoMaclachlan/oscr/tree/2.x>`_, extract the archive you have downloaded, and use ``pip install .`` after navigating into the directory the files were extracted to.
+To use the latest testing version, download the `2.x branch files <https://codeberg.org/MurdoMaclachlan/oscr/src/branch/2.x>`_, extract the archive you have downloaded, and use ``pip install .`` after navigating into the directory the files were extracted to.

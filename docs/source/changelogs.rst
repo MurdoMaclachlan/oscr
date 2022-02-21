@@ -3,8 +3,41 @@ Changelogs
 
 A list of changelogs for OSCR, with the most recent version first. These are also available `here <https://github.com/MurdoMaclachlan/oscr/releases>`_.
 
-2.1.1 - Current Release
------------------------
+Unreleased
+----------
+
+
+2.2.0
+-----
+
+**Functionality**
+
+- Change default regex to allow saving of a claim/done comment. (#161, #162)
+- Make ``Globals.config`` use proper encapsulation. (#151, #175)
+
+**Cleanup/Optimisation**
+
+- Blacken all modules. (#152)
+- Divide ``globals.py`` into two modules; ``classes.py``, containing all classes, and ``globalspy``, containing all global variables. (#153, #168)
+
+**Documentation**
+
+- Change function/variable naming from camelCase to snake_case. (#154, #160)
+- Change config keys from camelCase to snake_case. (#168, #169, #176)
+- Add docstrings to all modules. (#155, #158)
+- Rename ``ini.py`` to ``creds.py``. (#156, #168)
+
+**Bug Fixes**
+
+- Fix crash due to misnamed attribute on ``fetch_stats()`` failing to find ``stats.json``. (#157, #160)
+- Fix refresh token not being properly saved to ``praw.ini``. (#163, #170)
+- Fix possible reference before assignment if ``praw.ini`` is not found in ``edit_credentials()``. (#164, #171)
+- Fix crash when editing arrays in ``edit_config()`` due to old variable naming references. (#165, #172)
+- Change default argument for ``update_log()`` to ``None``. (#166, #173)
+- Fix unfilled argument when calling ``dump_credentials()`` in ``edit_credentials()``. (#167, #174)
+
+2.1.1
+-----
 
 **Bug Fixes**
 
@@ -12,8 +45,8 @@ A list of changelogs for OSCR, with the most recent version first. These are als
 - Fixed a crash on attempting to handle AttributeErrors in comment checking due to not specifying a dataset to call from.
 - Fixed a crash on attempting to dumpStats due to an attribute naming mismatch.
 
-2.1.0 - Current Release
------------------------
+2.1.0
+-----
 
 **Functionality**
 
