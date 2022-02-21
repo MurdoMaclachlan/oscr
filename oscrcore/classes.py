@@ -204,7 +204,7 @@ class StatsHandler:
     """
     def __init__(self: object) -> NoReturn:
         self.__data = {
-            "current": {"counted": 0, "deleted": 0, "waitingFor": 0},
+            "current": {"counted": 0, "deleted": 0, "waiting_for": 0},
             "total": {},
         }
         self.enabled = True
