@@ -154,7 +154,7 @@ class LogHandler:
             return False
 
         statement = f"{self.get_time()} - {message}"
-        self.__log.append(statement)
+        self.__log.append(statement + "\n")
         print(statement) if Globals.get("print_logs") else None
 
         return True
