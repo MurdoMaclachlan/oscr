@@ -13,22 +13,22 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program. If not, see <https://www.gnu.org/licenses/>.
-    
+    along with this program. If not, see https://www.gnu.org/licenses/.
+
     Contact me at murdomaclachlan@duck.com
 """
 
-from oscrcore.arguments import checkArgs
+from oscrcore.arguments import check_args
 from oscrcore.main import oscr
-from oscrcore.misc import getConfig
+from oscrcore.misc import get_config
 
 print(
-      "Copyright (C) 2020-present, Murdo B. Maclachlan\n"
-      "This program comes with ABSOLUTELY NO WARRANTY.\n"
-      "This is free software, and you are welcome to redistribute it\n"
-      "under certain conditions; see LICENCE in dist-info for conditions."
+    "Copyright (C) 2020-present, Murdo B. Maclachlan\n"
+    "This program comes with ABSOLUTELY NO WARRANTY.\n"
+    "This is free software, and you are welcome to redistribute it\n"
+    "under certain conditions; see LICENCE in dist-info for conditions."
 )
 
-getConfig()
-checkArgs()
+get_config()
+check_args()
 oscr()

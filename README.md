@@ -23,4 +23,4 @@ Nicknamed Oscar, this program removes blacklisted comments after a period of tim
 
 ### [OSCR's documentation is hosted at readthedocs.](https://oscr.readthedocs.io/en/latest/)
 
-For emergency contact, I'm reachable through `murdo@maclachlans.org.uk` and `murdomaclachlan@gmail.com` (the first address is preferred). You can also open an issue on GitHub if needed.
+For emergency contact, I'm reachable through `murdomaclachlan@duck.com`.

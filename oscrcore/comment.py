@@ -13,83 +13,144 @@
 
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <https://www.gnu.org/licenses/>.
-    
+
     Contact me at murdomaclachlan@duck.com
-"""
 
-import re
-from alive_progress import alive_bar as aliveBar
-from time import time
-from typing import Any, List, NoReturn
-from .globals import Globals, Log, Stats
-from .misc import checkRegex
-global Globals, Log, Stats
+    ----------
 
-"""
     This module handles methods related to working with
     the comments retrieved from Reddit.
 """
 
+import re
+from alive_progress import alive_bar
+from time import time
+from typing import Any, List, NoReturn
+from .classes import Globals, Log, Stats
+from .misc import check_regex
 
-# Blacklist check; placed here for ease of readability in main.py.
+global Globals, Log, Stats
+
+
 def blacklist(string: str) -> bool:
-    
-    return True if (string.casefold(), string)[Globals.config["caseSensitive"]] in Globals.config["blacklist"] else False
+    """Matches a given string value to elements of the blacklist.
+
+    Arguments:
+    - string (string)
+
+    Returns: boolean
+    """
+    return (
+        True
+        if (string.casefold(), string)[Globals.get(key="case_sensitive")]
+        in Globals.get(key="blacklist")
+        else False
+    )
 
 
-def checkComments(commentList: List[object]) -> NoReturn:
+def check_comments(comment_list: List[object]) -> NoReturn:
+    """Iterates through a list of Reddit comments, deleting any that meet the
+    requirements to do so.
 
-    with aliveBar(Globals.config["limit"], spinner='classic', bar='classic', enrich_print=False) as progress:
+    Arguments:
+    - comment_list (a praw.models.Comment array)
 
+    No return value.
+    """
+    with alive_bar(
+        Globals.get(key="limit"), spinner="classic", bar="classic", enrich_print=False
+    ) as progress:
         # Checks all the user's comments, deleting them if they're past the cutoff.
-        for comment in commentList:
-
+        for comment in comment_list:
             # Reduce API calls per iteration
             body = comment.body
             try:
-                if (blacklist(body), regex(body))[Globals.config["useRegex"]]:
+                if (blacklist(body), regex(body))[Globals.get(key="use_regex")]:
                     remover(comment, body)
-
             # Result of a comment being in reply to a deleted/removed submission
             except AttributeError as e:
-                Log.new([Log.warning(f"Handled error on iteration {Stats.get('current', 'counted')}: {e} | Comment at {comment.permalink}")])
-
+                Log.new(
+                    [
+                        Log.warning(
+                            "Handled error on iteration"
+                            + f"{Stats.get('current', 'counted')}: {e} | Comment at"
+                            + f"{comment.permalink}"
+                        )
+                    ]
+                )
             Stats.increment("counted")
             progress()
 
 
-# Checks a given value against an array; the value passes the
-# check either if it is in the array or if the array is empty
-def checkArray(array: List, value: Any = "", mode: str = "len") -> bool:
-    
+def check_array(array: List, value: Any = "", mode: str = "len") -> bool:
+    """Checks a given value against an array; the value passes the check either if it is
+    in the array or if the array is empty
+
+    Arguments:
+    - array (array)
+    - value (any, optional, default: empty string)
+    - mode (string, optional, default: "len")
+
+    Returns: boolean.
+    """
     if mode not in ["len", "val"]:
-        Log.new([Log.warning("WARNING: unknown mode passed to checkArray(). Skipping.")])
+        Log.new(
+            Log.warning("WARNING: unknown mode passed to check_array(). Skipping.")
+        )
         return False
-    return True if (len(array) < 1 and mode == "len") or (value in array and mode == "val") else False
+    return (
+        True
+        if (len(array) < 1 and mode == "len") or (value in array and mode == "val")
+        else False
+    )
 
 
-# Regex check; placed here for easy of readability in main.py.
 def regex(string: str) -> bool:
-    
-    return True if Globals.config["useRegex"] and checkRegex(re, string) else False
+    """Matches a given string value to regexes in the regex list.
+
+    Arguments:
+    - string (string)
+
+    Returns: boolean.
+    """
+    return True if Globals.get(key="use_regex") and check_regex(re, string) else False
 
 
-# The main comment deletion algorithm
 def remover(comment: object, body: str) -> NoReturn:
-    
-    if (
-        checkArray(Globals.config["subredditList"]) and checkArray(Globals.config["userList"]) or
-        (
-            checkArray(Globals.config["subredditList"], value=str(comment.subreddit).casefold(), mode="val") and
-            checkArray(Globals.config["userList"], value=comment.parent().author.name, mode="val")
-        )):
+    """Main comment remover algorithm; checks that comment passes deletion requirements,
+    deletes if so, counts as "waiting for" if not.
 
-            # Only delete comments older than the cutoff
-            if time() - comment.created_utc > Globals.config["cutoffSec"]:
-                Log.new([f"Obsolete '{body}' found, deleting."])
-                if not Globals.config["debug"]:
-                    comment.delete()
-                    Stats.increment("deleted")
-            else:
-                Log.new([f"Waiting for '{body}'."])
-                Stats.increment("waitingFor")
+    Arguments:
+    - comment (praw.Reddit.Comment instance)
+
+    No return value.
+    """
+    if (
+        check_array(Globals.get(key="subreddit_list"))
+        and check_array(Globals.get(key="user_list"))
+        or (
+            (
+                check_array(
+                    Globals.get(key="subreddit_list"),
+                    value=str(comment.subreddit).casefold(),
+                    mode="val",
+                )
+            )
+            and (
+                check_array(
+                    Globals.get(key="user_list"),
+                    value=comment.parent().author.name,
+                    mode="val",
+                )
+            )
+        )
+    ):
+        # Only delete comments older than the cutoff
+        if time() - comment.created_utc > Globals.get(key="cutoff_sec"):
+            Log.new(f"Obsolete '{body}' found, deleting.")
+            if not Globals.get(key="debug"):
+                comment.delete()
+                Stats.increment("deleted")
+        else:
+            Log.new(f"Waiting for '{body}'.")
+            Stats.increment("waiting_for")
