@@ -119,8 +119,8 @@ def oscr() -> NoReturn:
                 "Log updated successfully.",
                 f"Waiting {str(Globals.get(key='wait'))} "
                 + str(
-                    {Globals.get(key='unit')[0] if Globals.get(key='wait') == 1
-                     else Globals.get(key='unit')[1]}
+                    Globals.get(key='unit')[0] if Globals.get(key='wait') == 1
+                    else Globals.get(key='unit')[1]
                 )
                 + " before checking again..."
             ]

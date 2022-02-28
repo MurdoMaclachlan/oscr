@@ -6,6 +6,9 @@ A list of changelogs for OSCR, with the most recent version first. These are als
 Unreleased
 ----------
 
+**Bug Fixes**
+
+- Fixed broken formatting of 'wait_unit' in wait log statement. (@MurdoMaclachlan)
 
 2.2.0
 -----
