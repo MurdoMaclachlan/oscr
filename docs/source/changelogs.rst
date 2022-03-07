@@ -1,10 +1,14 @@
 Changelogs
 ==========
 
-A list of changelogs for OSCR, with the most recent version first. These are also available `here <https://github.com/MurdoMaclachlan/oscr/releases>`_.
+A list of changelogs for OSCR, with the most recent version first. These are also available `here <https://codeberg.org/MurdoMaclachlan/oscr/releases>`_.
 
 Unreleased
 ----------
+
+**Documentation**
+
+- Updated links in documentation. (@MurdoMaclachlan)
 
 **Bug Fixes**
 

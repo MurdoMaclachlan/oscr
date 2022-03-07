@@ -32,7 +32,7 @@ u/Metaquarx
 u/MurdoMaclachlan
 ^^^^^^^^^^^^^^^^^^
 
-`Website <https://murdomaclachlan.carrd.co/>`_
+`Website <https://murdomaclachlan.codeberg.page/>`_ (`mirror <https://murdomaclachlan.github.io/website/>`_)
 
 - Original creator and primary maintainer
 

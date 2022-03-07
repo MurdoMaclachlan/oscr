@@ -54,4 +54,4 @@ DEFAULT_CONFIG = {
     "user_list": ["transcribersofreddit"],
     "wait": 10,
 }
-VERSION = "2.2.0.1"
+VERSION = "2.2.0.2"

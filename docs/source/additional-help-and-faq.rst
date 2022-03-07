@@ -9,4 +9,4 @@ Additional Help and FAQ
 | If you are updating to 2.0.0 from a version of OSCR that had the praw.ini in just ``.config``, run ``oscr -F`` and it should automatically move the ``oscr`` section from your ``.config`` praw.ini to ``.config/oscr``, but note that this functionality was removed in version 2.1.0.
 
 | **How can I contact the developer?**
-| I'm reachable through ``murdomaclachlan@duck.com``. You can also `open an issue on GitHub <https://github.com/MurdoMaclachlan/oscr/issues>`_ if needed.
+| I'm reachable through ``murdomaclachlan@duck.com``. You can also `open an issue on Codeberg <https://codeberg.org/MurdoMaclachlan/oscr/issues>`_ if needed.
