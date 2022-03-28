@@ -23,7 +23,6 @@
 """
 
 import re
-from alive_progress import alive_bar
 from time import time
 from typing import Any, List
 from .classes import Globals, Log, Stats
@@ -57,29 +56,28 @@ def check_comments(comment_list: List[object]) -> None:
 
     No return value.
     """
-    with alive_bar(
-        Globals.get(key="limit"), spinner="classic", bar="classic", enrich_print=False
-    ) as progress:
-        # Checks all the user's comments, deleting them if they're past the cutoff.
-        for comment in comment_list:
-            # Reduce API calls per iteration
-            body = comment.body
-            try:
-                if (blacklist(body), regex(body))[Globals.get(key="use_regex")]:
-                    remover(comment, body)
-            # Result of a comment being in reply to a deleted/removed submission
-            except AttributeError as e:
-                Log.new(
-                    [
-                        Log.warning(
-                            "Handled error on iteration"
-                            + f"{Stats.get('current', 'counted')}: {e} | Comment at"
-                            + f"{comment.permalink}"
-                        )
-                    ]
-                )
-            Stats.increment("counted")
-            progress()
+    Globals.init_bar()
+    # Checks all the user's comments, deleting them if they're past the cutoff.
+    for comment in comment_list:
+        # Reduce API calls per iteration
+        body = comment.body
+        try:
+            if (blacklist(body), regex(body))[Globals.get(key="use_regex")]:
+                remover(comment, body)
+        # Result of a comment being in reply to a deleted/removed submission
+        except AttributeError as e:
+            Log.new(
+                [
+                    Log.warning(
+                        "Handled error on iteration"
+                        + f"{Stats.get('current', 'counted')}: {e} | Comment at"
+                        + f"{comment.permalink}"
+                    )
+                ]
+            )
+        Stats.increment("counted")
+        Globals.bar.increment()
+    Globals.bar.close()
 
 
 def check_array(array: List, value: Any = "", mode: str = "len") -> bool:

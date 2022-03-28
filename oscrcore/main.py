@@ -26,7 +26,9 @@
     continues to loop until run-time ends.
 """
 
+import signal
 from time import sleep
+from typing import Any
 from .auth import init
 from .classes import Globals, Log, Stats
 from .comment import check_comments
@@ -44,6 +46,7 @@ def oscr() -> None:
 
     No return value.
     """
+    signal.signal(signal.SIGINT, signal_handler)
     Log.new(
         [
             (
@@ -125,3 +128,20 @@ def oscr() -> None:
             ]
         )
         sleep(Globals.get(key="wait_time"))
+
+def signal_handler(sig: int, frame: Any) -> None:
+    """Gracefully exit; don't lose any as-yet unsaved log entries.
+
+        :param sig: int
+        :param frame: Any
+
+        :return: Nothing.
+    """
+    from .statistics import dump_stats
+    if not Globals.bar.close():
+        print("\r", end="\r")
+    update_log("Received kill signal, exiting...")
+    if Stats.enabled:
+        Stats.update_totals()
+        dump_stats()
+    exit(0)

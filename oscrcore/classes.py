@@ -25,6 +25,7 @@ from colored import fg, attr
 from datetime import datetime
 from os import environ, makedirs
 from os.path import expanduser, isdir
+from smooth_progress import ProgressBar
 from sys import platform
 from time import time
 from typing import Any, Dict, List, Union
@@ -40,6 +41,7 @@ class GlobalsHandler:
     """
     def __init__(self: object, default_config: Dict, version: str) -> None:
         self.__config = {}
+        self.bar = None
         self.DEFAULT_CONFIG = default_config
         self.VERSION = version
 
@@ -52,6 +54,10 @@ class GlobalsHandler:
         Returns: the value in the config at the given key
         """
         return self.__config[key] if key else self.__config
+
+    def init_bar(self: object) -> None:
+        self.bar = ProgressBar(limit=self.get(key="limit"))
+        self.bar.open()
 
     def set(self: object, value: Any, key: str = None) -> None:
         """Sets a single config key to a single new given value.
@@ -303,11 +309,11 @@ class SysHandler:
 
             paths = (
                 {
-                    "config": environ["APPDATA"] + "\\tadr",
-                    "data": environ["APPDATA"] + "\\tadr\data"
+                    "config": environ["APPDATA"] + "\\oscr",
+                    "data": environ["APPDATA"] + "\\oscr\data"
                 } if os == "win" else {
-                    "config": f"{home}/.config/tadr",
-                    "data": f"{home}/.tadr/data"
+                    "config": f"{home}/.config/oscr",
+                    "data": f"{home}/.oscr/data"
                 }
             )
 

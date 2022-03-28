@@ -21,7 +21,7 @@ setup(
     url="https://github.com/MurdoMaclachlan/oscr",
     packages=find_packages(),
     install_requires=[
-        "alive_progress>=1.6.1",
+        "smooth_progress",
         "colored",
         "configparser",
         "praw>=7.1.2"
