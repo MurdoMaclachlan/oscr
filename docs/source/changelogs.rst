@@ -12,6 +12,7 @@ Unreleased
 
 **Bug Fixes**
 
+- Fixed ``--clean-hunt`` not deleting treasure hunt claims that use "dibs" as the claim phrase. (@MurdoMaclachlan)
 - Fixed broken formatting of 'wait_unit' in wait log statement. (@MurdoMaclachlan)
 
 2.2.0
@@ -25,7 +26,7 @@ Unreleased
 **Cleanup/Optimisation**
 
 - Blacken all modules. (#152)
-- Divide ``globals.py`` into two modules; ``classes.py``, containing all classes, and ``globalspy``, containing all global variables. (#153, #168)
+- Divide ``globals.py`` into two modules; ``classes.py``, containing all classes, and ``globals.py``, containing all global variables. (#153, #168)
 
 **Documentation**
 

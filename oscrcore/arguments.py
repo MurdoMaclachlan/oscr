@@ -151,7 +151,7 @@ def clean_hunt() -> NoReturn:
     temp_config_change(
         [
             (
-                ["regex_blacklist", ["^(claim|claiming|done).*treasure *hunt.*"]]
+                ["regex_blacklist", ["^(claim|claiming|dibs|done).*treasure *hunt.*"]]
                 if Globals.get(key="use_regex")
                 else ["blacklist", ["claim -- treasure hunt", "done -- treasure hunt"]]
             ),
