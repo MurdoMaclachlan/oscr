@@ -25,7 +25,7 @@
 import re
 from alive_progress import alive_bar
 from time import time
-from typing import Any, List, NoReturn
+from typing import Any, List
 from .classes import Globals, Log, Stats
 from .misc import check_regex
 
@@ -48,7 +48,7 @@ def blacklist(string: str) -> bool:
     )
 
 
-def check_comments(comment_list: List[object]) -> NoReturn:
+def check_comments(comment_list: List[object]) -> None:
     """Iterates through a list of Reddit comments, deleting any that meet the
     requirements to do so.
 
@@ -116,7 +116,7 @@ def regex(string: str) -> bool:
     return True if Globals.get(key="use_regex") and check_regex(re, string) else False
 
 
-def remover(comment: object, body: str) -> NoReturn:
+def remover(comment: object, body: str) -> None:
     """Main comment remover algorithm; checks that comment passes deletion requirements,
     deletes if so, counts as "waiting for" if not.
 

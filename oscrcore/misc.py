@@ -25,7 +25,7 @@
 
 import json
 import sys
-from typing import Dict, List, NoReturn, TextIO
+from typing import Dict, List, TextIO
 from .classes import Globals, Log, System
 
 global Globals, Log, System
@@ -39,7 +39,7 @@ global Globals, Log, System
 """
 
 
-def check_config() -> NoReturn:
+def check_config() -> None:
     """Checks if all necessary config options are present and conform the correct format
 
     No arguments.
@@ -74,7 +74,7 @@ def dump_config() -> bool:
     )
 
 
-def get_config() -> NoReturn:
+def get_config() -> None:
     """Retrieves the config from the config.json file; if no config is found, creates
     one from the default values.
 
@@ -121,7 +121,7 @@ def get_config() -> NoReturn:
 """
 
 
-def calculate_essentials() -> NoReturn:
+def calculate_essentials() -> None:
     """Performs any necessary one-time calculations or changes relating to the config.
 
     No arguments.

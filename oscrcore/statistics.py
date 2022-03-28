@@ -24,7 +24,6 @@
 """
 
 import json
-from typing import NoReturn
 from .classes import Globals, Log, Stats, System
 from .misc import dump_json
 global Globals, Log, Stats, System
@@ -52,7 +51,7 @@ def dump_stats() -> bool:
         return False
 
 
-def fetch_stats() -> NoReturn:
+def fetch_stats() -> None:
     """Fetches statistics from the stats.json file in the data path.
 
     No arguments.
@@ -89,7 +88,7 @@ def fetch_stats() -> NoReturn:
         Stats.enabled = dump_stats()
 
 
-def update_and_log_stats() -> NoReturn:
+def update_and_log_stats() -> None:
     """Logs current statistics and updates and logs totals following an iteration of
     OSCR.
 

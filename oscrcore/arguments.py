@@ -24,14 +24,14 @@
 
 import sys
 from os import remove
-from typing import Any, List, NoReturn
+from typing import Any, List
 from .classes import Globals, Log, System
 from .misc import calculate_essentials, dump_config
 
 global Globals, Log, System
 
 
-def check_args() -> NoReturn:
+def check_args() -> None:
     """Checks all passed arguments against a master list, processes them in the right
     order and calls the necessary functions.
 
@@ -140,7 +140,7 @@ def check_args() -> NoReturn:
 """
 
 
-def clean_hunt() -> NoReturn:
+def clean_hunt() -> None:
     """Performs the necessary temporary configuration changes for the --client-hunt
     runtime mode.
 
@@ -165,7 +165,7 @@ def clean_hunt() -> NoReturn:
     )
 
 
-def help_menu() -> NoReturn:
+def help_menu() -> None:
     """Prints a list of arguments and their functionalities.
 
     No arguments.
@@ -194,7 +194,7 @@ def help_menu() -> NoReturn:
     )
 
 
-def print_credits() -> NoReturn:
+def print_credits() -> None:
     """Prints a list of contributors, what they have contributed, and links to various
     accounts or websites of theirs.
 
@@ -226,7 +226,7 @@ def print_credits() -> NoReturn:
     )
 
 
-def reset_config() -> NoReturn:
+def reset_config() -> None:
     """Deletes the config file and replaces it with the default config; prompts for
     username before saving the default.
 
@@ -244,7 +244,7 @@ def reset_config() -> NoReturn:
     dump_config()
 
 
-def settings() -> NoReturn:
+def settings() -> None:
     """Enters the settings menu.
 
     No arguments.
@@ -257,7 +257,7 @@ def settings() -> NoReturn:
     settings_main()
 
 
-def show_config() -> NoReturn:
+def show_config() -> None:
     """Prints the contents of the config file.
 
     No arguments.
@@ -270,7 +270,7 @@ def show_config() -> NoReturn:
         print(f"{i}: {config[i]}")
 
 
-def show_version() -> NoReturn:
+def show_version() -> None:
     """Prints the current version number.
 
     No arguments.
@@ -280,7 +280,7 @@ def show_version() -> NoReturn:
     print(f"The installed version of OSCR is: {Globals.VERSION}")
 
 
-def temp_config_change(keys: List[List[Any]]) -> NoReturn:
+def temp_config_change(keys: List[List[Any]]) -> None:
     """Executes a list of config changes.
 
     Arguments:

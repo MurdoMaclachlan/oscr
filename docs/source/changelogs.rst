@@ -9,6 +9,7 @@ Unreleased
 **Cleanup/Optimisation**
 
 - Improved ``SysHandler.define_paths()`` using ``os.mkdirs()``, shortening code and dropping ``SysHandler.make_directory()``. (@MurdoMaclachlan)
+- Changed functions marked ``NoReturn`` to return ``None`` instead, as is more in-line with how the typing library should be used. (@MurdoMaclachlan)
 
 **Documentation**
 

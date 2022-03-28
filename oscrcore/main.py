@@ -27,7 +27,6 @@
 """
 
 from time import sleep
-from typing import NoReturn
 from .auth import init
 from .classes import Globals, Log, Stats
 from .comment import check_comments
@@ -37,7 +36,7 @@ from .statistics import update_and_log_stats
 global Globals, Log, Stats
 
 
-def oscr() -> NoReturn:
+def oscr() -> None:
     """The primary OSCR function controlling the flow of all primary functionality. Also
     a hot mess.
 

@@ -27,7 +27,7 @@ from os import environ, makedirs
 from os.path import expanduser, isdir
 from sys import platform
 from time import time
-from typing import Any, Dict, List, NoReturn, Union
+from typing import Any, Dict, List, Union
 from .globals import DEFAULT_CONFIG, VERSION
 
 global Globals, Log, Stats, System
@@ -38,12 +38,12 @@ class GlobalsHandler:
     belong in any of the other three classes. Currently, that means the config settings,
     the version number and the default config.
     """
-    def __init__(self: object, default_config: Dict, version: str) -> NoReturn:
+    def __init__(self: object, default_config: Dict, version: str) -> None:
         self.__config = {}
         self.DEFAULT_CONFIG = default_config
         self.VERSION = version
 
-    def get(self: object, key: str = None) -> NoReturn:
+    def get(self: object, key: str = None) -> None:
         """Gets a single config value from a given key.
 
         Arguments:
@@ -53,7 +53,7 @@ class GlobalsHandler:
         """
         return self.__config[key] if key else self.__config
 
-    def set(self: object, value: Any, key: str = None) -> NoReturn:
+    def set(self: object, value: Any, key: str = None) -> None:
         """Sets a single config key to a single new given value.
 
         :argument key: (string)
@@ -100,7 +100,7 @@ class LogHandler:
     output, and also defines a simple API for access and modification to/of the data
     contained therein.
     """
-    def __init__(self: object) -> NoReturn:
+    def __init__(self: object) -> None:
         self.ConsoleColours = self.Colours(1, 0, 130)
         self.__log = []
 
@@ -108,7 +108,7 @@ class LogHandler:
         """The Colours class stores colour attributes which can be applied to strings in
         order to colour the console output of log entries.
         """
-        def __init__(self: object, error: int, normal: int, warning: int) -> NoReturn:
+        def __init__(self: object, error: int, normal: int, warning: int) -> None:
             self.ERROR = fg(error)
             self.NORMAL = attr(normal)
             self.WARNING = fg(warning)
@@ -159,7 +159,7 @@ class LogHandler:
 
         return True
 
-    def request(self: object, mode: List) -> Union[List[str], NoReturn, str]:
+    def request(self: object, mode: List) -> Union[List[str], None, str]:
         """Returns or deletes item(s) in the log, either all items or the most
         recently-added item.
 
@@ -202,7 +202,7 @@ class StatsHandler:
     """The Statistics class stores the current and total statistics and provides a
     simple API for accessing and modifying the data contained therein.
     """
-    def __init__(self: object) -> NoReturn:
+    def __init__(self: object) -> None:
         self.__data = {
             "current": {"counted": 0, "deleted": 0, "waiting_for": 0},
             "total": {},
@@ -224,7 +224,7 @@ class StatsHandler:
         """
         return self.__data[dataset][stat] if stat else self.__data[dataset]
 
-    def generate_new(self: object) -> NoReturn:
+    def generate_new(self: object) -> None:
         """Resets all statistics in the "total" dataset to  0. Should only be used if
         the stats file cannot be found.
 
@@ -234,7 +234,7 @@ class StatsHandler:
         """
         self.__data["total"] = {"counted": 0, "deleted": 0}
 
-    def increment(self: object, stat: str) -> NoReturn:
+    def increment(self: object, stat: str) -> None:
         """Increments a single statistic of the "current" dataset.
 
         Arguments:
@@ -244,7 +244,7 @@ class StatsHandler:
         """
         self.__data["current"][stat] += 1
 
-    def reset(self: object) -> NoReturn:
+    def reset(self: object) -> None:
         """Resets all entries in the "current" dataset to 0. Should be called every
         program loop.
 
@@ -254,7 +254,7 @@ class StatsHandler:
         """
         self.__data["current"] = {"counted": 0, "deleted": 0, "waiting_for": 0}
 
-    def set_totals(self: object, totals: Dict) -> NoReturn:
+    def set_totals(self: object, totals: Dict) -> None:
         """Sets the "total" dataset to a new given set of values.
 
         Arguments:
@@ -264,7 +264,7 @@ class StatsHandler:
         """
         self.__data["total"] = totals
 
-    def update_totals(self: object) -> NoReturn:
+    def update_totals(self: object) -> None:
         """Adds the "counted" and "deleted" statistics in the "current" dataset to those
         in the "total" dataset.
 
@@ -281,7 +281,7 @@ class SysHandler:
     The paths to the data and config directories are contained here, as well as the
     location of the home directory and the auto-detected OS.
     """
-    def __init__(self: object) -> NoReturn:
+    def __init__(self: object) -> None:
         self.HOME = expanduser("~")
         self.OS = platform
         self.PATHS = self.define_paths(self.HOME, self.OS)

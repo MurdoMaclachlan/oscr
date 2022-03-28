@@ -23,13 +23,13 @@
 """
 
 import sys
-from typing import List, NoReturn, Union
+from typing import List, Union
 from .classes import Globals, Log, System
 
 global Globals, Log, System
 
 
-def exit_with_log(messages: Union[List[str], str]) -> NoReturn:
+def exit_with_log(messages: Union[List[str], str]) -> None:
     """Updates the log with final message(s) then exits OSCR.
 
     Arguments:

@@ -24,7 +24,6 @@
 
 import sys
 import json
-from typing import NoReturn
 from .classes import Globals, Log, System
 from .creds import create_ini, dump_credentials, get_credentials
 from .log import exit_with_log, update_log
@@ -33,7 +32,7 @@ from .misc import dump_config
 global Globals, Log, System
 
 
-def settings_main() -> NoReturn:
+def settings_main() -> None:
     """The main settings menu; controls all other sub-menus.
 
     No arguments.
@@ -238,7 +237,7 @@ def edit_credentials() -> bool:
     return True
 
 
-def how_to_use() -> NoReturn:
+def how_to_use() -> None:
     """Prints guide for using the settings menu.
 
     No arguments.
