@@ -6,6 +6,10 @@ A list of changelogs for OSCR, with the most recent version first. These are als
 Unreleased
 ----------
 
+**Cleanup/Optimisation**
+
+- Improved ``SysHandler.define_paths()`` using ``os.mkdirs()``, shortening code and dropping ``SysHandler.make_directory()``. (@MurdoMaclachlan)
+
 **Documentation**
 
 - Updated links in documentation. (@MurdoMaclachlan)
