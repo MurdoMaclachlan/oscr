@@ -6,10 +6,18 @@ A list of changelogs for OSCR, with the most recent version first. These are als
 Unreleased
 ----------
 
+**Functionality**
+
+- Added system for gracefully handling kill signals, avoiding loss of unsaved log entries or stats and printing nice console output instead of a KeyboardInterrupt traceback. (@MurdoMaclachlan)
+
 **Cleanup/Optimisation**
 
 - Improved ``SysHandler.define_paths()`` using ``os.mkdirs()``, shortening code and dropping ``SysHandler.make_directory()``. (@MurdoMaclachlan)
 - Changed functions marked ``NoReturn`` to return ``None`` instead, as is more in-line with how the typing library should be used. (@MurdoMaclachlan)
+
+**Dependencies**
+
+- Dropped alive_progress, required smooth_progress (any version) instead. (@MurdoMaclachlan)
 
 **Documentation**
 
