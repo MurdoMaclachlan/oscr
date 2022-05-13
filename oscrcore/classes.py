@@ -41,7 +41,6 @@ class GlobalsHandler:
     """
     def __init__(self: object, default_config: Dict, version: str) -> None:
         self.__config = {}
-        self.bar = None
         self.DEFAULT_CONFIG = default_config
         self.VERSION = version
 
@@ -54,10 +53,6 @@ class GlobalsHandler:
         Returns: the value in the config at the given key
         """
         return self.__config[key] if key else self.__config
-
-    def init_bar(self: object) -> None:
-        self.bar = ProgressBar(limit=self.get(key="limit"))
-        self.bar.open()
 
     def set(self: object, value: Any, key: str = None) -> None:
         """Sets a single config key to a single new given value.
@@ -79,7 +74,7 @@ class GlobalsHandler:
         https://stackoverflow.com/questions/1175208/elegant-python-function-to-convert-camelcase-to-snake-case#1176023
 
         :return: an array containing self and a boolean flag indicating whether or not
-            any keys were changed
+                 any keys were changed
         """
         import re
         # First run through the keys and add in the underlines
@@ -107,6 +102,7 @@ class LogHandler:
     contained therein.
     """
     def __init__(self: object) -> None:
+        self.bar = None
         self.ConsoleColours = self.Colours(1, 0, 130)
         self.__log = []
 
@@ -128,6 +124,14 @@ class LogHandler:
         Returns: a single date string in format 'YYYY-MM-DD HH:MM:SS'.
         """
         return datetime.fromtimestamp(time).strftime("%Y-%m-%d %H:%M:%S")
+
+    def init_bar(self: object, limit: int) -> None:
+        """Initiate and open the progress bar.
+
+        :param limit: The number of increments it should take to fill the bar.
+        """
+        self.bar = ProgressBar(limit=limit)
+        self.bar.open()
 
     def new(self: object, messages: Union[List[str], str]) -> bool:
         """Initiates a new log entry and prints it to the console, if printLogs is
@@ -160,8 +164,14 @@ class LogHandler:
             return False
 
         statement = f"{self.get_time()} - {message}"
+
+        isBar: bool = (self.bar is not None) and self.bar.opened
+        if isBar and len(statement) < len(self.bar.state):
+            statement += " " * (len(self.bar.state) - len(statement))
         self.__log.append(statement + "\n")
         print(statement) if Globals.get("print_logs") else None
+        if isBar:
+           print(self.bar.state, end="\r", flush=True)
 
         return True
 

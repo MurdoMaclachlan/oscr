@@ -56,7 +56,7 @@ def check_comments(comment_list: List[object]) -> None:
 
     No return value.
     """
-    Globals.init_bar()
+    Log.init_bar(Globals.get(key="limit"))
     # Checks all the user's comments, deleting them if they're past the cutoff.
     for comment in comment_list:
         # Reduce API calls per iteration
@@ -76,8 +76,8 @@ def check_comments(comment_list: List[object]) -> None:
                 ]
             )
         Stats.increment("counted")
-        Globals.bar.increment()
-    Globals.bar.close()
+        Log.bar.increment()
+    Log.bar.close()
 
 
 def check_array(array: List, value: Any = "", mode: str = "len") -> bool:

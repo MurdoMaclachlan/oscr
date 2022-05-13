@@ -138,7 +138,7 @@ def signal_handler(sig: int, frame: Any) -> None:
         :return: Nothing.
     """
     from .statistics import dump_stats
-    if not Globals.bar.close():
+    if not Log.bar.close():
         print("\r", end="\r")
     update_log("Received kill signal, exiting...")
     if Stats.enabled:
