@@ -14,10 +14,11 @@ As of this version, smooth_progress 0.1.0+ is required and alive_progress is no 
 - Improved ``SysHandler.define_paths()`` using ``os.mkdirs()``, shortening code and dropping ``SysHandler.make_directory()``. (@MurdoMaclachlan)
 - Changed functions marked ``NoReturn`` to return ``None`` instead, as is more in-line with how the typing library should be used. (@MurdoMaclachlan)
 - Updated links in documentation. (@MurdoMaclachlan)
+- Fixed a minor typo. (@MurdoMaclachlan)
 
 **Bug Fixes**
 
-- Fixed ``--clean-hunt`` not deleting treasure hunt claims that use "dibs" as the claim phrase. (@MurdoMaclachlan)
+- Fixed ``--clean-hunt`` not deleting treasure hunt claims that use 'dibs' as the claim phrase. (@MurdoMaclachlan)
 - Fixed broken formatting of 'wait_unit' in wait log statement. (@MurdoMaclachlan)
 
 2.2.0

@@ -103,7 +103,7 @@ def oscr() -> None:
                     "WARNING: OSCR counted less comments than your limit of"
                     + f" {Globals.get(key='limit')}. You may have deleted all"
                     + " available elligible comments, or a caching error may have"
-                    + " caused Reddit to return less coments than it should. It may"
+                    + " caused Reddit to return less comments than it should. It may"
                     + " be worth running OSCR once more."
                 )
             )
