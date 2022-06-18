@@ -24,8 +24,10 @@
 """
 
 import json
-from .classes import Globals, Log, Stats, System
+from .classes import Globals, Stats, System
+from .logger import Log
 from .misc import dump_json
+
 global Globals, Log, Stats, System
 
 
@@ -39,14 +41,13 @@ def dump_stats() -> bool:
     if dump_json(
         f"{System.PATHS['data']}/stats.json", {"statistics": [Stats.get("total")]}
     ):
-        Log.new("Updated statistics successfully.")
+        Log.new("Updated statistics successfully.", "INFO")
         return True
     else:
         Log.new(
-            Log.warning(
-                "WARNING: Failed to update statistics, will no longer attempt to"
-                + " update for this instance."
-            )
+            "Failed to update statistics, will no longer attempt to update for this"
+            + " instance.",
+            "WARNING"
         )
         return False
 
@@ -66,24 +67,18 @@ def fetch_stats() -> None:
             # Catch invalid JSON in the config file (usually a result of manual editing)
             except json.decoder.JSONDecodeError as e:
                 Log.new(
-                    [
-                        Log.warning(
-                            "WARNING: Failed to fetch statistics; could not decode"
-                            + " JSON file. Returning 0."
-                        ),
-                        Log.warning(f"Error was: {e}"),
-                    ]
+                    "Failed to fetch statistics; could not decode JSON file. Returning"
+                    + f" 0. Error was: {e}",
+                    "ERROR"
                 )
                 Stats.generate_new()
 
             Stats.set_totals(data["statistics"][0])
-            Log.new("Fetched statistics successfully.")
+            Log.new("Fetched statistics successfully.", "INFO")
 
     # Catch missing stats file
     except FileNotFoundError:
-        Log.new(
-            Log.warning("WARNING: Could not find stats file. It will be created.")
-        )
+        Log.new("Could not find stats file. It will be created.", "WARNING")
         Stats.generate_new()
         Stats.enabled = dump_stats()
 
@@ -98,20 +93,13 @@ def update_and_log_stats() -> None:
     """
     # Gives info about most recent iteration; how many comments were counted, deleted,
     # still waiting for.
-    Log.new(
-        [
-            f"Counted this cycle: {Stats.get('current', stat='counted')}",
-            f"Deleted this cycle: {Stats.get('current', stat='deleted')}",
-            f"Waiting for: {Stats.get('current', stat='waiting_for')}",
-        ]
-    )
+    Log.new(f"Counted this cycle: {Stats.get('current', stat='counted')}", "INFO")
+    Log.new(f"Deleted this cycle: {Stats.get('current', stat='deleted')}", "INFO")
+    Log.new(f"Waiting for: {Stats.get('current', stat='waiting_for')}", "INFO")
 
     # Updates total statistics
     Stats.update_totals()
     Stats.enabled = dump_stats() if Stats.enabled else False
-    Log.new(
-        [
-            f"Total Counted: {Stats.get('total', stat='counted')}",
-            f"Total Deleted: {Stats.get('total', stat='deleted')}",
-        ]
-    ) if Globals.get(key="report_totals") else None
+    if Globals.get(key="report_totals"):
+        Log.new(f"Total Counted: {Stats.get('total', stat='counted')}", "INFO")
+        Log.new(f"Total Deleted: {Stats.get('total', stat='deleted')}", "INFO")

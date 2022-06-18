@@ -25,7 +25,8 @@
 import sys
 from os import remove
 from typing import Any, List
-from .classes import Globals, Log, System
+from .classes import Globals, System
+from .logger import Log
 from .misc import calculate_essentials, dump_config
 
 global Globals, Log, System
@@ -97,10 +98,11 @@ def check_args() -> None:
                     argument
                 ) != len(sys.argv):
                     print(
-                        Log.warning(
-                            "WARNING: --clean-hunt was passed, but so"
+                        Log.new(
+                            "--clean-hunt was passed, but so"
                             + " were other arguments. Subsequent arguments"
-                            + " will not be processed."
+                            + " will not be processed.",
+                            "WARNING"
                         )
                     )
                     break
@@ -110,9 +112,10 @@ def check_args() -> None:
                 argument in list(arguments.keys())[8:] or argument in config_changes
             ) and closing:
                 print(
-                    Log.warning(
-                        f"WARNING: '{argument}' was passed but was accompanied by a"
-                        + " closing argument and will not be processed."
+                    Log.new(
+                        f"'{argument}' was passed but was accompanied by a"
+                        + " closing argument and will not be processed.",
+                        "WARNING"
                     )
                 )
             else:
@@ -121,11 +124,7 @@ def check_args() -> None:
     # Handles passing of unknown arguments
     for argument in sys.argv[1:]:
         if argument not in arguments:
-            Log.new(
-                Log.warning(
-                    f"WARNING: Unknown argument '{argument}' passed - ignoring."
-                )
-            )
+            Log.new(f"Unknown argument '{argument}' passed - ignoring.", "WARNING")
     sys.exit(0) if closing else calculate_essentials()
 
 
@@ -234,11 +233,11 @@ def reset_config() -> None:
 
     No return value.
     """
-    Log.new("Resetting config file.")
+    Log.new("Resetting config file.", "INFO")
     try:
         remove(f"{System.PATHS['config']}/config.json")
     except FileNotFoundError:
-        Log.new("Config file already absent.")
+        Log.new("Config file already absent.", "INFO")
     Globals.set(Globals.DEFAULT_CONFIG)
     Globals.set(input("Please enter your Reddit username:\n  /u/"), key="user")
     dump_config()
@@ -253,7 +252,7 @@ def settings() -> None:
     """
     from .settings import settings_main
 
-    Log.new("Running OSCR with --settings parameter, entering settings menu.")
+    Log.new("Running OSCR with --settings parameter, entering settings menu.", "INFO")
     settings_main()
 
 

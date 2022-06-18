@@ -24,7 +24,8 @@ setup(
         "smooth_progress",
         "colored",
         "configparser",
-        "praw>=7.1.2"
+        "praw>=7.1.2",
+        "PyGObject~=3.42.0"
     ],
     classifiers=[
         "Programming Language :: Python :: 3.5",

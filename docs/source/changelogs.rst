@@ -11,6 +11,7 @@ As of this version, smooth_progress 0.1.0+ is required and alive_progress is no 
 **Improvements**
 
 - Added system for gracefully handling kill signals, avoiding loss of unsaved log entries or stats and printing nice console output instead of a KeyboardInterrupt traceback. (@MurdoMaclachlan)
+- Greatly improved logging system. (@MurdoMaclachlan)
 - Improved ``SysHandler.define_paths()`` using ``os.mkdirs()``, shortening code and dropping ``SysHandler.make_directory()``. (@MurdoMaclachlan)
 - Changed functions marked ``NoReturn`` to return ``None`` instead, as is more in-line with how the typing library should be used. (@MurdoMaclachlan)
 - Updated links in documentation. (@MurdoMaclachlan)
@@ -20,6 +21,7 @@ As of this version, smooth_progress 0.1.0+ is required and alive_progress is no 
 
 - Fixed ``--clean-hunt`` not deleting treasure hunt claims that use 'dibs' as the claim phrase. (@MurdoMaclachlan)
 - Fixed broken formatting of 'wait_unit' in wait log statement. (@MurdoMaclachlan)
+- Fixed accumulation of massive log size over a long period of regular use. (@MurdoMaclachlan)
 
 2.2.0
 -----

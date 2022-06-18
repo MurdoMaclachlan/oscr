@@ -30,9 +30,10 @@ import signal
 from time import sleep
 from typing import Any
 from .auth import init
-from .classes import Globals, Log, Stats
+from .classes import Globals, Stats
 from .comment import check_comments
 from .log import exit_with_log, update_log
+from .logger import Log
 from .statistics import update_and_log_stats
 
 global Globals, Log, Stats
@@ -48,21 +49,15 @@ def oscr() -> None:
     """
     signal.signal(signal.SIGINT, signal_handler)
     Log.new(
-        [
-            (
-                f"Running OSCR version {Globals.VERSION} with recur set to"
-                + f" {Globals.get(key='recur')}."
-            ),
-            (
-                Log.warning(
-                    "WARNING: Log updates are OFF. Console log will not be saved for"
-                    + " this instance."
-                )
-                if not Globals.get(key="log_updates")
-                else ""
-            ),
-        ]
-    )
+        f"Running OSCR version {Globals.VERSION} with recur set to"
+        + f" {Globals.get(key='recur')}.",
+        "INFO"
+    ),
+    if not Globals.get(key="log_updates"):
+        Log.new(
+            "Log updates are OFF. Console log will not be saved for this instance.",
+            "WARNING"
+        )
 
     # Initialises Reddit instance
     reddit = init()
@@ -82,30 +77,30 @@ def oscr() -> None:
         Stats.reset()
 
         # Fetches the comment list from Reddit
-        Log.new("Retrieving comments...")
+        Log.new("Retrieving comments...", "INFO")
         profile = reddit.redditor(Globals.get(key="user"))
         comment_list = profile.comments.new(limit=Globals.get(key="limit"))
-        Log.new("Comments retrieved; checking...")
+        Log.new("Comments retrieved; checking...", "INFO")
 
         # Iterate through commentList and delete any that meet requirements
         check_comments(comment_list)
 
         Log.new(
             f"Successfully checked all {Stats.get('current', stat='counted')}"
-            + " available comments."
+            + " available comments.",
+            "INFO"
         )
 
         # Notifies if the end of Reddit's listing is reached (i.e. no new comments due
         # to API limitations)
         if Stats.get("current", stat="counted") < Globals.get(key="limit"):
             Log.new(
-                Log.warning(
-                    "WARNING: OSCR counted less comments than your limit of"
-                    + f" {Globals.get(key='limit')}. You may have deleted all"
-                    + " available elligible comments, or a caching error may have"
-                    + " caused Reddit to return less comments than it should. It may"
-                    + " be worth running OSCR once more."
-                )
+                "OSCR counted less comments than your limit of"
+                + f" {Globals.get(key='limit')}. You may have deleted all"
+                + " available elligible comments, or a caching error may have"
+                + " caused Reddit to return less comments than it should. It may"
+                + " be worth running OSCR once more.",
+                "WARNING"
             )
 
         update_and_log_stats()

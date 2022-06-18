@@ -24,9 +24,10 @@
 
 import sys
 import json
-from .classes import Globals, Log, System
+from .classes import Globals, System
 from .creds import create_ini, dump_credentials, get_credentials
 from .log import exit_with_log, update_log
+from .logger import Log
 from .misc import dump_config
 
 global Globals, Log, System
@@ -53,23 +54,18 @@ def settings_main() -> None:
 
         # Determines which result happens
         if choice == "1":
-            Log.new("Opening config edit menu.")
+            Log.new("Opening config edit menu.", "INFO")
             edit_config()
         elif choice == "2":
+            Log.new("Opening praw.ini edit menu.", "INFO")
             Log.new(
-                [
-                    "Opening praw.ini edit menu.",
-                    Log.warning(
-                        "WARNING: edits to praw.ini will require a restart to take"
-                        + " effect."
-                    ),
-                ]
+                "Edits to praw.ini will require a restart to take effect.", "WARNING"
             )
             edit_credentials()
         elif choice == "3":
             how_to_use()
         elif choice == "4":
-            Log.new("Exiting settings menu, continuing to main program.")
+            Log.new("Exiting settings menu, continuing to main program.", "INFO")
             break
         else:
             update_log(messages="Updating log...")
@@ -203,9 +199,7 @@ def edit_credentials() -> bool:
     try:
         creds = get_credentials()
     except FileNotFoundError:
-        Log.new(
-            Log.warning(f"ERROR: file '{System.PATHS['config']}/praw.ini' not found.")
-        )
+        Log.new(f"File '{System.PATHS['config']}/praw.ini' not found.", "ERROR")
         if create_ini():
             creds = get_credentials()
         else:

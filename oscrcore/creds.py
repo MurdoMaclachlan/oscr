@@ -23,7 +23,8 @@
 
 from configparser import ConfigParser
 from typing import Dict
-from .classes import Globals, Log, System
+from .classes import Globals, System
+from .logger import Log
 
 global Globals, Log, System
 
@@ -47,7 +48,10 @@ def create_ini() -> bool:
 
     Returns: boolean success status.
     """
-    Log.new(["praw.ini missing, incomplete or incorrect. It will need to be created."])
+    Log.new(
+        "praw.ini missing, incomplete or incorrect. It will need to be created.",
+        "INFO"
+    )
     return dump_credentials(
         {
             "client_id": input("Please input your client id:  "),
@@ -92,8 +96,7 @@ def get_credentials() -> Dict:
             return get_credentials()
         else:
             Log.new(
-                Log.warning(
-                    "Could not create praw.ini! Encountered a fatal error during"
-                    + " ini creation."
-                )
+                "Could not create praw.ini! Encountered a fatal error during ini"
+                + " creation.",
+                "FATAL"
             )

@@ -26,7 +26,8 @@
 import json
 import sys
 from typing import Dict, List, TextIO
-from .classes import Globals, Log, System
+from .classes import Globals, System
+from .logger import Log
 
 global Globals, Log, System
 
@@ -53,10 +54,8 @@ def check_config() -> None:
     for key in Globals.DEFAULT_CONFIG:
         if key not in current_config:
             Log.new(
-                Log.warning(
-                    f"Detected missing config key: {key}. Adding with default"
-                    + " value."
-                )
+                f"Detected missing config key: {key}. Adding with default value.",
+                "WARNING"
             )
             Globals.set(Globals.DEFAULT_CONFIG[key], key=key)
     dump_config()
@@ -90,10 +89,8 @@ def get_config() -> None:
             # Catch invalid JSON in the config file (usually a result of manual editing)
             except json.decoder.JSONDecodeError as e:
                 print(
-                    Log.warning(
-                        "Failed to get config; could not decode JSON file. Exiting."
-                    ),
-                    f"Error was: {e}",
+                    "FATAL: Failed to get config; could not decode JSON file. Exiting.",
+                    f"Error was: {e}"
                 )
                 sys.exit(0)
 

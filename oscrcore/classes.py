@@ -21,17 +21,13 @@
     This module contains all classes used by OSCR.
 """
 
-from colored import fg, attr
-from datetime import datetime
 from os import environ, makedirs
 from os.path import expanduser, isdir
-from smooth_progress import ProgressBar
 from sys import platform
-from time import time
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, Union
 from .globals import DEFAULT_CONFIG, VERSION
 
-global Globals, Log, Stats, System
+global Globals, Stats, System
 
 
 class GlobalsHandler:
@@ -93,125 +89,6 @@ class GlobalsHandler:
         # Return the entire globals object alongside a flag to determine if any keys
         # were changed by the function
         return [self, True if before != self.__config else False]
-
-
-class LogHandler:
-    """The Log class handles the logging system, surprise surprise. In addition to
-    containing the main log array, Log contains data relating to the colouring of log
-    output, and also defines a simple API for access and modification to/of the data
-    contained therein.
-    """
-    def __init__(self: object) -> None:
-        self.bar = None
-        self.ConsoleColours = self.Colours(1, 0, 130)
-        self.__log = []
-
-    class Colours:
-        """The Colours class stores colour attributes which can be applied to strings in
-        order to colour the console output of log entries.
-        """
-        def __init__(self: object, error: int, normal: int, warning: int) -> None:
-            self.ERROR = fg(error)
-            self.NORMAL = attr(normal)
-            self.WARNING = fg(warning)
-
-    def get_time(self: object, time: int = time()) -> str:
-        """Gets the current time and parses it to a human-readable format.
-
-        Arguments:
-        - time (int): optional with 'time.time()' as default
-
-        Returns: a single date string in format 'YYYY-MM-DD HH:MM:SS'.
-        """
-        return datetime.fromtimestamp(time).strftime("%Y-%m-%d %H:%M:%S")
-
-    def init_bar(self: object, limit: int) -> None:
-        """Initiate and open the progress bar.
-
-        :param limit: The number of increments it should take to fill the bar.
-        """
-        self.bar = ProgressBar(limit=limit)
-        self.bar.open()
-
-    def new(self: object, messages: Union[List[str], str]) -> bool:
-        """Initiates a new log entry and prints it to the console, if printLogs is
-        enabled.
-
-        Arguments:
-        - messages (string array, or single string)
-
-        Returns: boolean success status.
-        """
-        if type(messages) == list:
-            for message in messages:
-                self.process(message)
-        else:
-            self.process(messages)
-
-        return True
-
-    def process(self: object, message: str) -> bool:
-        """Processes a single new log entry. Helper method for Log.new() in case of a
-        string array being passed.
-
-        Arguments:
-        - messages (single string)
-
-        Returns: boolean success status.
-        """
-        # Allows for dynamic passing of lists
-        if not message:
-            return False
-
-        statement = f"{self.get_time()} - {message}"
-
-        isBar: bool = (self.bar is not None) and self.bar.opened
-        if isBar and len(statement) < len(self.bar.state):
-            statement += " " * (len(self.bar.state) - len(statement))
-        self.__log.append(statement + "\n")
-        print(statement) if Globals.get("print_logs") else None
-        if isBar:
-           print(self.bar.state, end="\r", flush=True)
-
-        return True
-
-    def request(self: object, mode: List) -> Union[List[str], None, str]:
-        """Returns or deletes item(s) in the log, either all items or the most
-        recently-added item.
-
-        Arguments:
-        - mode (string array of length 2): options;
-            - options for the first item are "clear" and "get",
-            - options for the second item are "all" and "recent",
-
-        Returns: a single log entry (string), list of log entries (string array), or
-                 nothing.
-        """
-        requests = {
-            "all": (self.__log, self.__log[:])[1 if mode[0] == "clear" else 0],
-            "recent": self.__log[len(self.__log) - 1],
-        }
-
-        try:
-            if mode[0] == "clear":
-                del requests[mode[1]]
-            elif mode[0] == "get":
-                return requests[mode[1]]
-        except KeyError:
-            print(self.warning("WARNING: Log.request() received unknown mode '{i}'."))
-
-    def warning(self: object, message: str) -> str:
-        """WARNING: soon-to-be deprecated.
-
-        Creates and returns a string that when printed will be coloured with the warning
-        colour.
-
-        Arguments:
-        - message (string)
-
-        Returns: a single coloured string.
-        """
-        return self.ConsoleColours.WARNING + message + self.ConsoleColours.NORMAL
 
 
 class StatsHandler:
@@ -336,12 +213,11 @@ class SysHandler:
 
         # Exit if the operating system is unsupported
         else:
-            Log.new(Log.warning(f"Unsupported operating system: {os}, exiting."))
+            print(f"FATAL: Unsupported operating system: {os}, exiting.")
             exit()
 
 
 # Declare global classes
 Globals = GlobalsHandler(DEFAULT_CONFIG, VERSION)
-Log = LogHandler()
 Stats = StatsHandler()
 System = SysHandler()

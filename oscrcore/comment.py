@@ -25,7 +25,8 @@
 import re
 from time import time
 from typing import Any, List
-from .classes import Globals, Log, Stats
+from .classes import Globals, Stats
+from .logger import Log
 from .misc import check_regex
 
 global Globals, Log, Stats
@@ -67,13 +68,10 @@ def check_comments(comment_list: List[object]) -> None:
         # Result of a comment being in reply to a deleted/removed submission
         except AttributeError as e:
             Log.new(
-                [
-                    Log.warning(
-                        "Handled error on iteration"
-                        + f"{Stats.get('current', 'counted')}: {e} | Comment at"
-                        + f"{comment.permalink}"
-                    )
-                ]
+                "Handled error on iteration"
+                + f"{Stats.get('current', 'counted')}: {e} | Comment at"
+                + f"{comment.permalink}",
+                "ERROR"
             )
         Stats.increment("counted")
         Log.bar.increment()
@@ -92,9 +90,7 @@ def check_array(array: List, value: Any = "", mode: str = "len") -> bool:
     Returns: boolean.
     """
     if mode not in ["len", "val"]:
-        Log.new(
-            Log.warning("WARNING: unknown mode passed to check_array(). Skipping.")
-        )
+        Log.new("nknown mode passed to check_array(). Skipping.", "WARNING")
         return False
     return (
         True
@@ -145,10 +141,10 @@ def remover(comment: object, body: str) -> None:
     ):
         # Only delete comments older than the cutoff
         if time() - comment.created_utc > Globals.get(key="cutoff_sec"):
-            Log.new(f"Obsolete '{body}' found, deleting.")
+            Log.new(f"Obsolete '{body}' found, deleting.", "INFO")
             if not Globals.get(key="debug"):
                 comment.delete()
                 Stats.increment("deleted")
         else:
-            Log.new(f"Waiting for '{body}'.")
+            Log.new(f"Waiting for '{body}'.", "INFO")
             Stats.increment("waiting_for")

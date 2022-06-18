@@ -37,8 +37,9 @@ from configparser import NoSectionError
 from praw.exceptions import MissingRequiredAttributeException
 from typing import Dict
 from .creds import add_refresh_token, create_ini, get_credentials
-from .classes import Globals, Log, System
+from .classes import Globals, System
 from .log import exit_with_log
+from .logger import Log
 
 global Globals, Log, System
 
@@ -58,11 +59,14 @@ def check_failure(client: object, params: Dict, state: str) -> None:
         send_message(
             client, f'State mismatch. Expected: {state} Received: {params["state"]}'
         )
-        Log.new([f'State mismatch. Expected: {state} Received: {params["state"]}'])
+        Log.new(
+            f'State mismatch. Expected: {state} Received: {params["state"]}',
+            "FATAL"
+        )
         sys.exit()
     elif "error" in params:
         send_message(client, params["error"])
-        Log.new([params["error"]])
+        Log.new(params["error"], "FATAL")
         sys.exit()
 
 
@@ -126,7 +130,7 @@ def login() -> object:
             # If user has 2FA enabled but has not authorised OSCR
             except Exception as e:
                 if str(e) != "invalid_grant error processing request":
-                    Log.new(Log.warning([f"LOGIN FAILURE, ERROR IS: {e}"]))
+                    Log.new(f"LOGIN FAILURE, ERROR IS: {e}", "FATAL")
                     sys.exit(0)
 
                 # ngl idk wtf this does but it sure does do
@@ -135,10 +139,9 @@ def login() -> object:
                     scopes = ["history", "read", "edit"]
                     url = reddit.auth.url(scopes, state, "permanent")
                     Log.new(
-                        [
-                            "2FA enabled, but not authorised. OSCR will now open a"
-                            + " tab in your browser to complete the login process."
-                        ]
+                        "2FA enabled, but not authorised. OSCR will now open a"
+                        + " tab in your browser to complete the login process.",
+                        "INFO"
                     )
                     webbrowser.open(url)
 
@@ -177,16 +180,13 @@ def login() -> object:
             reddit.user.me()
         except Exception as e:
             if str(e) != "invalid_grant error processing request":
-                Log.new(Log.warning([f"LOGIN FAILURE, ERROR IS: {e}"]))
+                Log.new(f"LOGIN FAILURE, ERROR IS: {e}", "FATAL")
                 sys.exit(0)
             else:
                 Log.new(
-                    [
-                        Log.warning(
-                            "2FA detected, but not enabled. Please run 'oscr -S' and"
-                            + " set useRefreshTokens to True, then re-run OSCR."
-                        )
-                    ]
+                    "2FA detected, but not enabled. Please run 'oscr -S' and"
+                    + " set useRefreshTokens to True, then re-run OSCR.",
+                    "FATAL"
                 )
                 sys.exit(0)
 
