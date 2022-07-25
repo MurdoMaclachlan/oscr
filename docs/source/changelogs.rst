@@ -6,12 +6,13 @@ A list of changelogs for OSCR, with the most recent version first. These are als
 Unreleased
 ----------
 
-As of this version, smooth_progress 0.1.0+ is required and alive_progress is no longer required.
+As of this version, smooth_progress 0.1.0+ is required and alive_progress is no longer required. Similarly, plyer is now required, and PyGObject is no longer required.
 
 **Improvements**
 
 - Added system for gracefully handling kill signals, avoiding loss of unsaved log entries or stats and printing nice console output instead of a KeyboardInterrupt traceback. (@MurdoMaclachlan)
 - Greatly improved logging system. (@MurdoMaclachlan)
+- Notifications now show the name of the program as a title. (@MurdoMaclachlan)
 - Improved ``SysHandler.define_paths()`` using ``os.mkdirs()``, shortening code and dropping ``SysHandler.make_directory()``. (@MurdoMaclachlan)
 - Changed functions marked ``NoReturn`` to return ``None`` instead, as is more in-line with how the typing library should be used. (@MurdoMaclachlan)
 - Updated links in documentation. (@MurdoMaclachlan)

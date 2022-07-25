@@ -17,11 +17,8 @@
     Contact me at murdomaclachlan@duck.com
 """
 
-from gi import require_version
-require_version("Notify", "0.7")
-from gi.repository import Notify
-from gi.repository.GLib import GError
 from datetime import datetime
+from plyer import notification
 from smooth_progress import ProgressBar
 from time import time
 from typing import List, Union
@@ -54,8 +51,7 @@ class Logger:
         self.bar = None
         self.__log = []
         self.__is_empty = True
-        self.__notify = Notify
-        self.__notify.init("Clone Finder")
+        self.__notifier = notification
         self.__scopes = {
             "CLONE":   clone,   # a notification of a found clone
             "DEBUG":   debug,   # information for debugging the program
@@ -145,10 +141,7 @@ class Logger:
 
         :param message: The message to display in the notification.
         """
-        try:
-            self.__notify.Notification.new(message).show()
-        except GError:
-            pass
+        self.__notifier.notify(title="OSCR",message=message)
 
     def new(
             self: object,
