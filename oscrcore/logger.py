@@ -49,8 +49,8 @@ class Logger:
         clone=2, debug=0, error=2, fatal=2, info=1, warning=2
     ) -> None:
         self.bar = None
-        self.__log = []
         self.__is_empty = True
+        self.__log = []
         self.__notifier = notification
         self.__scopes = {
             "CLONE":   clone,   # a notification of a found clone
