@@ -65,6 +65,7 @@ class Logger:
     def clean(self: object) -> None:
         del self.__log[:]
         self.__is_empty = True
+        self.__write_logs = False
 
     def get(
             self: object, mode: str = "all", scope: str = None
@@ -166,8 +167,8 @@ class Logger:
                 message += " " * (len(self.bar.state) - len(message))
             entry = LogEntry(message, output, scope, self.get_time())
             self.__log.append(entry)
-            if not self.__is_empty:
-                self.__is_empty = output
+            if not self.__write_logs:
+                self.__write_logs = output
             # A select few messages have no listed scope and should always be printed
             if scope == "NOSCOPE":
                 print(entry.rendered)
@@ -176,6 +177,7 @@ class Logger:
                 print(entry.rendered if not do_not_print else None)
             if isBar:
                 print(self.bar.state, end="\r", flush=True)
+            self.__is_empty = False
             return True
         else:
             self.new("Unknown scope passed to Logger.new()", "WARNING")

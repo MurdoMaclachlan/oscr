@@ -23,6 +23,7 @@ As of this version, smooth_progress 0.1.0+ is required and alive_progress is no 
 - Fixed ``--clean-hunt`` not deleting treasure hunt claims that use 'dibs' as the claim phrase. (@MurdoMaclachlan)
 - Fixed broken formatting of 'wait_unit' in wait log statement. (@MurdoMaclachlan)
 - Fixed accumulation of massive log size over a long period of regular use. (@MurdoMaclachlan)
+- Fixed writing to the log file when there are no log entries of appropriate scope. (@MurdoMaclachlan)
 
 2.2.0
 -----
