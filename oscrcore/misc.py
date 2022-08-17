@@ -160,7 +160,7 @@ def check_regex(re, comment: str) -> bool:
 
     Returns: boolean.
     """
-    for pattern in Globals.get(key="regex_blacklist"):
+    for pattern in Globals.get(key="regex_list"):
         if re.match(
             pattern, (comment.casefold(), comment)[Globals.get(key="case_sensitive")]
         ):

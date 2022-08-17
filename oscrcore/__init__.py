@@ -36,6 +36,9 @@ from .globals import VERSION
 from .log import exit_with_log
 from .log import update_log
 
+# the logger itself
+from .logger import Log
+
 # miscellaneous functions
 from .misc import calculate_essentials
 from .misc import check_config

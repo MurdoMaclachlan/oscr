@@ -4,3 +4,4 @@ dist/*
 oscr.egg-info/*
 *.xml
 *.iml
+oscrcore/__pycache__

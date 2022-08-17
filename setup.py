@@ -21,8 +21,8 @@ setup(
     url="https://github.com/MurdoMaclachlan/oscr",
     packages=find_packages(),
     install_requires=[
+        "smooth_logger",
         "smooth_progress",
-        "colored",
         "configparser",
         "plyer",
         "praw>=7.1.2",

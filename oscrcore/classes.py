@@ -200,7 +200,7 @@ class SysHandler:
                     "data": environ["APPDATA"] + "\\oscr\data"
                 } if os == "win" else {
                     "config": f"{home}/.config/oscr",
-                    "data": f"{home}/.oscr/data"
+                    "data": f"{home}/.config/oscr/data"
                 }
             )
 
@@ -208,7 +208,7 @@ class SysHandler:
             for path in paths:
                 if not isdir(paths[path]):
                     print(f"Making path: {paths[path]}")
-                    makedirs(path, exist_ok=True)
+                    makedirs(paths[path], exist_ok=True)
             return paths
 
         # Exit if the operating system is unsupported

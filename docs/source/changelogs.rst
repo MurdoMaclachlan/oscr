@@ -6,14 +6,22 @@ A list of changelogs for OSCR, with the most recent version first. These are als
 Unreleased
 ----------
 
-As of this version, smooth_progress 0.1.0+ is required and alive_progress is no longer required. Similarly, plyer is now required, and PyGObject is no longer required.
+As of this version, ``smooth_progress`` is required and ``alive_progress`` is no longer required. Similarly, ``smooth_logger`` is now required, and ``PyGObject`` is no longer required.
 
 **Improvements**
 
 - Added system for gracefully handling kill signals, avoiding loss of unsaved log entries or stats and printing nice console output instead of a KeyboardInterrupt traceback. (@MurdoMaclachlan)
-- Greatly improved logging system. (@MurdoMaclachlan)
-- Notifications now show the name of the program as a title. (@MurdoMaclachlan)
+- Switched logging system to use ``smooth_logger``. (@MurdoMaclachlan) As part of this:
+    - Notifications now show the name of the program as a title. (@MurdoMaclachlan)
+    - Fixed accumulation of massive log size over a long period of regular use. (@MurdoMaclachlan)
+    - Fixed writing to the log file when there are no log entries of appropriate scope. (@MurdoMaclachlan)
 - Improved ``SysHandler.define_paths()`` using ``os.mkdirs()``, shortening code and dropping ``SysHandler.make_directory()``. (@MurdoMaclachlan)
+- All data and logs are now stored in ``~/.config/oscr/`` on Unix systems, instead of ``~/.oscr``, avoiding loose folders in the home folder. Existing statistics will need to be manually moved. (@MurdoMaclachlan)
+
+**Documentation**
+
+- Changed ``regex_blacklist`` config key to ``regex_list``, more accurately reflecting its nature. (@MurdoMaclachlan)
+- Removed unused ``colored`` dependency. (@MurdoMaclachlan)
 - Changed functions marked ``NoReturn`` to return ``None`` instead, as is more in-line with how the typing library should be used. (@MurdoMaclachlan)
 - Updated links in documentation. (@MurdoMaclachlan)
 - Fixed a minor typo. (@MurdoMaclachlan)
@@ -22,8 +30,6 @@ As of this version, smooth_progress 0.1.0+ is required and alive_progress is no 
 
 - Fixed ``--clean-hunt`` not deleting treasure hunt claims that use 'dibs' as the claim phrase. (@MurdoMaclachlan)
 - Fixed broken formatting of 'wait_unit' in wait log statement. (@MurdoMaclachlan)
-- Fixed accumulation of massive log size over a long period of regular use. (@MurdoMaclachlan)
-- Fixed writing to the log file when there are no log entries of appropriate scope. (@MurdoMaclachlan)
 
 2.2.0
 -----
