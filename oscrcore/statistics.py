@@ -28,8 +28,6 @@ from .classes import Globals, Stats, System
 from .logger import Log
 from .misc import dump_json
 
-global Globals, Log, Stats, System
-
 
 def dump_stats() -> bool:
     """Writes the total statistics to stats.json.

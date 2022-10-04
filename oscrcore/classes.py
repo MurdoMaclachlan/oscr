@@ -40,7 +40,7 @@ class GlobalsHandler:
         self.DEFAULT_CONFIG = default_config
         self.VERSION = version
 
-    def get(self: object, key: str = None) -> None:
+    def get(self, key: str = None) -> None:
         """Gets a single config value from a given key.
 
         Arguments:
@@ -50,7 +50,7 @@ class GlobalsHandler:
         """
         return self.__config[key] if key else self.__config
 
-    def set(self: object, value: Any, key: str = None) -> None:
+    def set(self, value: Any, key: str = None) -> None:
         """Sets a single config key to a single new given value.
 
         :argument key: (string)
@@ -63,14 +63,14 @@ class GlobalsHandler:
         else:
             self.__config = value
 
-    def snake_case(self: object) -> object:
+    def snake_case(self) -> object:
         """Convert all config keys to snake case.
 
         Regexes taken from this StackOverflow answer:
         https://stackoverflow.com/questions/1175208/elegant-python-function-to-convert-camelcase-to-snake-case#1176023
 
-        :return: an array containing self and a boolean flag indicating whether or not
-                 any keys were changed
+        :return: an array containing self and a boolean flag indicating whether any keys
+                 were changed
         """
         import re
         # First run through the keys and add in the underlines
@@ -95,14 +95,14 @@ class StatsHandler:
     """The Statistics class stores the current and total statistics and provides a
     simple API for accessing and modifying the data contained therein.
     """
-    def __init__(self: object) -> None:
-        self.__data = {
+    def __init__(self) -> None:
+        self.__data: dict[str, dict] = {
             "current": {"counted": 0, "deleted": 0, "waiting_for": 0},
             "total": {},
         }
         self.enabled = True
 
-    def get(self: object, dataset: str, stat: str = None) -> Union[Dict, int]:
+    def get(self, dataset: str, stat: str = None) -> Union[Dict, int]:
         """Returns either a single statistic or, if no statistic is specified, an entire
         dataset.
         - Dataset options are: "current", "total"
@@ -117,7 +117,7 @@ class StatsHandler:
         """
         return self.__data[dataset][stat] if stat else self.__data[dataset]
 
-    def generate_new(self: object) -> None:
+    def generate_new(self) -> None:
         """Resets all statistics in the "total" dataset to  0. Should only be used if
         the stats file cannot be found.
 
@@ -127,7 +127,7 @@ class StatsHandler:
         """
         self.__data["total"] = {"counted": 0, "deleted": 0}
 
-    def increment(self: object, stat: str) -> None:
+    def increment(self, stat: str) -> None:
         """Increments a single statistic of the "current" dataset.
 
         Arguments:
@@ -137,7 +137,7 @@ class StatsHandler:
         """
         self.__data["current"][stat] += 1
 
-    def reset(self: object) -> None:
+    def reset(self) -> None:
         """Resets all entries in the "current" dataset to 0. Should be called every
         program loop.
 
@@ -147,7 +147,7 @@ class StatsHandler:
         """
         self.__data["current"] = {"counted": 0, "deleted": 0, "waiting_for": 0}
 
-    def set_totals(self: object, totals: Dict) -> None:
+    def set_totals(self, totals: Dict) -> None:
         """Sets the "total" dataset to a new given set of values.
 
         Arguments:
@@ -157,7 +157,7 @@ class StatsHandler:
         """
         self.__data["total"] = totals
 
-    def update_totals(self: object) -> None:
+    def update_totals(self) -> None:
         """Adds the "counted" and "deleted" statistics in the "current" dataset to those
         in the "total" dataset.
 
@@ -174,14 +174,14 @@ class SysHandler:
     The paths to the data and config directories are contained here, as well as the
     location of the home directory and the auto-detected OS.
     """
-    def __init__(self: object) -> None:
+    def __init__(self) -> None:
         self.HOME = expanduser("~")
         self.OS = platform
-        self.PATHS = self.define_paths(self.HOME, self.OS)
+        self.PATHS = self.__define_paths(self.HOME, self.OS)
 
-    def define_paths(self: object, home: str, os: str) -> Dict[str, str]:
+    def __define_paths(self, home: str, os: str) -> Dict[str, str]:
         """Detects OS and defines the appropriate save paths for the config and data.
-        Exits on detecting an unspported OS. Supported OS's are: Linux, MacOS, Windows.
+        Exits on detecting an unsupported OS. Supported OSes are: Linux, MacOS, Windows.
 
         Arguments:
         - home (string)

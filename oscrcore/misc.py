@@ -29,8 +29,6 @@ from typing import Dict, List, TextIO
 from .classes import Globals, System
 from .logger import Log
 
-global Globals, Log, System
-
 
 """
     CONFIGURATION FUNCTIONS

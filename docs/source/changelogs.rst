@@ -25,6 +25,7 @@ As of this version, ``smooth_progress`` is required and ``alive_progress`` is no
 - Changed functions marked ``NoReturn`` to return ``None`` instead, as is more in-line with how the typing library should be used. (@MurdoMaclachlan)
 - Updated links in documentation. (@MurdoMaclachlan)
 - Fixed a minor typo. (@MurdoMaclachlan)
+- Improved code styling and type-hinting. (@MurdoMaclachlan)
 
 **Bug Fixes**
 

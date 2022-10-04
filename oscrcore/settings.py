@@ -30,8 +30,6 @@ from .log import exit_with_log, update_log
 from .logger import Log
 from .misc import dump_config
 
-global Globals, Log, System
-
 
 def settings_main() -> None:
     """The main settings menu; controls all other sub-menus.

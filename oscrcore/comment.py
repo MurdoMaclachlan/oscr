@@ -23,13 +23,12 @@
 """
 
 import re
+from praw.models import Comment
 from time import time
 from typing import Any, List
 from .classes import Globals, Stats
 from .logger import Log
 from .misc import check_regex
-
-global Globals, Log, Stats
 
 
 def blacklist(string: str) -> bool:
@@ -48,7 +47,7 @@ def blacklist(string: str) -> bool:
     )
 
 
-def check_comments(comment_list: List[object]) -> None:
+def check_comments(comment_list: List[Comment]) -> None:
     """Iterates through a list of Reddit comments, deleting any that meet the
     requirements to do so.
 
@@ -90,7 +89,7 @@ def check_array(array: List, value: Any = "", mode: str = "len") -> bool:
     Returns: boolean.
     """
     if mode not in ["len", "val"]:
-        Log.new("nknown mode passed to check_array(). Skipping.", "WARNING")
+        Log.new("Unknown mode passed to check_array(). Skipping.", "WARNING")
         return False
     return (
         True
@@ -110,7 +109,7 @@ def regex(string: str) -> bool:
     return True if Globals.get(key="use_regex") and check_regex(re, string) else False
 
 
-def remover(comment: object, body: str) -> None:
+def remover(comment: Comment, body: str) -> None:
     """Main comment remover algorithm; checks that comment passes deletion requirements,
     deletes if so, counts as "waiting for" if not.
 

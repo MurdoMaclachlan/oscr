@@ -36,8 +36,6 @@ from .log import exit_with_log, update_log
 from .logger import Log
 from .statistics import update_and_log_stats
 
-global Globals, Log, Stats
-
 
 def oscr() -> None:
     """The primary OSCR function controlling the flow of all primary functionality. Also
@@ -97,7 +95,7 @@ def oscr() -> None:
             Log.new(
                 "OSCR counted less comments than your limit of"
                 + f" {Globals.get(key='limit')}. You may have deleted all"
-                + " available elligible comments, or a caching error may have"
+                + " available eligible comments, or a caching error may have"
                 + " caused Reddit to return less comments than it should. It may"
                 + " be worth running OSCR once more.",
                 "WARNING"
@@ -123,6 +121,7 @@ def oscr() -> None:
             ]
         )
         sleep(Globals.get(key="wait_time"))
+
 
 def signal_handler(sig: int, frame: Any) -> None:
     """Gracefully exit; don't lose any as-yet unsaved log entries.

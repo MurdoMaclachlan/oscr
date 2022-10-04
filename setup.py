@@ -13,8 +13,8 @@ setup(
     author="Murdo Maclachlan",
     author_email="murdomaclachlan@duck.com",
     description=(
-        "A utility allowing users to delete blacklisted comments from their",
-        "Reddit profile once they have passed a cutoff time."
+        "A utility allowing users to delete blacklisted comments from their "
+        + "Reddit profile once they have passed a cutoff time."
     ),
     long_description=readme(),
     long_description_content_type="text/markdown",

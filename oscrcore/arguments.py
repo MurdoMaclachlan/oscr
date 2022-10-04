@@ -29,8 +29,6 @@ from .classes import Globals, System
 from .logger import Log
 from .misc import calculate_essentials, dump_config
 
-global Globals, Log, System
-
 
 def check_args() -> None:
     """Checks all passed arguments against a master list, processes them in the right
@@ -66,7 +64,7 @@ def check_args() -> None:
         "-r": temp_config_change,
     }
 
-    # List of argumets that require a change to the config
+    # List of arguments that require a change to the config
     config_changes = {
         "--force-regex": [["use_regex", True]],
         "-f": [["use_regex", True]],
